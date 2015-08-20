@@ -1,5 +1,4 @@
-# enfolding
-#### a prototype Geographical Imagination System (GIS)
+## enfolding:  a prototype Geographical Imagination System (GIS)
 
 Current [wireframes.](https://github.com/FoldingSpace/enfolding/Wireframes.pdf)
 
