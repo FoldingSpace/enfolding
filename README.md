@@ -1,2 +1,2 @@
 # enfolding
-a Geographical Imagination System
+a prototype Geographical Imagination System (GIS)
