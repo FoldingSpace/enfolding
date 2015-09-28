@@ -1,12 +1,13 @@
 var maps = []; //array to store images
-var mapFocus; //number in array to focus
+var mapFocus = 0; //number in array to focus
 var buttonNodes;
 var buttonDist;
+var buttonMatrix;
 var mode = 0; //mode 0 = edit nodes, 1 = edit distances
 
 function setup() {
   // create canvas
-  var c = createCanvas(1000, 700);
+  var c = createCanvas(1500, 700);
   colorMode(HSB,360,100,100,100)
   background(100,0,50,100);
   // Add an event for when a file is dropped onto the canvas
@@ -14,10 +15,13 @@ function setup() {
   
   buttonNodes = createButton('add nodes');
   buttonDist = createButton('edit distances');
+  buttonMatrix = createButton('make matrix');
   buttonNodes.position(10,0);
   buttonDist.position(100,0);
+  buttonMatrix.position(200,0);
   buttonNodes.mousePressed(mode0); //must be a better way to do this
   buttonDist.mousePressed(mode1);
+  buttonMatrix.mousePressed(makeMatrix);
 }
 
 function draw() {
@@ -198,6 +202,7 @@ function makeInput(edge, nodes, n, xOff, yOff){
     input.attribute("onkeydown", "keypress(event, " + n + ")");
 }
 
+//keypress for input boxes
 function keypress(event, id){
 	var key = event.keyCode;
 	if (key == 13){ //trigger for enter key
@@ -213,6 +218,74 @@ function keypress(event, id){
 //returns distance btw node and x,y
 function nodeDistXY(nn1,mx,my){
 	return dist(nn1.xpos,nn1.ypos,mx,my);
+}
+
+
+//build empty matrix, run through Floyd Warshall and MDS
+function makeMatrix(){
+	var nodes = maps[mapFocus].internalNodes;
+	var edges = maps[mapFocus].internalEdges;
+	var matrix = [];
+	var infStr = [];
+	
+	//from http://stackoverflow.com/questions/6495187/best-way-to-generate-empty-2d-array
+	var matrix = (function(matrix){ while(matrix.push([]) < nodes.length); return matrix})([]);
+	
+	//create array of empty values (= 'infinity') for each node
+	//for(var i = 0; i < nodes.length; i++){
+	//		append(infStr,-1); 
+	//	}
+	//populate matrix 
+	//for(var i = 0; i < nodes.length; i++){
+	//	matrix.push(infStr);
+	//}
+	//matrix[1][0] = 100;
+	//populate empty matrix from edge info
+	for(var i = 0; i < edges.length; i++){
+		var x = edges[i].node1;
+		var y = edges[i].node2;
+		var dis = parseFloat(edges[i].distanceMod);
+		//console.log(x + ' ' + y + ' ' + dis);
+		//distances are equal in both directions
+		//populates both spots n matrix by switching x/y
+		matrix[x][y] = dis;
+		matrix[y][x] = dis;
+	}
+	//cycle through all values replacing 'undefined' with 'Infinity'
+	//KLUDGE
+	for(var y = 0; y < nodes.length; y++){
+		for(var x = 0; x < nodes.length; x++){			
+			if(matrix[x][y] === undefined){
+				matrix[x][y] = 'Infinity';
+			}
+		}
+	}		
+	//console.log(matrix);
+	
+	//calculate Infinity entries with Floyd Warshall algo
+	var shortestDists = floydWarshall(matrix);
+	//console.log(shortestDists);
+	
+	//calculate MDS
+	//console.log(mdsCoords(shortestDists));
+	displayMaps();
+    displayGraphs();
+    updateData();
+	plotMdsGraph(shortestDists);
+	
+}
+
+function plotMdsGraph(coords){
+	push();
+	translate(1200,-140);
+	rotate(PI/4);
+	for(var i = 0; i < coords.length; i++){
+		var x = coords[i][0]/1.5;
+		var y = coords[i][1]/1.5;
+		ellipse(x,y,5,5);
+		console.log(x + ' ' + y);
+	}
+	pop();
 }
 
 function displayMaps(){
@@ -261,3 +334,112 @@ function mode1(){
 	mode = 1;
 	console.log('mode = 1');
 }
+
+//from http://www.benfrederickson.com/multidimensional-scaling/
+function mdsCoords(distances, dimensions) {
+	dimensions = dimensions || 2;
+
+	// square distances
+	var M = numeric.mul(-.5, numeric.pow(distances, 2));
+
+	// double centre the rows/columns
+	function mean(A) { return numeric.div(numeric.add.apply(null, A), A.length); }
+	var rowMeans = mean(M),
+		colMeans = mean(numeric.transpose(M)),
+		totalMean = mean(rowMeans);
+
+	for (var i = 0; i < M.length; ++i) {
+		for (var j =0; j < M[0].length; ++j) {
+			M[i][j] += totalMean - rowMeans[i] - colMeans[j];
+		}
+	}
+
+	// take the SVD of the double centred matrix, and return the
+	// points from it
+	var ret = numeric.svd(M),
+		eigenValues = numeric.sqrt(ret.S);
+	return ret.U.map(function(row) {
+		return numeric.mul(row, eigenValues).splice(0, dimensions);
+	});
+};
+	
+//from https://mgechev.github.io/javascript-algorithms/graphs_shortest-path_floyd-warshall.js.html
+(function (exports) {
+  'use strict';
+  var floydWarshall = (function () {
+    /**
+     * Matrix used for the algorithm.
+     */
+    var dist;
+    /**
+     * Initialize the distance matrix.
+     *
+     * @private
+     * @param {Array} graph Distance matrix of the array.
+     * @return {Array} Distance matrix used for the algorithm.
+     */
+
+    function init(graph) {
+      var dist = [];
+      var size = graph.length;
+      for (var i = 0; i < size; i += 1) {
+        dist[i] = [];
+        for (var j = 0; j < size; j += 1) {
+          if (i === j) {
+            dist[i][j] = 0;
+          } else if (!isFinite(graph[i][j])) {
+            dist[i][j] = Infinity;
+          } else {
+            dist[i][j] = graph[i][j];
+          }
+        }
+      }
+      return dist;
+    }
+    /**
+     * Floyd-Warshall algorithm. Finds the shortest path between
+     * each two vertices.<br><br>
+     * Complexity: O(|V|^3) where V is the number of vertices.
+     *
+     * @public
+     * @module graphs/shortest-path/floyd-warshall
+     * @param {Array} graph A distance matrix of the graph.
+     * @return {Array} Array which contains the shortest
+     *    distance between each two vertices.
+     *
+     * @example
+     * var floydWarshall =
+     * require('path-to-algorithms/src/graphs/shortest-path/floyd-warshall').floydWarshall;
+     * var distMatrix =
+     *    [[Infinity, 7,        9,       Infinity,  Infinity, 16],
+     *     [7,        Infinity, 10,       15,       Infinity, Infinity],
+     *     [9,        10,       Infinity, 11,       Infinity, 2],
+     *     [Infinity, 15,       11,       Infinity, 6,        Infinity],
+     *     [Infinity, Infinity, Infinity, 6,        Infinity, 9],
+     *     [16,       Infinity, 2,        Infinity, 9,        Infinity]];
+     *
+     * // [ [ 0, 7, 9, 20, 20, 11 ],
+     * //   [ 7, 0, 10, 15, 21, 12 ],
+     * //   [ 9, 10, 0, 11, 11, 2 ],
+     * //   [ 20, 15, 11, 0, 6, 13 ],
+     * //   [ 20, 21, 11, 6, 0, 9 ],
+     * //   [ 11, 12, 2, 13, 9, 0 ] ]
+     * var shortestDists = floydWarshall(distMatrix);
+     */
+    return function (graph) {
+      dist = init(graph);
+      var size = graph.length;
+      for (var k = 0; k < size; k += 1) {
+        for (var i = 0; i < size; i += 1) {
+          for (var j = 0; j < size; j += 1) {
+            if (dist[i][j] > dist[i][k] + dist[k][j]) {
+              dist[i][j] = dist[i][k] + dist[k][j];
+            }
+          }
+        }
+      }
+      return dist;
+    };
+  }());
+  exports.floydWarshall = floydWarshall;
+})(typeof window === 'undefined' ? module.exports : window);
