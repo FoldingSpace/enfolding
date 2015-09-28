@@ -3,7 +3,9 @@ var mapFocus = 0; //number in array to focus
 var buttonNodes;
 var buttonDist;
 var buttonMatrix;
+var buttonToggleImg;
 var mode = 0; //mode 0 = edit nodes, 1 = edit distances
+var imageOn = true;
 
 function setup() {
   // create canvas
@@ -16,12 +18,15 @@ function setup() {
   buttonNodes = createButton('add nodes');
   buttonDist = createButton('edit distances');
   buttonMatrix = createButton('make matrix');
+  buttonToggleImg = createButton('toggle image');
   buttonNodes.position(10,0);
   buttonDist.position(100,0);
   buttonMatrix.position(200,0);
+  buttonToggleImg.position(500,0);
   buttonNodes.mousePressed(mode0); //must be a better way to do this
   buttonDist.mousePressed(mode1);
   buttonMatrix.mousePressed(makeMatrix);
+  buttonToggleImg.mousePressed(imgToggle);
 }
 
 function draw() {
@@ -44,7 +49,7 @@ function gotFile(file) {
 	println('Not an image file!');
   }
   displayMaps();
-  displayGraphs();
+  //displayGraphs();
   updateData();
 }
 
@@ -77,8 +82,9 @@ function Map(name, opac, img){
 	strokeWeight(3);
 	stroke(0,100,0,50);
 	this.display = function(){  
-		image(this.img,this.offSetX,this.offSetY,this.img.width,this.img.height);
-		
+		if(imageOn){
+			image(this.img,this.offSetX,this.offSetY,this.img.width,this.img.height);
+		}	
 		//display nodes
     	for(var i=0; i < this.internalNodes.length; i++){
     		ellipse(this.internalNodes[i].xpos+this.offSetX,this.internalNodes[i].ypos+this.offSetY, 10, 10);
@@ -122,7 +128,7 @@ function Map(name, opac, img){
 				}
 				//console.log(this.internalEdges[this.internalEdges.length-1]);
 		displayMaps();
-		displayGraphs();
+		//displayGraphs();
 	    updateData();
 	};
 	}	
@@ -269,7 +275,7 @@ function makeMatrix(){
 	//calculate MDS
 	//console.log(mdsCoords(shortestDists));
 	displayMaps();
-    	displayGraphs();
+    	//displayGraphs();
     	updateData();
 	plotMdsGraph(shortestDists, edges);
 	
@@ -277,7 +283,7 @@ function makeMatrix(){
 
 function plotMdsGraph(coords, es){
 	push();
-	translate(1200,-140); //KLUDGE!
+	translate(800,-140); //KLUDGE!
 	rotate(PI/4);
 	for(var i = 0; i < es.length; i++){
 		var x1 = coords[es[i].node1][0]/1.5;
@@ -343,6 +349,19 @@ function mode1(){
 	mode = 1;
 	console.log('mode = 1');
 }
+
+function imgToggle(){
+	if(imageOn){
+		imageOn = false;
+	} else {
+		imageOn = true;
+	}
+	displayMaps();
+    	//displayGraphs();
+    	updateData();
+	makeMatrix();
+}
+	
 
 //from http://www.benfrederickson.com/multidimensional-scaling/
 function mdsCoords(distances, dimensions) {
