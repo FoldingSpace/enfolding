@@ -280,10 +280,10 @@ function plotMdsGraph(coords, es){
 	translate(1200,-140); //KLUDGE!
 	rotate(PI/4);
 	for(var i = 0; i < es.length; i++){
-		var x1 = coords[es[i].node1][0]/1.5;
-		var x2 = coords[es[i].node2][0]/1.5;
-		var y1 = coords[es[i].node1][1]/1.5;
-		var y2 = coords[es[i].node2][1]/1.5;
+		var x1 = coords[es[i].node1][0];
+		var x2 = coords[es[i].node2][0];
+		var y1 = coords[es[i].node1][1];
+		var y2 = coords[es[i].node2][1];
 		ellipse(x1,y1,10,10);
 		ellipse(x2,y2,10,10);
 		line(x1,y1,x2,y2);
