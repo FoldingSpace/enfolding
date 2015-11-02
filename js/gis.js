@@ -1,4 +1,5 @@
 var maps = []; //array to store images
+var mdsArray = [0];
 var mapFocus = 0; //number in array to focus
 var buttonNodes;
 var buttonDist;
@@ -6,55 +7,125 @@ var buttonMatrix;
 var buttonToggleImg;
 var mode = 0; //mode 0 = edit nodes, 1 = edit distances
 var imageOn = true;
+var rt = 0; //rotate variable
+var zoom = 1.5;
 
-function setup() {
-  // create canvas
-  var c = createCanvas(1500, 800);
-  colorMode(HSB,360,100,100,100)
-  background(100,0,50,100);
-  // Add an event for when a file is dropped onto the canvas
-  c.drop(gotFile);
+//BEGIN LEFT CANVAS
+//instance mode of p5.js https://github.com/processing/p5.js/wiki/p5.js-overview#instantiation--namespace
+var l = function(p){
+
+	p.setup = function() {
+	  // create canvas
+	  var c = p.createCanvas(500, 600);
+	  //p.colorMode('HSB',360,100,100,100)
+	  p.background(255,255,255,0);
+	  // Add an event for when a file is dropped onto the canvas
+	  c.drop(p.gotFile);
   
-  buttonNodes = createButton('add nodes');
-  buttonDist = createButton('edit distances');
-  buttonMatrix = createButton('make matrix');
-  buttonToggleImg = createButton('toggle image');
-  buttonNodes.position(10,0);
-  buttonDist.position(100,0);
-  buttonMatrix.position(200,0);
-  buttonToggleImg.position(500,0);
-  buttonNodes.mousePressed(mode0); //must be a better way to do this
-  buttonDist.mousePressed(mode1);
-  buttonMatrix.mousePressed(makeMatrix);
-  buttonToggleImg.mousePressed(imgToggle);
-}
+	  buttonNodes = p.createButton('add nodes');
+	  buttonDist = p.createButton('edit distances');
+	  
+	  buttonToggleImg = p.createButton('toggle image');
+	  buttonNodes.position(10,0);
+	  buttonDist.position(100,0);
+	  
+	  buttonToggleImg.position(500,0);
+	  buttonNodes.mousePressed(mode0); //must be a better way to do this
+	  buttonDist.mousePressed(mode1);
+	  
+	  buttonToggleImg.mousePressed(p.imageTog);
+	};
 
-function draw() {
-  fill(255,0,100,100);
-  noStroke();
-  textSize(24);
-  textAlign(CENTER);
-  text('Drag and drop a map', width/2, height/2);
-  createDiv('data: ').id('dataResults');
-  noLoop();
-}
 
-function gotFile(file) {
-  if (file.type === 'image') {
-	// Create an image DOM element and add to maps array
-	append(maps,new Map(file.name,1,createImg(file.data).hide()));
-	mapFocus = maps.length - 1; //change focus to last uploaded map
-	console.log('map focus: ' + 	mapFocus);
-  } else {
-	println('Not an image file!');
-  }
-  displayMaps();
-  //displayGraphs();
-  updateData();
-}
+
+	p.draw = function() {
+	  p.fill(0,0,0,100);
+	  p.noStroke();
+	  p.textSize(24);
+	  p.textAlign('CENTER');
+	  p.text('Drag and drop a map', p.width/4, p.height/2);
+	  p.createDiv('data: ').id('dataResults');
+	  p.noLoop();
+	};
+	
+	p.gotFile = function(file) {
+	  if (file.type === 'image') {
+		// Create an image DOM element and add to maps array
+		p.append(maps,new Map(file.name,1,p.createImg(file.data).hide(),p));
+		mapFocus = maps.length - 1; //change focus to last uploaded map
+		console.log('map focus: ' + 	mapFocus);
+	  } else {
+		console.log('Not an image file!');
+	  }
+	  displayMaps(p);
+	  //displayGraphs();
+	  updateData(p);
+	};
+	
+	//calls outside function and passes 'p' instance
+	p.imageTog = function(){
+		imgToggle(p);
+	};
+	
+	p.mouseReleased = function(){
+		if(mode == 0){
+			maps[mapFocus].addNode(p.mouseX, p.mouseY, p);
+		}
+	};
+	
+	p.keyPressed = function(){
+		updateData(p);
+	}
+	
+};
+//END LEFT CANVAS
+
+//BEGIN RIGHT CANVAS
+var r = function(p){
+	
+	p.setup = function() {
+		p.createCanvas(500, 600,'webgl');
+		p.background(255,255,255);
+		buttonMatrix = p.createButton('make matrix');
+		buttonMatrix.position(200,0);
+		buttonMatrix.mousePressed(p.mkMtrx);
+	};
+	
+	p.draw = function() {
+		
+	};
+	
+	p.mkMtrx = function(){
+		makeMatrix(p);
+	};
+	
+	p.mouseDragged = function() {	
+		if(p.mouseX > 0){
+	  		p.rotateY(p.mouseX / 100);
+  			p.rotateX(p.mouseY / 100);
+  			console.log(rt);
+  			plotCoords(mdsArray,maps[mapFocus].internalEdges,p);
+  		}
+  		// prevent default
+  		return false;
+	};
+	
+	p.mouseWheel = function(event) {
+		  //event.delta can be +1 or -1 depending
+		  //on the wheel/scroll direction
+		  //p.print(event.delta/10);
+		  //move the square one pixel up or down
+		  zoom -= event.delta/10;
+		  plotCoords(mdsArray,maps[mapFocus].internalEdges,p);
+		  //uncomment to block page scrolling
+		  return false;
+	};
+
+};
+//END RIGHT CANVAS
 
 //map class
-function Map(name, opac, img){
+function Map(name, opac, img, p){
 	this.name = name;
 	this.opac = opac;
 	this.img = img;
@@ -64,30 +135,30 @@ function Map(name, opac, img){
 	this.offSetY = 30;
 	
 	//start with 4 nodes at corners
-	append(this.internalNodes, new Node(0,0));
-	append(this.internalNodes, new Node(this.img.width,0));
-	append(this.internalNodes, new Node(this.img.width, this.img.height));
-	append(this.internalNodes, new Node(0,this.img.height));
+	p.append(this.internalNodes, new Node(0,0));
+	p.append(this.internalNodes, new Node(this.img.width,0));
+	p.append(this.internalNodes, new Node(this.img.width, this.img.height));
+	p.append(this.internalNodes, new Node(0,this.img.height));
 	
 	//and 4 edges that connect them
-	append(this.internalEdges, new Edge(0,1,nodeDist(this.internalNodes[0],this.internalNodes[1])));
-	append(this.internalEdges, new Edge(1,2,nodeDist(this.internalNodes[1],this.internalNodes[2])));
-	append(this.internalEdges, new Edge(2,3,nodeDist(this.internalNodes[2],this.internalNodes[3])));
-	append(this.internalEdges, new Edge(3,0,nodeDist(this.internalNodes[3],this.internalNodes[0])));
+	p.append(this.internalEdges, new Edge(0,1,nodeDist(this.internalNodes[0],this.internalNodes[1],p)));
+	p.append(this.internalEdges, new Edge(1,2,nodeDist(this.internalNodes[1],this.internalNodes[2],p)));
+	p.append(this.internalEdges, new Edge(2,3,nodeDist(this.internalNodes[2],this.internalNodes[3],p)));
+	p.append(this.internalEdges, new Edge(3,0,nodeDist(this.internalNodes[3],this.internalNodes[0],p)));
 	
 	for(var j = 0; j < this.internalEdges.length; j++){
-		makeInput(this.internalEdges[j], this.internalNodes, j, this.offSetX, this.offSetY);
+		makeInput(this.internalEdges[j], this.internalNodes, j, this.offSetX, this.offSetY,p);
 	}
 	
-	strokeWeight(3);
-	stroke(0,100,0,50);
-	this.display = function(){  
+	p.strokeWeight(3);
+	p.stroke(0,0,0,100);
+	this.display = function(p){  
 		if(imageOn){
-			image(this.img,this.offSetX,this.offSetY,this.img.width,this.img.height);
+			p.image(this.img,this.offSetX,this.offSetY,this.img.width,this.img.height);
 		}	
 		//display nodes
     	for(var i=0; i < this.internalNodes.length; i++){
-    		ellipse(this.internalNodes[i].xpos+this.offSetX,this.internalNodes[i].ypos+this.offSetY, 10, 10);
+    		p.ellipse(this.internalNodes[i].xpos+this.offSetX,this.internalNodes[i].ypos+this.offSetY, 10, 10);
     	} 
     	//display edges
     	for(var i=0; i < this.internalEdges.length; i++){
@@ -95,14 +166,14 @@ function Map(name, opac, img){
     		var x2 = this.internalNodes[this.internalEdges[i].node2].xpos + this.offSetX;
     		var y1 = this.internalNodes[this.internalEdges[i].node1].ypos + this.offSetY;
     		var y2 = this.internalNodes[this.internalEdges[i].node2].ypos + this.offSetY;
-    		line(x1,y1,x2,y2);	
+    		p.line(x1,y1,x2,y2);	
     	}
 	};
 	
-	this.displayGraph = function(goffSetX, goffSetY){
+	this.displayGraph = function(goffSetX, goffSetY,p){
 	//display nodes
     	for(var i=0; i < this.internalNodes.length; i++){
-    		ellipse(this.internalNodes[i].xpos+this.offSetX + goffSetX,this.internalNodes[i].ypos+this.offSetY+ goffSetY, 10, 10);
+    		p.ellipse(this.internalNodes[i].xpos+this.offSetX + goffSetX,this.internalNodes[i].ypos+this.offSetY+ goffSetY, 10, 10);
     	} 
     	//display edges
     	for(var i=0; i < this.internalEdges.length; i++){
@@ -110,26 +181,26 @@ function Map(name, opac, img){
     		var x2 = this.internalNodes[this.internalEdges[i].node2].xpos + this.offSetX + goffSetX;
     		var y1 = this.internalNodes[this.internalEdges[i].node1].ypos + this.offSetY + goffSetY;
     		var y2 = this.internalNodes[this.internalEdges[i].node2].ypos + this.offSetY + goffSetY;
-    		line(x1,y1,x2,y2);	
+    		p.line(x1,y1,x2,y2);	
     	}
 	};
 	
 	//called when mouseReleased
-		this.addNode = function(mx,my){
+		this.addNode = function(mx,my,p){
 		if(mx > this.offSetX && mx < this.offSetX + this.img.width && my > this.offSetY && my < this.offSetY + this.img.height){ //check if on map
-				append(this.internalNodes, new Node(mx-this.offSetX,my-this.offSetY));
+				p.append(this.internalNodes, new Node(mx-this.offSetX,my-this.offSetY));
 				
 				//third argument = n nearest nodes to connect to
-				var nodeShort = findClosestNNodes(mx-this.offSetX,my-this.offSetY, 2, this.internalNodes);  
+				var nodeShort = findClosestNNodes(mx-this.offSetX,my-this.offSetY, 2, this.internalNodes,p);  
 				//console.log(nodeShort);
 				for(var i = 0; i < nodeShort.length; i++){
-					append(this.internalEdges, new Edge(nodeShort[i], this.internalNodes.length - 1, nodeDistXY(this.internalNodes[nodeShort[i]], mx-this.offSetX,my-this.offSetY)));
-					makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY);
+					p.append(this.internalEdges, new Edge(nodeShort[i], this.internalNodes.length - 1, nodeDistXY(this.internalNodes[nodeShort[i]], mx-this.offSetX,my-this.offSetY,p)));
+					makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY,p);
 				}
 				//console.log(this.internalEdges[this.internalEdges.length-1]);
-		displayMaps();
+		displayMaps(p);
 		//displayGraphs();
-	    updateData();
+	    updateData(p);
 	};
 	}	
 }
@@ -167,13 +238,13 @@ function findClosestNode(mx,my,iNodes){
 }
 
 //connect to n nearest nodes
-function findClosestNNodes(mx, my, n, nodes){
+function findClosestNNodes(mx, my, n, nodes,p){
 	var closest = [];
 	var nodeIDs = [];
 	for(var i = 0; i < nodes.length; i++){
-		var distN = dist(nodes[i].xpos, nodes[i].ypos, mx, my);
+		var distN = p.dist(nodes[i].xpos, nodes[i].ypos, mx, my);
 		if(distN != 0){ //to avoid comparing to self
-			append(closest, {distance:distN, id:i});
+			p.append(closest, {distance:distN, id:i});
 		}	
 	}
 	//sort by distances, lowest to highest
@@ -181,20 +252,20 @@ function findClosestNNodes(mx, my, n, nodes){
 	
 	//return nodeIDS for the n closest nodes
 	for(var i = 0; i < n; i++){
-		append(nodeIDs, closest[i].id);
+		p.append(nodeIDs, closest[i].id);
 	}
 	//console.log(nodeIDs);
 	return nodeIDs;
 }
 
 //returns distance btw two nodes
-function nodeDist(nn1,nn2){
-	return dist(nn1.xpos,nn1.ypos,nn2.xpos,nn2.ypos);	
+function nodeDist(nn1,nn2,p){
+	return p.dist(nn1.xpos,nn1.ypos,nn2.xpos,nn2.ypos);	
 }
 
 //make dist input box
-function makeInput(edge, nodes, n, xOff, yOff){
-	input = createInput();
+function makeInput(edge, nodes, n, xOff, yOff,p){
+	input = p.createInput();
 	var x1 = nodes[edge.node1].xpos+xOff;
 	var x2 = nodes[edge.node2].xpos+xOff;
 	var y1 = nodes[edge.node1].ypos+yOff;
@@ -203,32 +274,19 @@ function makeInput(edge, nodes, n, xOff, yOff){
 	//console.log(edge.node1);
 	
     input.position(x1+(x2-x1)/2, y1+(y2-y1)/2);
-    input.value(int(edge.distance));
+    input.value(p.int(edge.distance));
     input.id(n); //adds id that refers to edge
     input.attribute("onkeydown", "keypress(event, " + n + ")");
 }
 
-//keypress for input boxes
-function keypress(event, id){
-	var key = event.keyCode;
-	if (key == 13){ //trigger for enter key
-		var inputFocus = document.getElementById(id);
-		var inVal = inputFocus.value; 
-		maps[mapFocus].internalEdges[id].distanceMod = inVal;
-		console.log(inVal); 
-		inputFocus.value = inVal + '/' + int(maps[mapFocus].internalEdges[id].distance);
-		updateData();
-	}
-}
-
 //returns distance btw node and x,y
-function nodeDistXY(nn1,mx,my){
-	return dist(nn1.xpos,nn1.ypos,mx,my);
+function nodeDistXY(nn1,mx,my,p){
+	return p.dist(nn1.xpos,nn1.ypos,mx,my);
 }
 
 
 //build empty matrix, run through Floyd Warshall and MDS
-function makeMatrix(){
+function makeMatrix(p){
 	var nodes = maps[mapFocus].internalNodes;
 	var edges = maps[mapFocus].internalEdges;
 	var matrix = [];
@@ -273,14 +331,36 @@ function makeMatrix(){
 	//console.log(shortestDists);
 	
 	//calculate MDS
-	//console.log(mdsCoords(shortestDists));
-	displayMaps();
+	console.log(mdsCoords(shortestDists,3));
+	mdsArray = mdsCoords(shortestDists,3);
+	//displayMaps(p);
     	//displayGraphs();
-    	updateData();
-	plotMdsGraph(shortestDists, edges);
+    //updateData(p);
+	plotCoords(mdsArray, edges, p);
 	
 }
 
+function plotCoords(coords, es, p){
+	p.background(255,255,255);
+	p.push();
+    //p.translate(800,300); //KLUDGE!
+	for(var i = 0; i < es.length; i++){
+		var x1 = coords[es[i].node1][0]/zoom;
+		var x2 = coords[es[i].node2][0]/zoom;
+		var y1 = coords[es[i].node1][1]/zoom;
+		var y2 = coords[es[i].node2][1]/zoom;
+		var z1 = coords[es[i].node1][2]/zoom;
+		var z2 = coords[es[i].node2][2]/zoom;
+		p.line(x1,y1,z1,x2,y2,z2);
+		//console.log(x + ' ' + y);	
+		//p.ellipse(x1,y1,5,5);
+		//p.ellipse(x2,y2,5,5);
+		//p.line(x1,y1,x2,y2);
+	}
+	p.pop();
+}
+
+//TO REMOVE
 function plotMdsGraph(coords, es){
 	push();
 	translate(800,-140); //KLUDGE!
@@ -303,28 +383,36 @@ function plotMdsGraph(coords, es){
 	pop();
 }
 
-function displayMaps(){
-	background(255,0,100,100);
+function displayMaps(p){
+	p.background(255,255,255);
 	for (var i=0; i<maps.length; i++) {
-    	maps[i].display();
+    	maps[i].display(p);
+  	}
+  	console.log('yes');
+}
+
+function displayGraphs(p){
+	for (var i=0; i<maps.length; i++) {
+    	maps[i].displayGraph(maps[i].img.width+50, 0,p);
   	}
 }
 
-function displayGraphs(){
-	for (var i=0; i<maps.length; i++) {
-    	maps[i].displayGraph(maps[i].img.width+50, 0);
-  	}
+//keypress for input boxes
+	function keypress(event, id){
+		var key = event.keyCode;
+		if (key == 13){ //trigger for enter key
+			var inputFocus = document.getElementById(id);
+			var inVal = inputFocus.value; 
+			maps[mapFocus].internalEdges[id].distanceMod = inVal;
+			console.log(inVal); 
+			inputFocus.value = inVal + '/' + parseInt(maps[mapFocus].internalEdges[id].distance);
+			}
 }
 
-function mouseReleased(){
-	if(mode == 0){
-		maps[mapFocus].addNode(mouseX, mouseY);
-	}
-	return false;
-}
+
 
 //add data to end of page for testing and cut-and-pasting to R
-function updateData(){
+function updateData(p){
 	var div = document.getElementById('dataResults');
 	div.innerHTML = ''; //clear data results
 	for (var i=0; i<maps.length; i++) {
@@ -335,7 +423,7 @@ function updateData(){
 		}
 		div.innerHTML = div.innerHTML + '<b>EDGES: </b><br />';
 		for(var j=0; j < maps[i].internalEdges.length; j++){
-			div.innerHTML = div.innerHTML + 'id: ' + j + ' distance: ' + int(maps[i].internalEdges[j].distance) + ' distanceMod: ' + int(maps[i].internalEdges[j].distanceMod) + ' node1: ' + maps[i].internalEdges[j].node1 + ' node2: ' + maps[i].internalEdges[j].node2 +   '<br />';
+			div.innerHTML = div.innerHTML + 'id: ' + j + ' distance: ' + p.int(maps[i].internalEdges[j].distance) + ' distanceMod: ' + p.int(maps[i].internalEdges[j].distanceMod) + ' node1: ' + maps[i].internalEdges[j].node1 + ' node2: ' + maps[i].internalEdges[j].node2 +   '<br />';
 		}
   	}
 }
@@ -350,16 +438,16 @@ function mode1(){
 	console.log('mode = 1');
 }
 
-function imgToggle(){
+function imgToggle(p){
 	if(imageOn){
 		imageOn = false;
 	} else {
 		imageOn = true;
 	}
-	displayMaps();
+	displayMaps(p);
     	//displayGraphs();
-    	updateData();
-	makeMatrix();
+    updateData(p);
+	//makeMatrix(p);
 }
 	
 
@@ -471,3 +559,6 @@ function mdsCoords(distances, dimensions) {
   }());
   exports.floydWarshall = floydWarshall;
 })(typeof window === 'undefined' ? module.exports : window);
+
+var myp5 = new p5(l,'leftCanv');
+var myp52 = new p5(r,'rightCanv');
