@@ -1,5 +1,6 @@
 var maps = []; //array to store images
 var mdsArray = [0];
+var triangles = [0];
 var mapFocus = 0; //number in array to focus
 var buttonNodes;
 var buttonDist;
@@ -7,6 +8,7 @@ var buttonMatrix;
 var buttonToggleImg;
 var mode = 0; //mode 0 = edit nodes, 1 = edit distances
 var imageOn = true;
+var delaunayOn = false;
 var rt = 0; //rotate variable
 var zoom = 1.5;
 
@@ -71,6 +73,9 @@ var l = function(p){
 		if(mode == 0){
 			maps[mapFocus].addNode(p.mouseX, p.mouseY, p);
 		}
+		makeMatrix(myp52);
+		displayMaps(p);
+		updateData(p);
 	};
 	
 	p.keyPressed = function(){
@@ -86,37 +91,41 @@ var r = function(p){
 	p.setup = function() {
 		p.createCanvas(500, 600,'webgl');
 		p.background(255,255,255);
-		buttonMatrix = p.createButton('make matrix');
-		buttonMatrix.position(200,0);
-		buttonMatrix.mousePressed(p.mkMtrx);
+		//buttonMatrix = p.createButton('make matrix');
+		//buttonMatrix.position(200,0);
+		//buttonMatrix.mousePressed(p.mkMtrx);
 	};
 	
 	p.draw = function() {
 		
 	};
 	
-	p.mkMtrx = function(){
-		makeMatrix(p);
-	};
+	//p.mkMtrx = function(){
+	//	makeMatrix(p);
+	//};
 	
 	p.mouseDragged = function() {	
 		if(p.mouseX > 0){
+			p.background(255,255,255);
 	  		p.rotateY(p.mouseX / 100);
   			p.rotateX(p.mouseY / 100);
-  			console.log(rt);
+  			//console.log(rt);
   			plotCoords(mdsArray,maps[mapFocus].internalEdges,p);
+  			plotTriangles(mdsArray,p,triangles);
   		}
   		// prevent default
   		return false;
 	};
 	
 	p.mouseWheel = function(event) {
+		  p.background(255,255,255);
 		  //event.delta can be +1 or -1 depending
 		  //on the wheel/scroll direction
 		  //p.print(event.delta/10);
 		  //move the square one pixel up or down
 		  zoom -= event.delta/10;
 		  plotCoords(mdsArray,maps[mapFocus].internalEdges,p);
+		  plotTriangles(mdsArray,p,triangles);
 		  //uncomment to block page scrolling
 		  return false;
 	};
@@ -156,8 +165,24 @@ function Map(name, opac, img, p){
 		if(imageOn){
 			p.image(this.img,this.offSetX,this.offSetY,this.img.width,this.img.height);
 		}	
+		if(delaunayOn){
+			for(var i = 0; i < triangles.length; i+=3){
+				var x1 = this.internalNodes[triangles[i]].xpos + this.offSetX;
+				var y1 = this.internalNodes[triangles[i]].ypos + this.offSetY;
+				var x2 = this.internalNodes[triangles[i+1]].xpos + this.offSetX;
+				var y2 = this.internalNodes[triangles[i+1]].ypos + this.offSetY;
+				var x3 = this.internalNodes[triangles[i+2]].xpos + this.offSetX;
+				var y3 = this.internalNodes[triangles[i+2]].ypos + this.offSetY;
+				p.stroke(255,0,0,50);
+				p.strokeWeight(3);
+				p.line(x1,y1,x2,y2);
+				p.line(x2,y2,x3,y3);
+				p.line(x3,y3,x1,y1);
+			}		
+		}
 		//display nodes
     	for(var i=0; i < this.internalNodes.length; i++){
+    	    p.stroke(0,0,0,150);
     		p.ellipse(this.internalNodes[i].xpos+this.offSetX,this.internalNodes[i].ypos+this.offSetY, 10, 10);
     	} 
     	//display edges
@@ -166,24 +191,13 @@ function Map(name, opac, img, p){
     		var x2 = this.internalNodes[this.internalEdges[i].node2].xpos + this.offSetX;
     		var y1 = this.internalNodes[this.internalEdges[i].node1].ypos + this.offSetY;
     		var y2 = this.internalNodes[this.internalEdges[i].node2].ypos + this.offSetY;
+			p.strokeWeight(2);
+    		p.stroke(0,0,0, 150);
     		p.line(x1,y1,x2,y2);	
     	}
 	};
 	
-	this.displayGraph = function(goffSetX, goffSetY,p){
-	//display nodes
-    	for(var i=0; i < this.internalNodes.length; i++){
-    		p.ellipse(this.internalNodes[i].xpos+this.offSetX + goffSetX,this.internalNodes[i].ypos+this.offSetY+ goffSetY, 10, 10);
-    	} 
-    	//display edges
-    	for(var i=0; i < this.internalEdges.length; i++){
-    		var x1 = this.internalNodes[this.internalEdges[i].node1].xpos + this.offSetX + goffSetX;
-    		var x2 = this.internalNodes[this.internalEdges[i].node2].xpos + this.offSetX + goffSetX;
-    		var y1 = this.internalNodes[this.internalEdges[i].node1].ypos + this.offSetY + goffSetY;
-    		var y2 = this.internalNodes[this.internalEdges[i].node2].ypos + this.offSetY + goffSetY;
-    		p.line(x1,y1,x2,y2);	
-    	}
-	};
+	
 	
 	//called when mouseReleased
 		this.addNode = function(mx,my,p){
@@ -331,19 +345,52 @@ function makeMatrix(p){
 	//console.log(shortestDists);
 	
 	//calculate MDS
-	console.log(mdsCoords(shortestDists,3));
-	mdsArray = mdsCoords(shortestDists,3);
+	//console.log(mdsCoords(shortestDists,3));
+	mdsArray = mdsCoords(shortestDists,3); //mdsArray is currently global--should be rewritten for future editions with multiple maps
 	//displayMaps(p);
     	//displayGraphs();
     //updateData(p);
+    
+    //delaunay triangulation from https://github.com/ironwallaby/delaunay
+    triangles = Delaunay.triangulate(mdsArray);//triangles is currently global--should be rewritten for future editions
+	
+	p.background(255,255,255);
 	plotCoords(mdsArray, edges, p);
+	plotTriangles(mdsArray,p,triangles);
+	delaunayOn = true;
 	
 }
 
-function plotCoords(coords, es, p){
-	p.background(255,255,255);
+function plotTriangles(coords, p, trias){
+	for(var i = 0; i < trias.length; i+=3){
+		var x1 = coords[trias[i]][0]/zoom;
+		var y1 = coords[trias[i]][1]/zoom;
+		var z1 = coords[trias[i]][2]/zoom;
+		var x2 = coords[trias[i+1]][0]/zoom;
+		var y2 = coords[trias[i+1]][1]/zoom;
+		var z2 = coords[trias[i+1]][2]/zoom;
+		var x3 = coords[trias[i+2]][0]/zoom;
+		var y3 = coords[trias[i+2]][1]/zoom;
+		var z3 = coords[trias[i+2]][2]/zoom;
+		p.stroke(255,0,0,50);
+		p.line(x1,y1,z1,x2,y2,z2);
+		p.line(x2,y2,z2,x3,y3,z3);
+		p.line(x3,y3,z3,x1,y1,z1);
+		
+		p.fill(255,100);
+		p.beginShape();
+			p.vertex(x1,y1,z1);
+			p.vertex(x2,y2,z2);
+			p.vertex(x3,y3,z3);
+		p.endShape();
+		
+	}
+}
+
+function plotCoords(coords, es, p, trias){
+	//p.background(255,255,255);
 	p.push();
-    //p.translate(800,300); //KLUDGE!
+    p.translate(0,0,2); //offset 2 pixels from triangulation graph
 	for(var i = 0; i < es.length; i++){
 		var x1 = coords[es[i].node1][0]/zoom;
 		var x2 = coords[es[i].node2][0]/zoom;
@@ -351,6 +398,7 @@ function plotCoords(coords, es, p){
 		var y2 = coords[es[i].node2][1]/zoom;
 		var z1 = coords[es[i].node1][2]/zoom;
 		var z2 = coords[es[i].node2][2]/zoom;
+		p.stroke(150,150,150);
 		p.line(x1,y1,z1,x2,y2,z2);
 		//console.log(x + ' ' + y);	
 		//p.ellipse(x1,y1,5,5);
