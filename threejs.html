@@ -1,0 +1,48 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script language="javascript" type="text/javascript" src="js/three.min.js"></script>
+  <script type="text/javascript">
+  	//test page for three.js experiments
+  	//including UV mapping for map textures in 3D
+  	
+  	var camera, scene, renderer, cube, material, mesh;
+  	
+  	function init(){
+  		scene = new THREE.Scene();
+  		
+  		camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight,1,10000);
+  		camera.position.z = 1000;
+  		
+  		scene.add(camera);
+  		
+  		cube = new THREE.CubeGeometry(300,300,300);
+  		material = new THREE.MeshLambertMaterial({color:0x0000FF,wireframe:false});
+  		mesh = new THREE.Mesh(cube,material);
+  		scene.add(mesh);
+  		
+  		var pointLight = new THREE.DirectionalLight(0xFFFFFF);
+  		pointLight.position.set(0,1,5);
+  		scene.add(pointLight);
+  		
+  		renderer = new THREE.WebGLRenderer();
+  		renderer.setSize(window.innerWidth,window.innerHeight);
+  		
+  		document.body.appendChild(renderer.domElement);
+  		
+  		animate();
+  	}
+  	
+  	function animate(){
+  		requestAnimationFrame(animate);
+  		mesh.rotation.x += 0.02;
+  		mesh.rotation.y += 0.02;
+  		
+  		renderer.render(scene, camera);	
+  	}	
+  	
+  </script>
+  </head>	
+  <body onload="init()">
+  </body>
+</html>  

@@ -6,11 +6,12 @@ var buttonNodes;
 var buttonDist;
 var buttonMatrix;
 var buttonToggleImg;
+var buttonWireframe;
 var mode = 0; //mode 0 = edit nodes, 1 = edit distances
 var imageOn = true;
 var delaunayOn = false;
 var rt = 0; //rotate variable
-var zoom = 1.5;
+var zoom = 1;
 
 //BEGIN LEFT CANVAS
 //instance mode of p5.js https://github.com/processing/p5.js/wiki/p5.js-overview#instantiation--namespace
@@ -35,19 +36,23 @@ var l = function(p){
 	  buttonNodes.mousePressed(mode0); //must be a better way to do this
 	  buttonDist.mousePressed(mode1);
 	  
+	  buttonWireframe = p.createButton('wireframe');
+	  buttonWireframe.position(200,0);
+	  buttonWireframe.mousePressed(wireFrameMode);
+	  
 	  buttonToggleImg.mousePressed(p.imageTog);
-	};
-
-
-
-	p.draw = function() {
 	  p.fill(0,0,0,100);
 	  p.noStroke();
 	  p.textSize(24);
 	  p.textAlign('CENTER');
 	  p.text('Drag and drop a map', p.width/4, p.height/2);
 	  p.createDiv('data: ').id('dataResults');
-	  p.noLoop();
+	};
+
+
+
+	p.draw = function() {
+	  
 	};
 	
 	p.gotFile = function(file) {
@@ -72,10 +77,12 @@ var l = function(p){
 	p.mouseReleased = function(){
 		if(mode == 0){
 			maps[mapFocus].addNode(p.mouseX, p.mouseY, p);
+			//console.log(p.mouseX + " " + p.mouseY);
 		}
-		makeMatrix(myp52);
+		
 		displayMaps(p);
 		updateData(p);
+		makeMatrix();
 	};
 	
 	p.keyPressed = function(){
@@ -85,7 +92,73 @@ var l = function(p){
 };
 //END LEFT CANVAS
 
-//BEGIN RIGHT CANVAS
+//BEGIN RIGHT CANVAS, THREE.JS
+	var renderer = new THREE.WebGLRenderer();
+	var scene = new THREE.Scene();
+	var camera = new THREE.PerspectiveCamera(
+                75,             // Field of view
+                500 / 600,      // Aspect ratio
+                0.1,            // Near plane
+                100000           // Far plane
+            );	
+    camera.position.set( 0, 0, 1000 );
+    camera.lookAt( new THREE.Vector3(0,0,0));    
+    var wireframeOn = false;    
+	
+	var material = new THREE.MeshLambertMaterial( { color: 0x0000FF, transparent: true, opacity: 0.8, side: THREE.DoubleSide, wireframe:wireframeOn } );    
+    //var material = new THREE.MeshLambertMaterial( { map: THREE.ImageUtils.loadTexture('images/texture.jpg'), side: THREE.DoubleSide } );
+    var slices = [];
+    
+	
+	window.onload = function() {
+		initThree();
+		animateThree();
+	};
+	
+	function initThree() {	
+			renderer.setSize( 500, 600 );
+			var div = document.getElementById('rightCanv');
+			//console.log(div);
+			div.appendChild(renderer.domElement);
+			controls = new THREE.OrbitControls(camera, renderer.domElement);
+			//scene.add( new THREE.AmbientLight( Math.random() * 0x202020 ) );
+			var dLight = new THREE.DirectionalLight(0xFFFFFF);
+  			dLight.position.set(0,5,5);
+  			scene.add(dLight);
+    		
+    		var dLight = new THREE.DirectionalLight(0xFFFFFF);
+  			dLight.position.set(0,-5,-5);
+  			scene.add(dLight);
+  			
+            //plotTriangles(mdsArray,triangles);
+		};
+	
+	function animateThree(){
+			var render = function () {
+				requestAnimationFrame( render );
+				
+				renderer.setClearColor(0xdffffff, 1);
+				/*for ( var i = 0; i < slices.length; i ++ ) {
+					var slice = slices[ i ];
+
+					slice.rotation.x += 0.01;
+					slice.rotation.y += -0.01;
+					slice.x += .00001;
+				}*/
+				
+				
+				renderer.render(scene, camera);
+				
+				
+			};
+
+			render();
+	  
+	};
+//END RIGHT CANVAS
+
+
+/*
 var r = function(p){
 	
 	p.setup = function() {
@@ -130,8 +203,7 @@ var r = function(p){
 		  return false;
 	};
 
-};
-//END RIGHT CANVAS
+}; */
 
 //map class
 function Map(name, opac, img, p){
@@ -353,41 +425,55 @@ function makeMatrix(p){
     
     //delaunay triangulation from https://github.com/ironwallaby/delaunay
     triangles = Delaunay.triangulate(mdsArray);//triangles is currently global--should be rewritten for future editions
-	
-	p.background(255,255,255);
-	plotCoords(mdsArray, edges, p);
-	plotTriangles(mdsArray,p,triangles);
+	//p.background(255,255,255);
+	//plotCoords(mdsArray, edges);
+	plotTriangles(mdsArray,triangles);
 	delaunayOn = true;
 	
 }
 
-function plotTriangles(coords, p, trias){
-	for(var i = 0; i < trias.length; i+=3){
-		var x1 = coords[trias[i]][0]/zoom;
-		var y1 = coords[trias[i]][1]/zoom;
-		var z1 = coords[trias[i]][2]/zoom;
-		var x2 = coords[trias[i+1]][0]/zoom;
-		var y2 = coords[trias[i+1]][1]/zoom;
-		var z2 = coords[trias[i+1]][2]/zoom;
-		var x3 = coords[trias[i+2]][0]/zoom;
-		var y3 = coords[trias[i+2]][1]/zoom;
-		var z3 = coords[trias[i+2]][2]/zoom;
-		p.stroke(255,0,0,50);
-		p.line(x1,y1,z1,x2,y2,z2);
-		p.line(x2,y2,z2,x3,y3,z3);
-		p.line(x3,y3,z3,x1,y1,z1);
-		
-		p.fill(255,100);
-		p.beginShape();
-			p.vertex(x1,y1,z1);
-			p.vertex(x2,y2,z2);
-			p.vertex(x3,y3,z3);
-		p.endShape();
-		
+function plotTriangles(coords, trias){
+	//iterate through slices and remove all from scene
+	for(var i = 0; i < slices.length; i++){
+		scene.remove(slices[i]);
 	}
+	material.setValues({wireframe:wireframeOn});
+	slices = []; 
+	if(trias.length > 1){
+		for(var i = 0; i < trias.length; i+=3){
+		
+			var x1 = coords[trias[i]][0]/zoom;
+			var y1 = coords[trias[i]][1]/zoom;
+			var z1 = coords[trias[i]][2]/zoom;
+			var x2 = coords[trias[i+1]][0]/zoom;
+			var y2 = coords[trias[i+1]][1]/zoom;
+			var z2 = coords[trias[i+1]][2]/zoom;
+			var x3 = coords[trias[i+2]][0]/zoom;
+			var y3 = coords[trias[i+2]][1]/zoom;
+			var z3 = coords[trias[i+2]][2]/zoom;
+		
+	
+			var geo = new THREE.Geometry();
+			
+			geo.vertices.push(
+				new THREE.Vector3( x1,  y1, z1 ),
+				new THREE.Vector3( x2, y2, z2 ),
+				new THREE.Vector3(  x3, y3, z3 )
+			);	
+			geo.faces.push( new THREE.Face3( 0, 2, 1 ) );
+			geo.computeFaceNormals();
+			geo.computeVertexNormals();
+			var triangle = new THREE.Mesh(geo, material);
+			scene.add(triangle);
+			slices.push(triangle);	
+			//console.log(x1 + ' ' + y1 + ' ' + z1);
+			
+		}
+	}	
 }
 
-function plotCoords(coords, es, p, trias){
+			
+function plotCoords(coords, es, trias){
 	//p.background(255,255,255);
 	p.push();
     p.translate(0,0,2); //offset 2 pixels from triangulation graph
@@ -436,7 +522,7 @@ function displayMaps(p){
 	for (var i=0; i<maps.length; i++) {
     	maps[i].display(p);
   	}
-  	console.log('yes');
+  	//console.log('yes');
 }
 
 function displayGraphs(p){
@@ -497,6 +583,14 @@ function imgToggle(p){
     updateData(p);
 	//makeMatrix(p);
 }
+
+function wireFrameMode(){
+	if(wireframeOn){
+		wireframeOn = false;
+	} else {
+		wireframeOn = true;
+	}
+}	
 	
 
 //from http://www.benfrederickson.com/multidimensional-scaling/
@@ -609,4 +703,3 @@ function mdsCoords(distances, dimensions) {
 })(typeof window === 'undefined' ? module.exports : window);
 
 var myp5 = new p5(l,'leftCanv');
-var myp52 = new p5(r,'rightCanv');
