@@ -93,20 +93,10 @@ var l = function(p){
 //END LEFT CANVAS
 
 //BEGIN RIGHT CANVAS, THREE.JS
-	var renderer = new THREE.WebGLRenderer();
-	var scene = new THREE.Scene();
-	var camera = new THREE.PerspectiveCamera(
-                75,             // Field of view
-                500 / 600,      // Aspect ratio
-                0.1,            // Near plane
-                100000           // Far plane
-            );	
-    camera.position.set( 0, 0, 1000 );
-    camera.lookAt( new THREE.Vector3(0,0,0));    
-    var wireframeOn = false;    
+	var renderer, scene, camera;
+	var wireframeOn = false; 
 	
-	var material = new THREE.MeshLambertMaterial( { color: 0x0000FF, transparent: true, opacity: 0.8, side: THREE.DoubleSide, wireframe:wireframeOn } );    
-    //var material = new THREE.MeshLambertMaterial( { map: THREE.ImageUtils.loadTexture('images/texture.jpg'), side: THREE.DoubleSide } );
+	//var material = new THREE.MeshLambertMaterial( { color: 0x0000FF, transparent: true, opacity: 0.8, side: THREE.DoubleSide, wireframe:wireframeOn } );    
     var slices = [];
     
 	
@@ -116,19 +106,35 @@ var l = function(p){
 	};
 	
 	function initThree() {	
+		renderer = new THREE.WebGLRenderer({ alpha: true });
+		scene = new THREE.Scene();
+		camera = new THREE.PerspectiveCamera(
+                75,             // Field of view
+                500 / 600,      // Aspect ratio
+                0.1,            // Near plane
+                100000           // Far plane
+            );	
+    	camera.position.set( 0, 0, 1000 );
+    	camera.lookAt( new THREE.Vector3(0,0,0));       
+	 	scene.add(camera);
+	 	
 			renderer.setSize( 500, 600 );
 			var div = document.getElementById('rightCanv');
 			//console.log(div);
 			div.appendChild(renderer.domElement);
 			controls = new THREE.OrbitControls(camera, renderer.domElement);
 			//scene.add( new THREE.AmbientLight( Math.random() * 0x202020 ) );
-			var dLight = new THREE.DirectionalLight(0xFFFFFF);
+			//scene.add( new THREE.AmbientLight( 0xFFFFFF ) );
+			
+			var dLight = new THREE.DirectionalLight(0xFFFFFF, 0.8);
   			dLight.position.set(0,5,5);
   			scene.add(dLight);
-    		
-    		var dLight = new THREE.DirectionalLight(0xFFFFFF);
-  			dLight.position.set(0,-5,-5);
-  			scene.add(dLight);
+  			
+  			var dLight2 = new THREE.DirectionalLight(0xFFFFFF, 0.8);
+  			dLight2.position.set(0,-5,5);
+  			scene.add(dLight2);
+  			
+			renderer.setClearColor(0xdffffff, 1);
   			
             //plotTriangles(mdsArray,triangles);
 		};
@@ -137,7 +143,7 @@ var l = function(p){
 			var render = function () {
 				requestAnimationFrame( render );
 				
-				renderer.setClearColor(0xdffffff, 1);
+				
 				/*for ( var i = 0; i < slices.length; i ++ ) {
 					var slice = slices[ i ];
 
@@ -433,12 +439,16 @@ function makeMatrix(p){
 }
 
 function plotTriangles(coords, trias){
+	//var material = new THREE.MeshLambertMaterial( { color: 0x0000FF, transparent: true, opacity: 0.8, side: THREE.DoubleSide, wireframe:wireframeOn } );
+	//var material = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture(maps[mapFocus].img), side: THREE.DoubleSide } );
+	var material = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('map.jpg'), side: THREE.DoubleSide } );
 	//iterate through slices and remove all from scene
 	for(var i = 0; i < slices.length; i++){
 		scene.remove(slices[i]);
 	}
 	material.setValues({wireframe:wireframeOn});
 	slices = []; 
+	console.log(triangles);
 	if(trias.length > 1){
 		for(var i = 0; i < trias.length; i+=3){
 		
@@ -452,15 +462,39 @@ function plotTriangles(coords, trias){
 			var y3 = coords[trias[i+2]][1]/zoom;
 			var z3 = coords[trias[i+2]][2]/zoom;
 		
-	
+			//console.log("(" + x1 + "," + y1 + "," + z1 + ") " + "(" + x2 + "," + y2 + "," + z3 + ") " + "(" + x3 + "," + y3 + "," + z3 +")");
 			var geo = new THREE.Geometry();
 			
 			geo.vertices.push(
-				new THREE.Vector3( x1,  y1, z1 ),
+				new THREE.Vector3( x1, y1, z1 ),
 				new THREE.Vector3( x2, y2, z2 ),
-				new THREE.Vector3(  x3, y3, z3 )
+				new THREE.Vector3( x3, y3, z3 )
 			);	
+			
+			//pull out width/height of image to normalize to 1 scale of UV
+			//for future versions, move outside this function
+			var w = maps[mapFocus].img.width;
+			var h = maps[mapFocus].img.height;
+			
+			var uvs = [];
+			var uv1x = maps[mapFocus].internalNodes[trias[i]].xpos/w;
+			var uv1y = maps[mapFocus].internalNodes[trias[i]].ypos/h;
+			var uv2x = maps[mapFocus].internalNodes[trias[i+1]].xpos/w;
+			var uv2y = maps[mapFocus].internalNodes[trias[i+1]].ypos/h;
+			var uv3x = maps[mapFocus].internalNodes[trias[i+2]].xpos/w;
+			var uv3y = maps[mapFocus].internalNodes[trias[i+2]].ypos/h;
+			
+			var uvs = [];
+			uvs.push(
+				new THREE.Vector2(uv1x,uv1y),
+				new THREE.Vector2(uv2x,uv2y),
+				new THREE.Vector2(uv3x,uv3y)
+				
+			);
+			
 			geo.faces.push( new THREE.Face3( 0, 2, 1 ) );
+			geo.faceVertexUvs[0].push([uvs[0],uvs[2],uvs[1]]);
+			
 			geo.computeFaceNormals();
 			geo.computeVertexNormals();
 			var triangle = new THREE.Mesh(geo, material);
@@ -469,7 +503,11 @@ function plotTriangles(coords, trias){
 			//console.log(x1 + ' ' + y1 + ' ' + z1);
 			
 		}
-	}	
+	}
+		//var material2 = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('images/texture.jpg'), side: THREE.DoubleSide } );
+		//var cube = new THREE.CubeGeometry(300,300,300);
+  		//var mesh = new THREE.Mesh(cube,material);
+  		//scene.add(mesh);	
 }
 
 			
