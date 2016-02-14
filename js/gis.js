@@ -79,10 +79,9 @@ var l = function(p){
 			maps[mapFocus].addNode(p.mouseX, p.mouseY, p);
 			//console.log(p.mouseX + " " + p.mouseY);
 		}
-		
-		displayMaps(p);
 		updateData(p);
 		makeMatrix();
+		displayMaps(p);
 	};
 	
 	p.keyPressed = function(){
@@ -114,7 +113,7 @@ var l = function(p){
                 0.1,            // Near plane
                 100000           // Far plane
             );	
-    	camera.position.set( 0, 0, 1000 );
+    	camera.position.set( 0, 1000, -1000 );
     	camera.lookAt( new THREE.Vector3(0,0,0));       
 	 	scene.add(camera);
 	 	
@@ -127,11 +126,15 @@ var l = function(p){
 			//scene.add( new THREE.AmbientLight( 0xFFFFFF ) );
 			
 			var dLight = new THREE.DirectionalLight(0xFFFFFF, 0.8);
-  			dLight.position.set(0,5,5);
+  			dLight.position.set(0,5,-5);
   			scene.add(dLight);
   			
   			var dLight2 = new THREE.DirectionalLight(0xFFFFFF, 0.8);
-  			dLight2.position.set(0,-5,5);
+  			dLight2.position.set(0,-5,-5);
+  			scene.add(dLight2);
+  			
+  			var dLight2 = new THREE.DirectionalLight(0xFFFFFF, 0.3);
+  			dLight2.position.set(0,0,5);
   			scene.add(dLight2);
   			
 			renderer.setClearColor(0xdffffff, 1);
@@ -252,25 +255,27 @@ function Map(name, opac, img, p){
 				var x3 = this.internalNodes[triangles[i+2]].xpos + this.offSetX;
 				var y3 = this.internalNodes[triangles[i+2]].ypos + this.offSetY;
 				p.stroke(255,0,0,50);
-				p.strokeWeight(3);
+				p.strokeWeight(8);
 				p.line(x1,y1,x2,y2);
 				p.line(x2,y2,x3,y3);
 				p.line(x3,y3,x1,y1);
 			}		
 		}
 		//display nodes
+		p.stroke(0,0,0,150);
+		p.strokeWeight(1);
     	for(var i=0; i < this.internalNodes.length; i++){
-    	    p.stroke(0,0,0,150);
     		p.ellipse(this.internalNodes[i].xpos+this.offSetX,this.internalNodes[i].ypos+this.offSetY, 10, 10);
+    		p.text(i,this.internalNodes[i].xpos+this.offSetX,this.internalNodes[i].ypos+this.offSetY);
     	} 
     	//display edges
+    	p.strokeWeight(2);
+   		p.stroke(0,0,0, 150);
     	for(var i=0; i < this.internalEdges.length; i++){
     		var x1 = this.internalNodes[this.internalEdges[i].node1].xpos + this.offSetX;
     		var x2 = this.internalNodes[this.internalEdges[i].node2].xpos + this.offSetX;
     		var y1 = this.internalNodes[this.internalEdges[i].node1].ypos + this.offSetY;
     		var y2 = this.internalNodes[this.internalEdges[i].node2].ypos + this.offSetY;
-			p.strokeWeight(2);
-    		p.stroke(0,0,0, 150);
     		p.line(x1,y1,x2,y2);	
     	}
 	};
@@ -382,20 +387,11 @@ function makeMatrix(p){
 	var nodes = maps[mapFocus].internalNodes;
 	var edges = maps[mapFocus].internalEdges;
 	var matrix = [];
-	var infStr = [];
+	var vertices = new Array(nodes.length);
 	
 	//from http://stackoverflow.com/questions/6495187/best-way-to-generate-empty-2d-array
 	var matrix = (function(matrix){ while(matrix.push([]) < nodes.length); return matrix})([]);
 	
-	//create array of empty values (= 'infinity') for each node
-	//for(var i = 0; i < nodes.length; i++){
-	//		append(infStr,-1); 
-	//	}
-	//populate matrix 
-	//for(var i = 0; i < nodes.length; i++){
-	//	matrix.push(infStr);
-	//}
-	//matrix[1][0] = 100;
 	//populate empty matrix from edge info
 	for(var i = 0; i < edges.length; i++){
 		var x = edges[i].node1;
@@ -407,14 +403,17 @@ function makeMatrix(p){
 		matrix[x][y] = dis;
 		matrix[y][x] = dis;
 	}
-	//cycle through all values replacing 'undefined' with 'Infinity'
-	//KLUDGE
+	
 	for(var y = 0; y < nodes.length; y++){
+		//cycle through all values replacing 'undefined' with 'Infinity'
+		//KLUDGE
 		for(var x = 0; x < nodes.length; x++){			
 			if(matrix[x][y] === undefined){
 				matrix[x][y] = 'Infinity';
 			}
 		}
+		//populate vertices array for Delaunay
+		vertices[y] = [nodes[y].xpos, nodes[y].ypos];
 	}		
 	//console.log(matrix);
 	
@@ -423,17 +422,15 @@ function makeMatrix(p){
 	//console.log(shortestDists);
 	
 	//calculate MDS
-	//console.log(mdsCoords(shortestDists,3));
 	mdsArray = mdsCoords(shortestDists,3); //mdsArray is currently global--should be rewritten for future editions with multiple maps
-	//displayMaps(p);
-    	//displayGraphs();
-    //updateData(p);
-    
+	//console.log(mdsArray);
     //delaunay triangulation from https://github.com/ironwallaby/delaunay
-    triangles = Delaunay.triangulate(mdsArray);//triangles is currently global--should be rewritten for future editions
-	//p.background(255,255,255);
+    //console.log(vertices);
+    triangles = Delaunay.triangulate(vertices);//triangles is currently global--should be rewritten for future editions
+	console.log(triangles);
 	//plotCoords(mdsArray, edges);
 	plotTriangles(mdsArray,triangles);
+	console.log(mdsArray);
 	delaunayOn = true;
 	
 }
@@ -448,9 +445,13 @@ function plotTriangles(coords, trias){
 	}
 	material.setValues({wireframe:wireframeOn});
 	slices = []; 
-	console.log(triangles);
 	if(trias.length > 1){
 		for(var i = 0; i < trias.length; i+=3){
+		
+			//pull out width/height of image to normalize to 1 scale of UV
+			//for future versions, move outside this function
+			var w = maps[mapFocus].img.width;
+			var h = maps[mapFocus].img.height;
 		
 			var x1 = coords[trias[i]][0]/zoom;
 			var y1 = coords[trias[i]][1]/zoom;
@@ -462,7 +463,7 @@ function plotTriangles(coords, trias){
 			var y3 = coords[trias[i+2]][1]/zoom;
 			var z3 = coords[trias[i+2]][2]/zoom;
 		
-			//console.log("(" + x1 + "," + y1 + "," + z1 + ") " + "(" + x2 + "," + y2 + "," + z3 + ") " + "(" + x3 + "," + y3 + "," + z3 +")");
+			//console.log("[" + i + "]" + "(" + x1 + "," + y1 + "," + z1 + ") " + "(" + x2 + "," + y2 + "," + z3 + ") " + "(" + x3 + "," + y3 + "," + z3 +")");
 			var geo = new THREE.Geometry();
 			
 			geo.vertices.push(
@@ -471,18 +472,15 @@ function plotTriangles(coords, trias){
 				new THREE.Vector3( x3, y3, z3 )
 			);	
 			
-			//pull out width/height of image to normalize to 1 scale of UV
-			//for future versions, move outside this function
-			var w = maps[mapFocus].img.width;
-			var h = maps[mapFocus].img.height;
+			
 			
 			var uvs = [];
 			var uv1x = maps[mapFocus].internalNodes[trias[i]].xpos/w;
-			var uv1y = maps[mapFocus].internalNodes[trias[i]].ypos/h;
+			var uv1y = 1-maps[mapFocus].internalNodes[trias[i]].ypos/h;
 			var uv2x = maps[mapFocus].internalNodes[trias[i+1]].xpos/w;
-			var uv2y = maps[mapFocus].internalNodes[trias[i+1]].ypos/h;
+			var uv2y = 1-maps[mapFocus].internalNodes[trias[i+1]].ypos/h;
 			var uv3x = maps[mapFocus].internalNodes[trias[i+2]].xpos/w;
-			var uv3y = maps[mapFocus].internalNodes[trias[i+2]].ypos/h;
+			var uv3y = 1-maps[mapFocus].internalNodes[trias[i+2]].ypos/h;
 			
 			var uvs = [];
 			uvs.push(
@@ -492,8 +490,8 @@ function plotTriangles(coords, trias){
 				
 			);
 			
-			geo.faces.push( new THREE.Face3( 0, 2, 1 ) );
-			geo.faceVertexUvs[0].push([uvs[0],uvs[2],uvs[1]]);
+			geo.faces.push( new THREE.Face3( 0, 1, 2 ) );
+			geo.faceVertexUvs[0].push([uvs[0],uvs[1],uvs[2]]);
 			
 			geo.computeFaceNormals();
 			geo.computeVertexNormals();
@@ -620,6 +618,7 @@ function imgToggle(p){
     	//displayGraphs();
     updateData(p);
 	//makeMatrix(p);
+	
 }
 
 function wireFrameMode(){
