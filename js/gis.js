@@ -7,11 +7,15 @@ var buttonDist;
 var buttonMatrix;
 var buttonToggleImg;
 var buttonWireframe;
+var buttonRotate;
 var mode = 0; //mode 0 = edit nodes, 1 = edit distances
 var imageOn = true;
 var delaunayOn = false;
 var rt = 0; //rotate variable
 var zoom = 1;
+var nNodes = 2;
+var mapImages = [];
+var autoRotate = false;
 
 //BEGIN LEFT CANVAS
 //instance mode of p5.js https://github.com/processing/p5.js/wiki/p5.js-overview#instantiation--namespace
@@ -27,18 +31,35 @@ var l = function(p){
   
 	  buttonNodes = p.createButton('add nodes');
 	  buttonDist = p.createButton('edit distances');
+	  nNodeSelect = p.createSelect();
+	  
 	  
 	  buttonToggleImg = p.createButton('toggle image');
-	  buttonNodes.position(10,0);
-	  buttonDist.position(100,0);
 	  
-	  buttonToggleImg.position(500,0);
+	  var myDiv = p.createDiv('nearest nodes');
+	  myDiv.position(50,640);
+	  buttonNodes.position(10,620);
+	  nNodeSelect.position(10,640);
+	  nNodeSelect.option(2);
+	  nNodeSelect.option(1);
+	  nNodeSelect.option(3);
+	  nNodeSelect.option(4);
+	  nNodeSelect.changed(nNodesChange);
+	  
+	  buttonDist.position(180,620);
+	  
+	  
+	  buttonToggleImg.position(280,620);
 	  buttonNodes.mousePressed(mode0); //must be a better way to do this
 	  buttonDist.mousePressed(mode1);
 	  
 	  buttonWireframe = p.createButton('wireframe');
-	  buttonWireframe.position(200,0);
+	  buttonWireframe.position(500,620);
 	  buttonWireframe.mousePressed(wireFrameMode);
+	  
+	  buttonRotate = p.createButton('auto-rotate');
+	  buttonRotate.position(600,620);
+	  buttonRotate.mousePressed(rotateMode);
 	  
 	  buttonToggleImg.mousePressed(p.imageTog);
 	  p.fill(0,0,0,100);
@@ -56,17 +77,25 @@ var l = function(p){
 	};
 	
 	p.gotFile = function(file) {
+	  //console.log(file);
 	  if (file.type === 'image') {
 		// Create an image DOM element and add to maps array
 		p.append(maps,new Map(file.name,1,p.createImg(file.data).hide(),p));
 		mapFocus = maps.length - 1; //change focus to last uploaded map
+		
+		//array mapImages holds map images for three.js access
+		//images also added to Map objects
+		//double storage should be consolidated in future versions
+		//currently unable to access img file from Map class for three.js, possible because
+		//stored as a p5 filetype (using file.data might fix)
+		mapImages.push(file.data);
 		console.log('map focus: ' + 	mapFocus);
+		updateData(p);
+		makeMatrix();
+		displayMaps(p);
 	  } else {
 		console.log('Not an image file!');
 	  }
-	  displayMaps(p);
-	  //displayGraphs();
-	  updateData(p);
 	};
 	
 	//calls outside function and passes 'p' instance
@@ -146,15 +175,16 @@ var l = function(p){
 			var render = function () {
 				requestAnimationFrame( render );
 				
-				
-				/*for ( var i = 0; i < slices.length; i ++ ) {
-					var slice = slices[ i ];
+				if(autoRotate){
+					for ( var i = 0; i < slices.length; i ++ ) {
+						var slice = slices[ i ];
 
-					slice.rotation.x += 0.01;
-					slice.rotation.y += -0.01;
-					slice.x += .00001;
-				}*/
-				
+						slice.rotation.x += 0.01;
+						slice.rotation.z += -0.01;
+						console.log(slice.rotation.z);
+						//slice.x += .00001;
+					}
+				}
 				
 				renderer.render(scene, camera);
 				
@@ -165,54 +195,6 @@ var l = function(p){
 	  
 	};
 //END RIGHT CANVAS
-
-
-/*
-var r = function(p){
-	
-	p.setup = function() {
-		p.createCanvas(500, 600,'webgl');
-		p.background(255,255,255);
-		//buttonMatrix = p.createButton('make matrix');
-		//buttonMatrix.position(200,0);
-		//buttonMatrix.mousePressed(p.mkMtrx);
-	};
-	
-	p.draw = function() {
-		
-	};
-	
-	//p.mkMtrx = function(){
-	//	makeMatrix(p);
-	//};
-	
-	p.mouseDragged = function() {	
-		if(p.mouseX > 0){
-			p.background(255,255,255);
-	  		p.rotateY(p.mouseX / 100);
-  			p.rotateX(p.mouseY / 100);
-  			//console.log(rt);
-  			plotCoords(mdsArray,maps[mapFocus].internalEdges,p);
-  			plotTriangles(mdsArray,p,triangles);
-  		}
-  		// prevent default
-  		return false;
-	};
-	
-	p.mouseWheel = function(event) {
-		  p.background(255,255,255);
-		  //event.delta can be +1 or -1 depending
-		  //on the wheel/scroll direction
-		  //p.print(event.delta/10);
-		  //move the square one pixel up or down
-		  zoom -= event.delta/10;
-		  plotCoords(mdsArray,maps[mapFocus].internalEdges,p);
-		  plotTriangles(mdsArray,p,triangles);
-		  //uncomment to block page scrolling
-		  return false;
-	};
-
-}; */
 
 //map class
 function Map(name, opac, img, p){
@@ -280,6 +262,10 @@ function Map(name, opac, img, p){
     	}
 	};
 	
+	this.returnImg = function(p){
+		return this.img;
+	};
+	
 	
 	
 	//called when mouseReleased
@@ -288,7 +274,7 @@ function Map(name, opac, img, p){
 				p.append(this.internalNodes, new Node(mx-this.offSetX,my-this.offSetY));
 				
 				//third argument = n nearest nodes to connect to
-				var nodeShort = findClosestNNodes(mx-this.offSetX,my-this.offSetY, 2, this.internalNodes,p);  
+				var nodeShort = findClosestNNodes(mx-this.offSetX,my-this.offSetY, nNodes, this.internalNodes,p);  
 				//console.log(nodeShort);
 				for(var i = 0; i < nodeShort.length; i++){
 					p.append(this.internalEdges, new Edge(nodeShort[i], this.internalNodes.length - 1, nodeDistXY(this.internalNodes[nodeShort[i]], mx-this.offSetX,my-this.offSetY,p)));
@@ -318,20 +304,6 @@ function Edge(node1, node2, distance){
 	this.node2 = node2;
 	this.distance = distance;
 	this.distanceMod = distance;
-}
-
-//NOT IN USE::TO DELETE returns closest existing node to new node
-function findClosestNode(mx,my,iNodes){
-	var smallestD = 10000000;
-	var nodeID;
-	for(var i = 0; i < 4; i++){ //check edge nodes for distance
-		distN = dist(iNodes[i].xpos, iNodes[i].ypos, mx,my);
-		if (distN < smallestD){
-			nodeID = i;
-			smallestD = distN;
-		}
-	}
-	return nodeID;
 }
 
 //connect to n nearest nodes
@@ -384,6 +356,7 @@ function nodeDistXY(nn1,mx,my,p){
 
 //build empty matrix, run through Floyd Warshall and MDS
 function makeMatrix(p){
+	//console.log(maps[mapFocus].internalNodes);
 	var nodes = maps[mapFocus].internalNodes;
 	var edges = maps[mapFocus].internalEdges;
 	var matrix = [];
@@ -427,18 +400,19 @@ function makeMatrix(p){
     //delaunay triangulation from https://github.com/ironwallaby/delaunay
     //console.log(vertices);
     triangles = Delaunay.triangulate(vertices);//triangles is currently global--should be rewritten for future editions
-	console.log(triangles);
+	//console.log(triangles);
 	//plotCoords(mdsArray, edges);
 	plotTriangles(mdsArray,triangles);
-	console.log(mdsArray);
+	//console.log(mdsArray);
 	delaunayOn = true;
 	
 }
 
 function plotTriangles(coords, trias){
 	//var material = new THREE.MeshLambertMaterial( { color: 0x0000FF, transparent: true, opacity: 0.8, side: THREE.DoubleSide, wireframe:wireframeOn } );
-	//var material = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture(maps[mapFocus].img), side: THREE.DoubleSide } );
-	var material = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('map.jpg'), side: THREE.DoubleSide } );
+	//console.log(mapImages[mapFocus]);
+	var material = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture(mapImages[mapFocus]), side: THREE.DoubleSide } );
+	//var material = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('map.jpg'), side: THREE.DoubleSide } );
 	//iterate through slices and remove all from scene
 	for(var i = 0; i < slices.length; i++){
 		scene.remove(slices[i]);
@@ -475,6 +449,7 @@ function plotTriangles(coords, trias){
 			
 			
 			var uvs = [];
+			//subtract 1 on y-axis because flipped in p5.js --> three.js
 			var uv1x = maps[mapFocus].internalNodes[trias[i]].xpos/w;
 			var uv1y = 1-maps[mapFocus].internalNodes[trias[i]].ypos/h;
 			var uv2x = maps[mapFocus].internalNodes[trias[i+1]].xpos/w;
@@ -496,6 +471,9 @@ function plotTriangles(coords, trias){
 			geo.computeFaceNormals();
 			geo.computeVertexNormals();
 			var triangle = new THREE.Mesh(geo, material);
+			triangle.rotation.x = 1.0;
+			triangle.rotation.z = -1.0;
+			
 			scene.add(triangle);
 			slices.push(triangle);	
 			//console.log(x1 + ' ' + y1 + ' ' + z1);
@@ -628,6 +606,19 @@ function wireFrameMode(){
 		wireframeOn = true;
 	}
 }	
+
+function rotateMode(){
+	if(autoRotate){
+		autoRotate = false;
+	} else {
+		autoRotate = true;
+	}
+}	
+
+function nNodesChange(){
+	var item = nNodeSelect.value();
+	nNodes = item;
+}
 	
 
 //from http://www.benfrederickson.com/multidimensional-scaling/
