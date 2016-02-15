@@ -8,6 +8,7 @@ var buttonMatrix;
 var buttonToggleImg;
 var buttonWireframe;
 var buttonRotate;
+var buttonReset;
 var mode = 0; //mode 0 = edit nodes, 1 = edit distances
 var imageOn = true;
 var delaunayOn = false;
@@ -37,7 +38,7 @@ var l = function(p){
 	  buttonToggleImg = p.createButton('toggle image');
 	  
 	  var myDiv = p.createDiv('nearest nodes');
-	  myDiv.position(50,640);
+	  myDiv.position(55,640);
 	  buttonNodes.position(10,620);
 	  nNodeSelect.position(10,640);
 	  nNodeSelect.option(2);
@@ -48,8 +49,9 @@ var l = function(p){
 	  
 	  buttonDist.position(180,620);
 	  
-	  
 	  buttonToggleImg.position(280,620);
+	  buttonToggleImg.mousePressed(p.imageTog);
+	  
 	  buttonNodes.mousePressed(mode0); //must be a better way to do this
 	  buttonDist.mousePressed(mode1);
 	  
@@ -61,7 +63,10 @@ var l = function(p){
 	  buttonRotate.position(600,620);
 	  buttonRotate.mousePressed(rotateMode);
 	  
-	  buttonToggleImg.mousePressed(p.imageTog);
+	  buttonReset = p.createButton('reset');
+	  buttonReset.position(680,620);
+	  buttonReset.mousePressed(p.resetMap);
+	  
 	  p.fill(0,0,0,100);
 	  p.noStroke();
 	  p.textSize(24);
@@ -103,6 +108,18 @@ var l = function(p){
 		imgToggle(p);
 	};
 	
+	p.resetMap = function(){
+		//find and delete all input DOM elements with class name of map's image
+		var allInputs = document.getElementsByClassName(maps[mapFocus].name);
+		console.log(allInputs);
+		for(var i = allInputs.length-1; i > 0; i--){
+			allInputs[i].remove();	
+		}
+		
+		//run object reset routine
+		maps[mapFocus].reset(p);
+	}
+		
 	p.mouseReleased = function(){
 		if(mode == 0){
 			maps[mapFocus].addNode(p.mouseX, p.mouseY, p);
@@ -219,7 +236,7 @@ function Map(name, opac, img, p){
 	p.append(this.internalEdges, new Edge(3,0,nodeDist(this.internalNodes[3],this.internalNodes[0],p)));
 	
 	for(var j = 0; j < this.internalEdges.length; j++){
-		makeInput(this.internalEdges[j], this.internalNodes, j, this.offSetX, this.offSetY,p);
+		makeInput(this.internalEdges[j], this.internalNodes, j, this.offSetX, this.offSetY,p, this.name);
 	}
 	
 	p.strokeWeight(3);
@@ -278,14 +295,39 @@ function Map(name, opac, img, p){
 				//console.log(nodeShort);
 				for(var i = 0; i < nodeShort.length; i++){
 					p.append(this.internalEdges, new Edge(nodeShort[i], this.internalNodes.length - 1, nodeDistXY(this.internalNodes[nodeShort[i]], mx-this.offSetX,my-this.offSetY,p)));
-					makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY,p);
+					makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY,p, this.name);
 				}
 				//console.log(this.internalEdges[this.internalEdges.length-1]);
 		displayMaps(p);
 		//displayGraphs();
 	    updateData(p);
+		};
 	};
-	}	
+	
+	this.reset = function(p){		
+		this.internalNodes = [];
+		this.internalEdges = [];
+
+		//Following routine same as initialization--could be condensed to single function
+		//start with 4 nodes at corners
+		p.append(this.internalNodes, new Node(0,0));
+		p.append(this.internalNodes, new Node(this.img.width,0));
+		p.append(this.internalNodes, new Node(this.img.width, this.img.height));
+		p.append(this.internalNodes, new Node(0,this.img.height));
+	
+		//and 4 edges that connect them
+		p.append(this.internalEdges, new Edge(0,1,nodeDist(this.internalNodes[0],this.internalNodes[1],p)));
+		p.append(this.internalEdges, new Edge(1,2,nodeDist(this.internalNodes[1],this.internalNodes[2],p)));
+		p.append(this.internalEdges, new Edge(2,3,nodeDist(this.internalNodes[2],this.internalNodes[3],p)));
+		p.append(this.internalEdges, new Edge(3,0,nodeDist(this.internalNodes[3],this.internalNodes[0],p)));
+		
+		for(var j = 0; j < this.internalEdges.length; j++){
+			makeInput(this.internalEdges[j], this.internalNodes, j, this.offSetX, this.offSetY,p);
+		}
+		
+				console.log(this.internalNodes);
+
+	};	
 }
 
 //node class
@@ -333,7 +375,7 @@ function nodeDist(nn1,nn2,p){
 }
 
 //make dist input box
-function makeInput(edge, nodes, n, xOff, yOff,p){
+function makeInput(edge, nodes, n, xOff, yOff,p, nm){
 	input = p.createInput();
 	var x1 = nodes[edge.node1].xpos+xOff;
 	var x2 = nodes[edge.node2].xpos+xOff;
@@ -345,6 +387,7 @@ function makeInput(edge, nodes, n, xOff, yOff,p){
     input.position(x1+(x2-x1)/2, y1+(y2-y1)/2);
     input.value(p.int(edge.distance));
     input.id(n); //adds id that refers to edge
+    input.class(nm); //uses image name for class for deletion later
     input.attribute("onkeydown", "keypress(event, " + n + ")");
 }
 
@@ -620,7 +663,6 @@ function nNodesChange(){
 	nNodes = item;
 }
 	
-
 //from http://www.benfrederickson.com/multidimensional-scaling/
 function mdsCoords(distances, dimensions) {
 	dimensions = dimensions || 2;
