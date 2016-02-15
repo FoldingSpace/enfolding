@@ -181,7 +181,7 @@ var l = function(p){
 
 						slice.rotation.x += 0.01;
 						slice.rotation.z += -0.01;
-						console.log(slice.rotation.z);
+						//console.log(slice.rotation.z);
 						//slice.x += .00001;
 					}
 				}
