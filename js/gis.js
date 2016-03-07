@@ -432,8 +432,7 @@ function Map(name, opac, img, p){
 				
 			}
 		}
-		
-		
+			
 		//define distances of outside of image
 		p.append(this.internalEdges,new Edge(0,gridW,img.width));
 		p.append(this.internalEdges, new Edge(gridW, (gridW+1)*(gridH+1)-1,img.height));
@@ -531,7 +530,6 @@ function nodeDistXY(nn1,mx,my,p){
 	return p.dist(nn1.xpos,nn1.ypos,mx,my);
 }
 
-
 //build empty matrix, run through Floyd Warshall and MDS
 function makeMatrix(p){
 	//console.log(maps[mapFocus].internalNodes);
@@ -570,7 +568,17 @@ function makeMatrix(p){
 	
 	//calculate Infinity entries with Floyd Warshall algo
 	var shortestDists = floydWarshall(matrix);
-	//console.log(shortestDists);
+	
+	//uncomment to print floyd warshall matrix to console
+	/*
+	for(var i = 0; i < shortestDists.length; i++){
+		var entries = [];
+		for(var j = 0; j<shortestDists[i].length;j++){
+			entries.push(shortestDists[i][j]);
+		}
+		console.log(entries);
+	}
+	*/		
 	
 	//calculate MDS
 	mdsArray = mdsCoords(shortestDists,3); //mdsArray is currently global--should be rewritten for future editions with multiple maps
