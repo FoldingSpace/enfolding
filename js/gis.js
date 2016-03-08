@@ -10,19 +10,21 @@ var buttonWireframe;
 var buttonRotate;
 var buttonReset;
 var buttonGridMode;
+var buttonGridMode2;
 var buttonTestNodes;
 var buttonTestNodes2;
+var buttonHideInputs;
 var nNodeSelect;
 var gridWSelect;
 var gridHSelect;
-var gridW = 6;
-var gridH = 6;
+var gridW = 4;
+var gridH = 5;
 var mode = 0; //mode 0 = edit nodes, 1 = edit distances
 var imageOn = true;
 var delaunayOn = false;
 var rt = 0; //rotate variable
 var zoom = 1;
-var nNodes = 4;
+var nNodes = 5;
 var mapImages = [];
 var autoRotate = false;
 
@@ -50,6 +52,13 @@ var l = function(p){
 	  nNodeSelect.option(3);
 	  nNodeSelect.option(2);
 	  nNodeSelect.option(1);
+	  nNodeSelect.option(0);
+	  nNodeSelect.option(10);
+	  nNodeSelect.option(9);
+	  nNodeSelect.option(8);
+	  nNodeSelect.option(7);
+	  nNodeSelect.option(6);
+	  nNodeSelect.option(5);
 	  nNodeSelect.changed(nNodesChange);
 	  
 	  var gW = p.createDiv('columns');
@@ -97,6 +106,14 @@ var l = function(p){
 	  buttonGridMode = p.createButton('grid mode');
 	  buttonGridMode.position(500,640);
 	  buttonGridMode.mousePressed(p.gridMode);
+	  
+	  buttonGridMode2 = p.createButton('grid mode 2');
+	  buttonGridMode2.position(500,760);
+	  buttonGridMode2.mousePressed(p.gridMode2);
+	  
+	  buttonHideInputs = p.createButton('hide input boxes');
+	  buttonHideInputs.position(500,780);
+	  buttonHideInputs.mousePressed(p.hideIns);
 	  
 	  p.fill(0,0,0,100);
 	  p.noStroke();
@@ -149,6 +166,14 @@ var l = function(p){
 		maps[mapFocus].reset(p);
 	}
 	
+	p.hideIns = function(){
+		var allInputs = document.getElementsByClassName(maps[mapFocus].name);
+		console.log(allInputs);
+		for(var i = allInputs.length-1; i >= 0; i--){
+			allInputs[i].remove();	
+		}
+	}
+	
 	p.gridMode = function(){
 		//find and delete all input DOM elements with class name of map's image
 		var allInputs = document.getElementsByClassName(maps[mapFocus].name);
@@ -157,6 +182,16 @@ var l = function(p){
 			allInputs[i].remove();	
 		}
 		maps[mapFocus].grid(p);
+	}
+	
+	p.gridMode2 = function(){
+		//find and delete all input DOM elements with class name of map's image
+		var allInputs = document.getElementsByClassName(maps[mapFocus].name);
+		console.log(allInputs);
+		for(var i = allInputs.length-1; i >= 0; i--){
+			allInputs[i].remove();	
+		}
+		maps[mapFocus].grid2(p);
 	}
 	
 	p.testNodes = function(){
@@ -404,11 +439,11 @@ function Map(name, opac, img, p){
 			for(var j = 0; j <=n; j++){ //width
 				p.append(this.internalNodes, new Node(j*img.width/n,i*img.height/m));
 				//console.log('j' + j + 'i' + i);
-				if(j > 0){ //draw horizontal lines to previous node	
+				if(j > 0 ){ //draw horizontal lines to previous node	&& i > 0 && i < gridH
 					p.append(this.internalEdges,new Edge(nodeCount-1,nodeCount,
 						nodeDist(this.internalNodes[nodeCount-1],this.internalNodes[nodeCount],p)));
 				}
-				if(i > 0 && (j == 0 || j == gridW)){ //draw vertical lines on outline
+				if(i > 0 ){ //draw vertical lines on outline && (j == 0 || j == gridW)  && j> 0 && j < gridW
 					p.append(this.internalEdges,new Edge(nodeCount-(n+1),nodeCount,
 						nodeDist(this.internalNodes[nodeCount-(n+1)],this.internalNodes[nodeCount],p)));
 					//console.log(nodeCount);
@@ -423,16 +458,23 @@ function Map(name, opac, img, p){
 			for(var j = 0; j < n; j++){
 				this.autoAddNode((j*img.width/n)+(img.width/n*0.5), (i*img.height/m)+(0.5*img.height/m), p);
 				if(j > 0 ){ 
+					//horizontals
 					p.append(this.internalEdges,new Edge(nodeCount-1,nodeCount,
 						nodeDist(this.internalNodes[nodeCount-1],this.internalNodes[nodeCount],p)));
 					//console.log(nodeCount);
-					//console.log(nodeDist(this.internalNodes[nodeCount-1],this.internalNodes[nodeCount],p));	
+					//console.log(nodeDist(this.internalNodes[nodeCount-1],this.internalNodes[nodeCount],p));
+					//verticals
 				}
+				if(i > 0){
+					p.append(this.internalEdges,new Edge(nodeCount-(n),nodeCount,
+						nodeDist(this.internalNodes[nodeCount-(n)],this.internalNodes[nodeCount],p)));	
+				}		
+					
 				nodeCount++;
 				
 			}
 		}
-			
+		/*	
 		//define distances of outside of image
 		p.append(this.internalEdges,new Edge(0,gridW,img.width));
 		p.append(this.internalEdges, new Edge(gridW, (gridW+1)*(gridH+1)-1,img.height));
@@ -442,7 +484,33 @@ function Map(name, opac, img, p){
 		//define diagonal distances across entire image
 		p.append(this.internalEdges, new Edge(0,(gridW+1)*(gridH+1)-1,p.dist(0,0,this.img.width,this.img.height)));
 		p.append(this.internalEdges, new Edge(gridW, (gridW+1)*(gridH+1)-1-gridW, p.dist(0,0,this.img.width, this.img.height)));
+		*/
+	};
+	
+	this.grid2 = function(p){
+		this.internalNodes = [];
+		this.internalEdges = [];
 		
+		var nodeCount = 0;
+		var n = gridW;
+		var m = gridH;
+		for(var i = 0; i <= m; i++){ //height
+			for(var j = 0; j <=n; j++){ //width
+				p.append(this.internalNodes, new Node(j*img.width/n,i*img.height/m));
+				//console.log('j' + j + 'i' + i);
+				if(j > 0 ){ //draw horizontal lines to previous node	&& i > 0 && i < gridH
+					p.append(this.internalEdges,new Edge(nodeCount-1,nodeCount,
+						nodeDist(this.internalNodes[nodeCount-1],this.internalNodes[nodeCount],p)));
+				}
+				if(i > 0 ){ //draw vertical lines on outline && (j == 0 || j == gridW)  && j> 0 && j < gridW
+					p.append(this.internalEdges,new Edge(nodeCount-(n+1),nodeCount,
+						nodeDist(this.internalNodes[nodeCount-(n+1)],this.internalNodes[nodeCount],p)));
+					//console.log(nodeCount);
+					//console.log(nodeDist(this.internalNodes[nodeCount-(n+1)],this.internalNodes[nodeCount],p));	
+				}
+				nodeCount++;
+			}	
+		}	
 	};
 	
 	//add two test nodes, connect with edge and custom distance
@@ -805,6 +873,7 @@ function rotateMode(){
 function nNodesChange(){
 	var item = nNodeSelect.value();
 	nNodes = item;
+	nNodes++;
 }
 
 function gridWChange(){
