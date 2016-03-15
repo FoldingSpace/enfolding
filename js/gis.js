@@ -1,6 +1,4 @@
 var maps = []; //array to store images
-var mdsArray = [0];
-var triangles = [0];
 var mapFocus = 0; //number in array to focus
 var buttonNodes;
 var buttonDist;
@@ -14,6 +12,7 @@ var buttonGridMode2;
 var buttonTestNodes;
 var buttonTestNodes2;
 var buttonHideInputs;
+var buttonMapFocus;
 var nNodeSelect;
 var gridWSelect;
 var gridHSelect;
@@ -34,20 +33,19 @@ var l = function(p){
 
 	p.setup = function() {
 	  // create canvas
-	  var c = p.createCanvas(500, 600);
+	  var c = p.createCanvas(1000, 600);
 	  //p.colorMode('HSB',360,100,100,100)
 	  p.background(255,255,255,0);
 	  // Add an event for when a file is dropped onto the canvas
 	  c.drop(p.gotFile);
   
 	  buttonNodes = p.createButton('add nodes');
-	  buttonDist = p.createButton('edit distances');
-	  buttonToggleImg = p.createButton('toggle image');
-	  buttonNodes.position(10,620);
+	  buttonNodes.position(1020,5);
+	  
 	  var myDiv = p.createDiv('nearest nodes');
-	  myDiv.position(55,640);
+	  myDiv.position(1070,25);
 	  nNodeSelect = p.createSelect();
-	  nNodeSelect.position(10,640);
+	  nNodeSelect.position(1020,25);
 	  nNodeSelect.option(4);
 	  nNodeSelect.option(3);
 	  nNodeSelect.option(2);
@@ -62,65 +60,73 @@ var l = function(p){
 	  nNodeSelect.changed(nNodesChange);
 	  
 	  var gW = p.createDiv('columns');
-	  gW.position(550,660);
+	  gW.position(1070,150);
 	  gridWSelect = p.createSelect();
-	  gridWSelect.position(500,660);
+	  gridWSelect.position(1020,150);
 	  gridWSelect.option(6);
 	  gridWSelect.changed(gridWChange);
 	  
 	  var gW = p.createDiv('rows');
-	  gW.position(550,680);
+	  gW.position(1070,130);
 	  gridHSelect = p.createSelect();
-	  gridHSelect.position(500,680);
+	  gridHSelect.position(1020,130);
 	  gridHSelect.option(6);
 	  gridHSelect.changed(gridHChange);
 	  
 	  buttonTestNodes = p.createButton('test nodes (100,100), (350,100)');
-	  buttonTestNodes.position(500,700);
+	  buttonTestNodes.position(1020,200);
 	  buttonTestNodes.mousePressed(p.testNodes);
 	  
 	  buttonTestNodes = p.createButton('test nodes (100,100), (100,350)');
-	  buttonTestNodes.position(500,720);
+	  buttonTestNodes.position(1020,220);
 	  buttonTestNodes.mousePressed(p.testNodes2);
 	  
-	  buttonDist.position(180,620);
-	  
-	  buttonToggleImg.position(280,620);
+	  buttonDist = p.createButton('edit distances');
+	  buttonDist.position(1120,5);
+	
+	  buttonToggleImg = p.createButton('toggle image');
+	  buttonToggleImg.position(1220,5);
 	  buttonToggleImg.mousePressed(p.imageTog);
 	  
 	  buttonNodes.mousePressed(mode0); //must be a better way to do this
 	  buttonDist.mousePressed(mode1);
 	  
 	  buttonWireframe = p.createButton('wireframe');
-	  buttonWireframe.position(500,620);
+	  buttonWireframe.position(1020,550);
 	  buttonWireframe.mousePressed(wireFrameMode);
 	  
 	  buttonRotate = p.createButton('auto-rotate');
-	  buttonRotate.position(600,620);
+	  buttonRotate.position(1020,570);
 	  buttonRotate.mousePressed(rotateMode);
 	  
 	  buttonReset = p.createButton('reset');
-	  buttonReset.position(680,620);
+	  buttonReset.position(1020,70);
 	  buttonReset.mousePressed(p.resetMap);
 	  
 	  buttonGridMode = p.createButton('grid mode');
-	  buttonGridMode.position(500,640);
+	  buttonGridMode.position(1020,90);
 	  buttonGridMode.mousePressed(p.gridMode);
 	  
 	  buttonGridMode2 = p.createButton('grid mode 2');
-	  buttonGridMode2.position(500,760);
+	  buttonGridMode2.position(1120,90);
 	  buttonGridMode2.mousePressed(p.gridMode2);
 	  
 	  buttonHideInputs = p.createButton('hide input boxes');
-	  buttonHideInputs.position(500,780);
+	  buttonHideInputs.position(1020,250);
 	  buttonHideInputs.mousePressed(p.hideIns);
+	  
+	  buttonMapFocus = p.createButton('change map focus');
+	  buttonMapFocus.position(1020,300);
+	  buttonMapFocus.mousePressed(p.changeFocus);
+	  var mF = p.createDiv('map#1').id('mFocus');
+	  mF.position(1020,320);
 	  
 	  p.fill(0,0,0,100);
 	  p.noStroke();
 	  p.textSize(24);
 	  p.textAlign('CENTER');
 	  p.text('Drag and drop a map', p.width/4, p.height/2);
-	  p.createDiv('data: ').id('dataResults');
+	  //p.createDiv('data: ').id('dataResults');
 	};
 
 
@@ -133,20 +139,25 @@ var l = function(p){
 	  //console.log(file);
 	  if (file.type === 'image') {
 		// Create an image DOM element and add to maps array
-		p.append(maps,new Map(file.name,1,p.createImg(file.data).hide(),p));
+		var offX = 30
+		if(maps.length > 0){
+			offX = maps[mapFocus].img.width + 35; 
+		} 	
+		p.append(maps,new Map(file.name,0.5,p.createImg(file.data).hide(),p, offX));
 		mapFocus = maps.length - 1; //change focus to last uploaded map
-		
 		//array mapImages holds map images for three.js access
 		//images also added to Map objects
 		//double storage should be consolidated in future versions
 		//currently unable to access img file from Map class for three.js, possible because
 		//stored as a p5 filetype (using file.data might fix)
 		mapImages.push(file.data);
-		console.log('map focus: ' + 	mapFocus);
+		console.log('map focus: ' + mapFocus);
 		maps[mapFocus].reCalculate();
 	  } else {
 		console.log('Not an image file!');
 	  }
+	  var div = document.getElementById('mFocus');
+		div.innerHTML = 'map#' + (mapFocus + 1); 
 	};
 	
 	//calls outside function and passes 'p' instance
@@ -214,6 +225,15 @@ var l = function(p){
 		
 	}
 	
+	p.changeFocus = function(){
+		mapFocus++;
+		if(mapFocus > maps.length-1){
+			mapFocus = 0;
+		}
+		var div = document.getElementById('mFocus');
+		div.innerHTML = 'map#' + (mapFocus + 1); 
+	}
+	
 };
 //END LEFT CANVAS
 
@@ -235,7 +255,7 @@ var l = function(p){
 		scene = new THREE.Scene();
 		camera = new THREE.PerspectiveCamera(
                 75,             // Field of view
-                500 / 600,      // Aspect ratio
+                1000 / 600,      // Aspect ratio
                 0.1,            // Near plane
                 100000           // Far plane
             );	
@@ -243,7 +263,7 @@ var l = function(p){
     	camera.lookAt( new THREE.Vector3(0,0,0));       
 	 	scene.add(camera);
 	 	
-			renderer.setSize( 500, 600 );
+			renderer.setSize( 1000, 600 );
 			var div = document.getElementById('rightCanv');
 			//console.log(div);
 			div.appendChild(renderer.domElement);
@@ -297,14 +317,15 @@ var l = function(p){
 //END RIGHT CANVAS
 
 //map class
-function Map(name, opac, img, p){
+function Map(name, opac, img, p, xoff){
 	this.name = name;
 	this.opac = opac;
 	this.img = img;
 	this.internalNodes = [];
 	this.internalEdges = [];
-	this.offSetX = 30;
+	this.offSetX = xoff;
 	this.offSetY = 30;
+	this.trias = [0];
 	
 	//start with 4 nodes at corners
 	p.append(this.internalNodes, new Node(0,0));
@@ -331,13 +352,13 @@ function Map(name, opac, img, p){
 			p.image(this.img,0,0,this.img.width,this.img.height);
 		}	
 		if(delaunayOn){
-			for(var i = 0; i < triangles.length; i+=3){
-				var x1 = this.internalNodes[triangles[i]].xpos;
-				var y1 = this.internalNodes[triangles[i]].ypos;
-				var x2 = this.internalNodes[triangles[i+1]].xpos;
-				var y2 = this.internalNodes[triangles[i+1]].ypos;
-				var x3 = this.internalNodes[triangles[i+2]].xpos;
-				var y3 = this.internalNodes[triangles[i+2]].ypos;
+			for(var i = 0; i < this.trias.length; i+=3){
+				var x1 = this.internalNodes[this.trias[i]].xpos;
+				var y1 = this.internalNodes[this.trias[i]].ypos;
+				var x2 = this.internalNodes[this.trias[i+1]].xpos;
+				var y2 = this.internalNodes[this.trias[i+1]].ypos;
+				var x3 = this.internalNodes[this.trias[i+2]].xpos;
+				var y3 = this.internalNodes[this.trias[i+2]].ypos;
 				p.stroke(255,0,0,50);
 				p.strokeWeight(8);
 				p.line(x1,y1,x2,y2);
@@ -365,6 +386,12 @@ function Map(name, opac, img, p){
     	p.pop();
 	};
 	
+	this.blur = function(p){
+		p.noStroke();
+		p.fill(255,150);
+		p.rect(0+this.offSetX,0+this.offSetY,this.img.width+this.offSetX,this.img.height+this.offSetY);
+	};
+	
 	this.returnImg = function(p){
 		return this.img;
 	};
@@ -378,14 +405,15 @@ function Map(name, opac, img, p){
 	
 	//called when mouseReleased
 		this.addNode = function(mx,my,p){
-		if(mx > 0 && mx < this.img.width+this.offSetX && my > 0 && my <  this.img.height+this.offSetY){ //check if on map
+		if(mx >this.offSetX && mx < this.img.width+this.offSetX && mx < p.width && my > 0 && my <  this.img.height+this.offSetY){ //check if on map
 				p.append(this.internalNodes, new Node(mx-this.offSetX,my-this.offSetY));
 				
 				//third argument = n nearest nodes to connect to
 				var nodeShort = findClosestNNodes(mx,my, nNodes, this.internalNodes,p);  
 				//console.log(nodeShort);
 				for(var i = 0; i < nodeShort.length; i++){
-					p.append(this.internalEdges, new Edge(nodeShort[i], this.internalNodes.length - 1, nodeDistXY(this.internalNodes[nodeShort[i]], mx,my,p)));
+					//subtract offsets from mx, my because nodes start from (0,0), then translated
+					p.append(this.internalEdges, new Edge(nodeShort[i], this.internalNodes.length - 1, nodeDistXY(this.internalNodes[nodeShort[i]], mx-this.offSetX,my-this.offSetY,p)));
 					makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY,p, this.name);
 				}
 				//console.log(this.internalEdges[this.internalEdges.length-1]);
@@ -603,6 +631,7 @@ function makeMatrix(p){
 	//console.log(maps[mapFocus].internalNodes);
 	var nodes = maps[mapFocus].internalNodes;
 	var edges = maps[mapFocus].internalEdges;
+	var triangles = maps[mapFocus].trias;
 	var matrix = [];
 	var vertices = new Array(nodes.length);
 	
@@ -649,11 +678,11 @@ function makeMatrix(p){
 	*/		
 	
 	//calculate MDS
-	mdsArray = mdsCoords(shortestDists,3); //mdsArray is currently global--should be rewritten for future editions with multiple maps
+	var mdsArray = mdsCoords(shortestDists,3); 
 	//console.log(mdsArray);
     //delaunay triangulation from https://github.com/ironwallaby/delaunay
     //console.log(vertices);
-    triangles = Delaunay.triangulate(vertices);//triangles is currently global--should be rewritten for future editions
+    triangles = Delaunay.triangulate(vertices);
 	//console.log(triangles);
 	//plotCoords(mdsArray, edges);
 	plotTriangles(mdsArray,triangles);
@@ -663,10 +692,8 @@ function makeMatrix(p){
 }
 
 function plotTriangles(coords, trias){
-	//var material = new THREE.MeshLambertMaterial( { color: 0x0000FF, transparent: true, opacity: 0.8, side: THREE.DoubleSide, wireframe:wireframeOn } );
-	//console.log(mapImages[mapFocus]);
 	var material = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture(mapImages[mapFocus]), side: THREE.DoubleSide } );
-	//var material = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('map.jpg'), side: THREE.DoubleSide } );
+
 	//iterate through slices and remove all from scene
 	for(var i = 0; i < slices.length; i++){
 		scene.remove(slices[i]);
@@ -738,6 +765,7 @@ function plotTriangles(coords, trias){
 		//var cube = new THREE.CubeGeometry(300,300,300);
   		//var mesh = new THREE.Mesh(cube,material);
   		//scene.add(mesh);	
+  	maps[mapFocus].trias = trias;	
 }
 
 			
@@ -789,6 +817,11 @@ function displayMaps(p){
 	p.background(255,255,255);
 	for (var i=0; i<maps.length; i++) {
     	maps[i].display(p);
+    	
+    	//blur out non-focus maps
+    	if(mapFocus != i){
+    		maps[i].blur(p);
+		}	
   	}
   	//console.log('yes');
 }
