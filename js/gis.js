@@ -90,13 +90,13 @@ var l = function(p){
 	  gridHSelect.option(10);
 	  gridHSelect.changed(gridHChange);
 	  
-	  buttonTestNodes = p.createButton('test nodes (100,100), (350,100)');
+	  /*buttonTestNodes = p.createButton('test nodes (100,100), (350,100)');
 	  buttonTestNodes.position(1020,200);
 	  buttonTestNodes.mousePressed(p.testNodes);
 	  
 	  buttonTestNodes = p.createButton('test nodes (100,100), (100,350)');
 	  buttonTestNodes.position(1020,220);
-	  buttonTestNodes.mousePressed(p.testNodes2);
+	  buttonTestNodes.mousePressed(p.testNodes2);*/
 	  
 	  buttonDist = p.createButton('edit distances');
 	  buttonDist.position(1120,5);
@@ -429,7 +429,7 @@ function Map(name, opac, img, p, xoff){
 	//called when mouseReleased
 		this.addNode = function(mx,my,p){
 		if(mx >this.offSetX && mx < this.img.width+this.offSetX && mx < p.width && my > 0 && my <  this.img.height+this.offSetY){ //check if on map
-			if(gridMode){
+			if(this.gridMode){
 				if(this.clickCount % 2 == 0){//evens are first clicks
 					this.autoAddNode(mx-this.offSetX,my-this.offSetY,p);
 				} else {//odds complete edge
