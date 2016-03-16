@@ -208,6 +208,7 @@ var l = function(p){
 			allInputs[i].remove();	
 		}
 		maps[mapFocus].grid(p);
+		gridMode = true;
 	}
 	
 	p.gridMode2 = function(){
@@ -219,6 +220,7 @@ var l = function(p){
 		}
 		maps[mapFocus].reset(p);
 		maps[mapFocus].grid2(p);
+		gridMode = true; 
 	}
 	
 	p.testNodes = function(){
@@ -233,8 +235,8 @@ var l = function(p){
 		if(mode == 0){
 			maps[mapFocus].addNode(p.mouseX, p.mouseY, p);
 			//console.log(p.mouseX + " " + p.mouseY);
-			maps[mapFocus].reCalculate();
-		}
+		} 
+		maps[mapFocus].reCalculate();
 	};
 	
 	p.keyPressed = function(){
@@ -343,6 +345,8 @@ function Map(name, opac, img, p, xoff){
 	this.offSetX = xoff;
 	this.offSetY = 30;
 	this.trias = [0];
+	this.gridMode = false; 
+	this.clickCount = 0; //count clicks for long distance edges in gridMode
 	
 	//start with 4 nodes at corners
 	p.append(this.internalNodes, new Node(0,0));
@@ -425,20 +429,32 @@ function Map(name, opac, img, p, xoff){
 	//called when mouseReleased
 		this.addNode = function(mx,my,p){
 		if(mx >this.offSetX && mx < this.img.width+this.offSetX && mx < p.width && my > 0 && my <  this.img.height+this.offSetY){ //check if on map
-				p.append(this.internalNodes, new Node(mx-this.offSetX,my-this.offSetY));
-				
-				//third argument = n nearest nodes to connect to
-				var nodeShort = findClosestNNodes(mx-this.offSetX,my-this.offSetY, nNodes, this.internalNodes,p);  
-				//console.log(nodeShort);
-				for(var i = 0; i < nodeShort.length; i++){
-					//subtract offsets from mx, my because nodes start from (0,0), then translated
-					p.append(this.internalEdges, new Edge(nodeShort[i], this.internalNodes.length - 1, nodeDistXY(this.internalNodes[nodeShort[i]], mx-this.offSetX,my-this.offSetY,p)));
+			if(gridMode){
+				if(this.clickCount % 2 == 0){//evens are first clicks
+					this.autoAddNode(mx-this.offSetX,my-this.offSetY,p);
+				} else {//odds complete edge
+					this.autoAddNode(mx-this.offSetX,my-this.offSetY,p);
+					var d = nodeDist(this.internalNodes[this.internalNodes.length-2], this.internalNodes[this.internalNodes.length-1],p);
+					p.append(this.internalEdges, new Edge(this.internalNodes.length-2,this.internalNodes.length-1,d)); //connect two above nodes
 					makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY,p, this.name);
 				}
-				//console.log(this.internalEdges[this.internalEdges.length-1]);
-		displayMaps(p);
-	    updateData(p);
-		};
+				this.clickCount++;
+			} else {
+					p.append(this.internalNodes, new Node(mx-this.offSetX,my-this.offSetY));
+				
+					//third argument = n nearest nodes to connect to
+					var nodeShort = findClosestNNodes(mx-this.offSetX,my-this.offSetY, nNodes, this.internalNodes,p);  
+					//console.log(nodeShort);
+					for(var i = 0; i < nodeShort.length; i++){
+						//subtract offsets from mx, my because nodes start from (0,0), then translated
+						p.append(this.internalEdges, new Edge(nodeShort[i], this.internalNodes.length - 1, nodeDistXY(this.internalNodes[nodeShort[i]], mx-this.offSetX,my-this.offSetY,p)));
+						makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY,p, this.name);
+					}
+					//console.log(this.internalEdges[this.internalEdges.length-1]);
+			displayMaps(p);
+			updateData(p);
+			}
+		};	
 	};
 	
 	//called for grid building
@@ -475,12 +491,13 @@ function Map(name, opac, img, p, xoff){
 		for(var j = 0; j < this.internalEdges.length; j++){
 			makeInput(this.internalEdges[j], this.internalNodes, j, this.offSetX, this.offSetY,p,this.name);
 		}
+		this.gridMode = false;
+		this.clickCount = 0;
 	};	
 	
 	this.grid = function(p){
 		this.internalNodes = [];
 		this.internalEdges = [];
-		
 		
 		var nodeCount = 0;
 		var n = gridW;
@@ -546,6 +563,7 @@ function Map(name, opac, img, p, xoff){
 		p.append(this.internalEdges, new Edge(gridW, (gridW+1)*(gridH+1)-1-gridW, p.dist(0,0,this.img.width, this.img.height)));
 		*/
 		nodeCount = 0; 
+		this.gridMode = true;
 	};
 	
 	this.grid2 = function(p){
@@ -577,6 +595,7 @@ function Map(name, opac, img, p, xoff){
 				nodeCount++;
 			}	
 		}	
+		this.gridMode = true; 
 	};
 	
 	//add two test nodes, connect with edge and custom distance
