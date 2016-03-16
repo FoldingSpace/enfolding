@@ -17,13 +17,13 @@ var nNodeSelect;
 var gridWSelect;
 var gridHSelect;
 var gridW = 4;
-var gridH = 5;
+var gridH = 4;
 var mode = 0; //mode 0 = edit nodes, 1 = edit distances
 var imageOn = true;
 var delaunayOn = false;
 var rt = 0; //rotate variable
 var zoom = 1;
-var nNodes = 5;
+var nNodes = 4;
 var mapImages = [];
 var autoRotate = false;
 
@@ -41,6 +41,7 @@ var l = function(p){
   
 	  buttonNodes = p.createButton('add nodes');
 	  buttonNodes.position(1020,5);
+	  buttonNodes.mousePressed(mode0); //must be a better way to do this
 	  
 	  var myDiv = p.createDiv('nearest nodes');
 	  myDiv.position(1070,25);
@@ -59,18 +60,34 @@ var l = function(p){
 	  nNodeSelect.option(5);
 	  nNodeSelect.changed(nNodesChange);
 	  
-	  var gW = p.createDiv('columns');
+	  var gW = p.createDiv('rows');
 	  gW.position(1070,150);
 	  gridWSelect = p.createSelect();
 	  gridWSelect.position(1020,150);
+	  gridWSelect.option(4);
+	  gridWSelect.option(2);
+	  gridWSelect.option(3);
+	  gridWSelect.option(5);
 	  gridWSelect.option(6);
+	  gridWSelect.option(7);
+	  gridWSelect.option(8);
+	  gridWSelect.option(9);
+	  gridWSelect.option(10);
 	  gridWSelect.changed(gridWChange);
 	  
-	  var gW = p.createDiv('rows');
+	  var gW = p.createDiv('columns');
 	  gW.position(1070,130);
 	  gridHSelect = p.createSelect();
 	  gridHSelect.position(1020,130);
+	  gridHSelect.option(4);
+	  gridHSelect.option(2);
+	  gridHSelect.option(3);
+	  gridHSelect.option(5);
 	  gridHSelect.option(6);
+	  gridHSelect.option(7);
+	  gridHSelect.option(8);
+	  gridHSelect.option(9);
+	  gridHSelect.option(10);
 	  gridHSelect.changed(gridHChange);
 	  
 	  buttonTestNodes = p.createButton('test nodes (100,100), (350,100)');
@@ -83,13 +100,11 @@ var l = function(p){
 	  
 	  buttonDist = p.createButton('edit distances');
 	  buttonDist.position(1120,5);
+	  buttonDist.mousePressed(mode1);
 	
 	  buttonToggleImg = p.createButton('toggle image');
 	  buttonToggleImg.position(1220,5);
 	  buttonToggleImg.mousePressed(p.imageTog);
-	  
-	  buttonNodes.mousePressed(mode0); //must be a better way to do this
-	  buttonDist.mousePressed(mode1);
 	  
 	  buttonWireframe = p.createButton('wireframe');
 	  buttonWireframe.position(1020,550);
@@ -143,7 +158,7 @@ var l = function(p){
 		if(maps.length > 0){
 			offX = maps[mapFocus].img.width + 35; 
 		} 	
-		p.append(maps,new Map(file.name,0.5,p.createImg(file.data).hide(),p, offX));
+		p.append(maps,new Map(file.name,1,p.createImg(file.data).hide(),p, offX));
 		mapFocus = maps.length - 1; //change focus to last uploaded map
 		//array mapImages holds map images for three.js access
 		//images also added to Map objects
@@ -202,6 +217,7 @@ var l = function(p){
 		for(var i = allInputs.length-1; i >= 0; i--){
 			allInputs[i].remove();	
 		}
+		maps[mapFocus].reset(p);
 		maps[mapFocus].grid2(p);
 	}
 	
@@ -232,6 +248,7 @@ var l = function(p){
 		}
 		var div = document.getElementById('mFocus');
 		div.innerHTML = 'map#' + (mapFocus + 1); 
+		maps[mapFocus].reCalculate();
 	}
 	
 };
@@ -352,18 +369,20 @@ function Map(name, opac, img, p, xoff){
 			p.image(this.img,0,0,this.img.width,this.img.height);
 		}	
 		if(delaunayOn){
-			for(var i = 0; i < this.trias.length; i+=3){
-				var x1 = this.internalNodes[this.trias[i]].xpos;
-				var y1 = this.internalNodes[this.trias[i]].ypos;
-				var x2 = this.internalNodes[this.trias[i+1]].xpos;
-				var y2 = this.internalNodes[this.trias[i+1]].ypos;
-				var x3 = this.internalNodes[this.trias[i+2]].xpos;
-				var y3 = this.internalNodes[this.trias[i+2]].ypos;
-				p.stroke(255,0,0,50);
-				p.strokeWeight(8);
-				p.line(x1,y1,x2,y2);
-				p.line(x2,y2,x3,y3);
-				p.line(x3,y3,x1,y1);
+			if(this.trias.length % 3 == 0){
+				for(var i = 0; i < this.trias.length; i+=3){
+					var x1 = this.internalNodes[this.trias[i]].xpos;
+					var y1 = this.internalNodes[this.trias[i]].ypos;
+					var x2 = this.internalNodes[this.trias[i+1]].xpos;
+					var y2 = this.internalNodes[this.trias[i+1]].ypos;
+					var x3 = this.internalNodes[this.trias[i+2]].xpos;
+					var y3 = this.internalNodes[this.trias[i+2]].ypos;
+					p.stroke(255,0,0,50);
+					p.strokeWeight(8);
+					p.line(x1,y1,x2,y2);
+					p.line(x2,y2,x3,y3);
+					p.line(x3,y3,x1,y1);
+				}	
 			}		
 		}
 		//display nodes
@@ -409,7 +428,7 @@ function Map(name, opac, img, p, xoff){
 				p.append(this.internalNodes, new Node(mx-this.offSetX,my-this.offSetY));
 				
 				//third argument = n nearest nodes to connect to
-				var nodeShort = findClosestNNodes(mx,my, nNodes, this.internalNodes,p);  
+				var nodeShort = findClosestNNodes(mx-this.offSetX,my-this.offSetY, nNodes, this.internalNodes,p);  
 				//console.log(nodeShort);
 				for(var i = 0; i < nodeShort.length; i++){
 					//subtract offsets from mx, my because nodes start from (0,0), then translated
@@ -434,9 +453,11 @@ function Map(name, opac, img, p, xoff){
 	    	updateData(p);
 	};
 	
-	this.reset = function(p){		
+	this.reset = function(p){	
+		p.resetMatrix();	
 		this.internalNodes = [];
 		this.internalEdges = [];
+		this.trias = [0];
 
 		//Following routine same as initialization--could be condensed to single function
 		//start with 4 nodes at corners
@@ -460,9 +481,11 @@ function Map(name, opac, img, p, xoff){
 		this.internalNodes = [];
 		this.internalEdges = [];
 		
+		
 		var nodeCount = 0;
 		var n = gridW;
 		var m = gridH;
+		//console.log(n + ' ' + m);
 		for(var i = 0; i <= m; i++){ //height
 			for(var j = 0; j <=n; j++){ //width
 				p.append(this.internalNodes, new Node(j*img.width/n,i*img.height/m));
@@ -471,12 +494,18 @@ function Map(name, opac, img, p, xoff){
 					p.append(this.internalEdges,new Edge(nodeCount-1,nodeCount,
 						nodeDist(this.internalNodes[nodeCount-1],this.internalNodes[nodeCount],p)));
 				}
+				
 				if(i > 0 ){ //draw vertical lines on outline && (j == 0 || j == gridW)  && j> 0 && j < gridW
-					p.append(this.internalEdges,new Edge(nodeCount-(n+1),nodeCount,
-						nodeDist(this.internalNodes[nodeCount-(n+1)],this.internalNodes[nodeCount],p)));
+					// :-/
+					if(typeof this.internalNodes[nodeCount-(n+1)] !== "undefined" && typeof this.internalNodes[nodeCount] !== "undefined" ){
+						p.append(this.internalEdges,new Edge(nodeCount-(n+1),nodeCount,
+							nodeDist(this.internalNodes[nodeCount-(n+1)],this.internalNodes[nodeCount],p)));
+					}		
 					//console.log(nodeCount);
 					//console.log(nodeDist(this.internalNodes[nodeCount-(n+1)],this.internalNodes[nodeCount],p));	
+					
 				}
+				//console.log(this.internalNodes.length + ' ' + nodeCount);
 				nodeCount++;
 			}	
 		}	
@@ -494,8 +523,11 @@ function Map(name, opac, img, p, xoff){
 					//verticals
 				}
 				if(i > 0){
-					p.append(this.internalEdges,new Edge(nodeCount-(n),nodeCount,
-						nodeDist(this.internalNodes[nodeCount-(n)],this.internalNodes[nodeCount],p)));	
+					// :-/
+					if(typeof this.internalNodes[nodeCount-(n+1)] !== "undefined" && typeof this.internalNodes[nodeCount] !== "undefined" ){
+						p.append(this.internalEdges,new Edge(nodeCount-(n),nodeCount,
+							nodeDist(this.internalNodes[nodeCount-(n)],this.internalNodes[nodeCount],p)));	
+					}		
 				}		
 					
 				nodeCount++;
@@ -513,6 +545,7 @@ function Map(name, opac, img, p, xoff){
 		p.append(this.internalEdges, new Edge(0,(gridW+1)*(gridH+1)-1,p.dist(0,0,this.img.width,this.img.height)));
 		p.append(this.internalEdges, new Edge(gridW, (gridW+1)*(gridH+1)-1-gridW, p.dist(0,0,this.img.width, this.img.height)));
 		*/
+		nodeCount = 0; 
 	};
 	
 	this.grid2 = function(p){
@@ -522,6 +555,7 @@ function Map(name, opac, img, p, xoff){
 		var nodeCount = 0;
 		var n = gridW;
 		var m = gridH;
+		console.log(n + ' ' + m);
 		for(var i = 0; i <= m; i++){ //height
 			for(var j = 0; j <=n; j++){ //width
 				p.append(this.internalNodes, new Node(j*img.width/n,i*img.height/m));
@@ -531,10 +565,14 @@ function Map(name, opac, img, p, xoff){
 						nodeDist(this.internalNodes[nodeCount-1],this.internalNodes[nodeCount],p)));
 				}
 				if(i > 0 ){ //draw vertical lines on outline && (j == 0 || j == gridW)  && j> 0 && j < gridW
-					p.append(this.internalEdges,new Edge(nodeCount-(n+1),nodeCount,
-						nodeDist(this.internalNodes[nodeCount-(n+1)],this.internalNodes[nodeCount],p)));
-					//console.log(nodeCount);
-					//console.log(nodeDist(this.internalNodes[nodeCount-(n+1)],this.internalNodes[nodeCount],p));	
+					//console.log(this.internalNodes);
+					// :-/
+					if(typeof this.internalNodes[nodeCount-(n+1)] !== "undefined" && typeof this.internalNodes[nodeCount] !== "undefined" ){
+						p.append(this.internalEdges,new Edge(nodeCount-(n+1),nodeCount,
+							nodeDist(this.internalNodes[nodeCount-(n+1)],this.internalNodes[nodeCount],p)));
+						//console.log(nodeCount);
+						//console.log(nodeDist(this.internalNodes[nodeCount-(n+1)],this.internalNodes[nodeCount],p));	
+					}	
 				}
 				nodeCount++;
 			}	
@@ -906,18 +944,18 @@ function rotateMode(){
 function nNodesChange(){
 	var item = nNodeSelect.value();
 	nNodes = item;
-	nNodes++;
 }
 
+//these are backwards!
 function gridWChange(){
 	var w = gridWSelect.value();
-	gridW = w;
+	gridH = w;
 	console.log(gridW);
 }
 
 function gridHChange(){
 	var h = gridHSelect.value();
-	gridH = h;
+	gridW = h;
 	console.log(gridH);
 }
 	
