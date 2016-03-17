@@ -13,6 +13,7 @@ var buttonTestNodes;
 var buttonTestNodes2;
 var buttonHideInputs;
 var buttonMapFocus;
+var buttonDelaunay; 
 var nNodeSelect;
 var gridWSelect;
 var gridHSelect;
@@ -20,7 +21,6 @@ var gridW = 4;
 var gridH = 4;
 var mode = 0; //mode 0 = edit nodes, 1 = edit distances
 var imageOn = true;
-var delaunayOn = false;
 var rt = 0; //rotate variable
 var zoom = 1;
 var nNodes = 4;
@@ -129,6 +129,10 @@ var l = function(p){
 	  buttonHideInputs = p.createButton('hide input boxes');
 	  buttonHideInputs.position(1020,250);
 	  buttonHideInputs.mousePressed(p.hideIns);
+	  
+	  buttonDelaunay = p.createButton('delaunay on/off');
+	  buttonDelaunay.position(1020,270);
+	  buttonDelaunay.mousePressed(delaunay);
 	  
 	  buttonMapFocus = p.createButton('change map focus');
 	  buttonMapFocus.position(1020,300);
@@ -347,6 +351,7 @@ function Map(name, opac, img, p, xoff){
 	this.trias = [0];
 	this.gridMode = false; 
 	this.clickCount = 0; //count clicks for long distance edges in gridMode
+	this.delaunayOn = true;
 	
 	//start with 4 nodes at corners
 	p.append(this.internalNodes, new Node(0,0));
@@ -372,7 +377,7 @@ function Map(name, opac, img, p, xoff){
 		if(imageOn){
 			p.image(this.img,0,0,this.img.width,this.img.height);
 		}	
-		if(delaunayOn){
+		if(this.delaunayOn){
 			if(this.trias.length % 3 == 0){
 				for(var i = 0; i < this.trias.length; i+=3){
 					var x1 = this.internalNodes[this.trias[i]].xpos;
@@ -744,7 +749,7 @@ function makeMatrix(p){
 	//plotCoords(mdsArray, edges);
 	plotTriangles(mdsArray,triangles);
 	//console.log(mdsArray);
-	delaunayOn = true;
+	//delaunayOn = true;
 	
 }
 
@@ -949,6 +954,14 @@ function wireFrameMode(){
 		wireframeOn = false;
 	} else {
 		wireframeOn = true;
+	}
+}	
+
+function delaunay(){
+	if(maps[mapFocus].delaunayOn){
+		maps[mapFocus].delaunayOn = false;
+	} else {
+		maps[mapFocus].delaunayOn = true;
 	}
 }	
 
