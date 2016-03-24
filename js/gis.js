@@ -15,8 +15,9 @@ var buttonHideInputs;
 var buttonMapFocus;
 var buttonDelaunay; 
 var buttonCombine;
-var buttonTrans;
+//var buttonTrans;
 var buttonDim;
+var tSlider1, tSlider2;
 var nNodeSelect;
 var gridWSelect;
 var gridHSelect;
@@ -28,7 +29,7 @@ var imageOn = true;
 var rt = 0; //rotate variable
 var zoom = 1;
 var nNodes = 4;
-var trans = 1.0;
+//var trans = 1.0;
 var mapImages = [];
 var autoRotate = false;
 var worm = false; 
@@ -96,6 +97,15 @@ var l = function(p){
 	  gridHSelect.option(10);
 	  gridHSelect.changed(gridHChange);
 	  
+	  tSlider1 = p.createSlider(0,100,100);
+	  tSlider1.position(1020,400);
+	  tSlider1.style('width', '100px');
+	  tSlider1.changed(p.trans1);
+	  tSlider2 = p.createSlider(0,100,100);
+	  tSlider2.position(1020,420);
+	  tSlider2.style('width', '100px');
+	  tSlider2.changed(p.trans2);
+	  
 	  buttonDim = p.createButton('2D/3D');
 	  buttonDim.position(1020,180);
 	  buttonDim.mousePressed(dimensionChange);
@@ -144,9 +154,9 @@ var l = function(p){
 	  buttonDelaunay.position(1020,270);
 	  buttonDelaunay.mousePressed(delaunay);
 	  
-	  buttonTrans = p.createButton('transparency on/off');
+	  /*buttonTrans = p.createButton('transparency on/off');
 	  buttonTrans.position(1150,200);
-	  buttonTrans.mousePressed(transToggle);
+	  buttonTrans.mousePressed(transToggle);*/
 	  
 	  buttonCombine = p.createButton('two map mode');
 	  buttonCombine.position(1020,200);
@@ -169,7 +179,7 @@ var l = function(p){
 
 
 	p.draw = function() {
-	  
+		
 	};
 	
 	p.gotFile = function(file) {
@@ -255,20 +265,16 @@ var l = function(p){
 	}
 		
 	p.mouseReleased = function(){
-		if(mode == 0){
-			maps[mapFocus].addNode(p.mouseX, p.mouseY, p);
-			//console.log(p.mouseX + " " + p.mouseY);
-		} 
-		if(worm){
-			maps[mapFocus].reCalculateW();
-			combineMatrix(p,0,1);
-			resetThree();	
-			plotTriangles(maps[0].mdsMatrix, maps[0].trias, 0);
-			plotTriangles(maps[1].mdsMatrix, maps[1].trias, 1);
-		} else {
-			maps[mapFocus].reCalculate();
-		}	
+		reCalc(p);
 	};
+	
+	p.trans1 = function(){
+		transOne(p);
+	}	
+	
+	p.trans2 = function(){
+		transTwo(p);
+	}
 	
 	p.keyPressed = function(){
 		
@@ -385,6 +391,7 @@ function Map(name, opac, img, p, xoff, id){
 	this.gridMode = false; 
 	this.clickCount = 0; //count clicks for long distance edges in gridMode
 	this.delaunayOn = true;
+	this.trans = 1.0;
 	
 	//start with 4 nodes at corners
 	p.append(this.internalNodes, new Node(0,0));
@@ -432,7 +439,7 @@ function Map(name, opac, img, p, xoff, id){
 		p.strokeWeight(1);
     	for(var i=0; i < this.internalNodes.length; i++){
     		p.ellipse(this.internalNodes[i].xpos,this.internalNodes[i].ypos, 10, 10);
-    		p.text(i,this.internalNodes[i].xpos,this.internalNodes[i].ypos);
+    		//p.text(i,this.internalNodes[i].xpos,this.internalNodes[i].ypos);
     	} 
     	//display edges
     	p.strokeWeight(2);
@@ -896,7 +903,7 @@ function plotTriangles(coords, trias, focus){
 
 	material.setValues({wireframe:wireframeOn});
 	material.transparent = true;
-	material.opacity = trans;
+	material.opacity = maps[focus].trans;
 	if(trias.length > 1){
 		for(var i = 0; i < trias.length; i+=3){
 		
@@ -1038,6 +1045,22 @@ function updateData(p){
   	}
 }
 
+function reCalc(p){
+	if(mode == 0){
+			maps[mapFocus].addNode(p.mouseX, p.mouseY, p);
+			//console.log(p.mouseX + " " + p.mouseY);
+		} 
+		if(worm){
+			maps[mapFocus].reCalculateW();
+			combineMatrix(p,0,1);
+			resetThree();	
+			plotTriangles(maps[0].mdsMatrix, maps[0].trias, 0);
+			plotTriangles(maps[1].mdsMatrix, maps[1].trias, 1);
+		} else {
+			maps[mapFocus].reCalculate();
+		}	
+}
+
 function mode0(){
 	mode = 0;
 	console.log('mode = 0');
@@ -1085,13 +1108,13 @@ function delaunay(){
 	}
 }
 
-function transToggle(){
+/*function transToggle(){
 	if(trans == 1.0){
 		trans = 0.75;
 	} else {
 		trans = 1.0;
 	}
-}			
+}*/			
 
 function rotateMode(){
 	if(autoRotate){
@@ -1126,6 +1149,16 @@ function dimensionChange(){
 		dim = 3;
 	}
 }	
+
+function transOne(pp){
+	maps[0].trans = tSlider1.value()/100;
+	reCalc(pp);
+}
+
+function transTwo(pp){
+	maps[1].trans = tSlider2.value()/100;
+	reCalc(pp);
+}
 	
 //from http://www.benfrederickson.com/multidimensional-scaling/
 function mdsCoords(distances, dimensions) {
