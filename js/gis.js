@@ -16,11 +16,13 @@ var buttonMapFocus;
 var buttonDelaunay; 
 var buttonCombine;
 var buttonTrans;
+var buttonDim;
 var nNodeSelect;
 var gridWSelect;
 var gridHSelect;
 var gridW = 4;
 var gridH = 4;
+var dim = 3;
 var mode = 0; //mode 0 = edit nodes, 1 = edit distances
 var imageOn = true;
 var rt = 0; //rotate variable
@@ -93,6 +95,10 @@ var l = function(p){
 	  gridHSelect.option(9);
 	  gridHSelect.option(10);
 	  gridHSelect.changed(gridHChange);
+	  
+	  buttonDim = p.createButton('2D/3D');
+	  buttonDim.position(1020,180);
+	  buttonDim.mousePressed(dimensionChange);
 	  
 	  /*buttonTestNodes = p.createButton('test nodes (100,100), (350,100)');
 	  buttonTestNodes.position(1020,200);
@@ -303,8 +309,8 @@ var l = function(p){
                 0.1,            // Near plane
                 100000           // Far plane
             );	
-    	camera.position.set( 400, 500, -200 );
-    	camera.up = new THREE.Vector3(0,1,0	);
+    	camera.position.set( 0, 0, 500 );
+    	camera.up = new THREE.Vector3(0,0,1);
     	camera.lookAt( new THREE.Vector3(0,0,0));       
 	 	scene.add(camera);
 	 	
@@ -349,7 +355,7 @@ var l = function(p){
 						var slice = slices[ i ];
 
 						slice.rotation.x += 0.01;
-						//slice.rotation.z += -0.01;
+						slice.rotation.z += -0.01;
 						//console.log(slice.rotation.z);
 						//slice.x += .00001;
 					}
@@ -778,7 +784,7 @@ function makeMatrix(p, focus){
 	*/		
 	
 	//calculate MDS
-	var mdsArray = mdsCoords(shortestDists,3); 
+	var mdsArray = mdsCoords(shortestDists,dim); 
 	console.log(mdsArray);
     //delaunay triangulation from https://github.com/ironwallaby/delaunay
    
@@ -864,7 +870,7 @@ function combineMatrix(p, focus1, focus2){
 		console.log(entries);
 	}*/
 	
-	var mdsArray = mdsCoords(shortestDists,3); 
+	var mdsArray = mdsCoords(shortestDists,dim); 
 	//console.log(mdsArray);
 	
 	//separate mdsArray to return to respective map objects
@@ -943,8 +949,8 @@ function plotTriangles(coords, trias, focus){
 			geo.computeFaceNormals();
 			geo.computeVertexNormals();
 			var triangle = new THREE.Mesh(geo, material);
-			triangle.rotation.x = 1.0;
-			triangle.rotation.z = -1.0;
+			triangle.rotation.x = 0;
+			triangle.rotation.z = 0;
 			
 			scene.add(triangle);
 			slices.push(triangle);	
@@ -1112,6 +1118,14 @@ function gridHChange(){
 	gridW = h;
 	console.log(gridH);
 }
+
+function dimensionChange(){
+	if(dim == 3){
+		dim = 2;
+	} else {
+		dim = 3;
+	}
+}	
 	
 //from http://www.benfrederickson.com/multidimensional-scaling/
 function mdsCoords(distances, dimensions) {
