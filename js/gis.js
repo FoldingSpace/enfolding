@@ -235,7 +235,7 @@ var l = function(p){
 		for(var i = allInputs.length-1; i >= 0; i--){
 			allInputs[i].remove();	
 		}
-		maps[mapFocus].reset(p);
+		//maps[mapFocus].reset(p);
 		maps[mapFocus].grid2(p);
 		gridMode = true; 
 	}
@@ -303,7 +303,8 @@ var l = function(p){
                 0.1,            // Near plane
                 100000           // Far plane
             );	
-    	camera.position.set( 0, 1000, -1000 );
+    	camera.position.set( 400, 500, -200 );
+    	camera.up = new THREE.Vector3(0,1,0	);
     	camera.lookAt( new THREE.Vector3(0,0,0));       
 	 	scene.add(camera);
 	 	
@@ -312,23 +313,27 @@ var l = function(p){
 			//console.log(div);
 			div.appendChild(renderer.domElement);
 			controls = new THREE.OrbitControls(camera, renderer.domElement);
-			//scene.add( new THREE.AmbientLight( Math.random() * 0x202020 ) );
-			//scene.add( new THREE.AmbientLight( 0xFFFFFF ) );
+						
+			scene.add( new THREE.AmbientLight( 0xC0C0C0 ) );
 			
-			var dLight = new THREE.DirectionalLight(0xFFFFFF, 0.5);
-  			dLight.position.set(0,5,-5);
+			var dLight = new THREE.DirectionalLight(0xFFFFFF, 0.2);
+  			dLight.position.set(5,5,-5);
   			scene.add(dLight);
   			
   			var dLight2 = new THREE.DirectionalLight(0xFFFFFF, 0.5);
-  			dLight2.position.set(0,-5,-5);
-  			scene.add(dLight2);
+  			dLight2.position.set(0,5,-5);
+  			//scene.add(dLight2);
   			
-  			var dLight2 = new THREE.DirectionalLight(0xFFFFFF, 0.3);
-  			dLight2.position.set(0,0,5);
-  			scene.add(dLight2);
+  			var dLight3 = new THREE.DirectionalLight(0xFFFFFF, 0.5);
+  			dLight3.position.set(0,0,5);
+  			//scene.add(dLight3);
+  			
+  			var dLight4 = new THREE.DirectionalLight(0xFFFFFF, 0.2);
+  			dLight4.position.set(5,-5,5);
+  			scene.add(dLight4);
   			
   			var light = new THREE.AmbientLight( 0x404040 ); // soft white light
-			scene.add( light );
+			//scene.add( light );
   			
 			renderer.setClearColor(0xdffffff, 1);
   			
@@ -344,17 +349,16 @@ var l = function(p){
 						var slice = slices[ i ];
 
 						slice.rotation.x += 0.01;
-						slice.rotation.z += -0.01;
+						//slice.rotation.z += -0.01;
 						//console.log(slice.rotation.z);
 						//slice.x += .00001;
 					}
 				}
 				
 				renderer.render(scene, camera);
-				
+	
 				
 			};
-
 			render();
 	  
 	};
@@ -614,7 +618,7 @@ function Map(name, opac, img, p, xoff, id){
 		console.log(n + ' ' + m);
 		for(var i = 0; i <= m; i++){ //height
 			for(var j = 0; j <=n; j++){ //width
-				p.append(this.internalNodes, new Node(j*img.width/n,i*img.height/m));
+				p.append(this.internalNodes, new Node(j*this.img.width/n,i*this.img.height/m));
 				//console.log('j' + j + 'i' + i);
 				if(j > 0 ){ //draw horizontal lines to previous node	&& i > 0 && i < gridH
 					p.append(this.internalEdges,new Edge(nodeCount-1,nodeCount,
@@ -755,7 +759,8 @@ function makeMatrix(p, focus){
 		}
 		//populate vertices array for Delaunay
 		vertices[y] = [nodes[y].xpos, nodes[y].ypos];
-	}		
+	}
+			
 	//console.log(matrix);
 	
 	//calculate Infinity entries with Floyd Warshall algo
@@ -774,7 +779,7 @@ function makeMatrix(p, focus){
 	
 	//calculate MDS
 	var mdsArray = mdsCoords(shortestDists,3); 
-	//console.log(mdsArray);
+	console.log(mdsArray);
     //delaunay triangulation from https://github.com/ironwallaby/delaunay
    
     triangles = Delaunay.triangulate(vertices);
@@ -792,17 +797,20 @@ function combineMatrix(p, focus1, focus2){
 	//from http://stackoverflow.com/questions/6495187/best-way-to-generate-empty-2d-array
 	var matrix = (function(matrix){ while(matrix.push([]) < (nodes1.length + nodes2.length)); return matrix})([]);
 	
+	
 	//populate empty matrix from edge info
 	for(var i = 0; i < edges1.length; i++){
 		var x = edges1[i].node1;
 		var y = edges1[i].node2;
 		var dis = parseFloat(edges1[i].distanceMod);
-		//console.log(x + ' ' + y + ' ' + dis);
+		console.log(x + ' ' + y + ' ' + dis);
 		//distances are equal in both directions
 		//populates both spots n matrix by switching x/y
 		matrix[x][y] = dis;
 		matrix[y][x] = dis;
 	}
+	
+	
 	
 	//add second image matrix
 	for(var i = 0; i < edges2.length; i++){
@@ -816,6 +824,8 @@ function combineMatrix(p, focus1, focus2){
 		matrix[y][x] = dis;
 	} 
 	
+	
+		
 	//connection for testing (last two nodes on each connected
 	matrix[nodes1.length-1][nodes1.length+nodes2.length-1] = 50;
 	matrix[nodes1.length+nodes2.length-1][nodes1.length-1] = 50;
@@ -831,8 +841,8 @@ function combineMatrix(p, focus1, focus2){
 				matrix[x][y] = 'Infinity';
 			}
 		}
-	}		
-	
+	}	
+		
 	var shortestDists = floydWarshall(matrix);
 	//uncomment to print floyd warshall matrix to console
 	/*
@@ -840,6 +850,16 @@ function combineMatrix(p, focus1, focus2){
 		var entries = [];
 		for(var j = 0; j<shortestDists[i].length;j++){
 			entries.push(shortestDists[i][j]);
+		}
+		console.log(entries);
+	}*/
+	
+	//uncomment to print matrix
+	/*
+	for(var i = 0; i < matrix.length; i++){
+		var entries = [];
+		for(var j = 0; j<matrix[i].length;j++){
+			entries.push(matrix[i][j]);
 		}
 		console.log(entries);
 	}*/
