@@ -736,9 +736,9 @@ function makeInput(edge, nodes, n, xOff, yOff,p, nm){
 	
     input.position(x1+(x2-x1)/2, y1+(y2-y1)/2);
     input.value(p.int(edge.distance));
-    input.id(n); //adds id that refers to edge
+    input.id(nm + "_" + n); //adds id that refers to edge
     input.class(nm); //uses image name for class for deletion later
-    input.attribute("onkeydown", "keypress(event, " + n + ")");
+    input.attribute("onkeydown", "keypress(event, " + "'" + nm + "_" + n + "')");
 }
 
 //returns distance btw node and x,y
@@ -879,25 +879,25 @@ function combineMatrix(p, focus1, focus2){
 	}	
 	
 	//uncomment to print matrix
-	
+	/*
 	for(var i = 0; i < matrix.length; i++){
 		var entries = [];
 		for(var j = 0; j<matrix[i].length;j++){
 			entries.push(matrix[i][j]);
 		}
 		console.log(entries);
-	}
+	}*/
 		
 	var shortestDists = floydWarshall(matrix);
 	//uncomment to print floyd warshall matrix to console
-	
+	/*
 	for(var i = 0; i < shortestDists.length; i++){
 		var entries = [];
 		for(var j = 0; j<shortestDists[i].length;j++){
 			entries.push(shortestDists[i][j]);
 		}
 		console.log(entries);
-	}
+	}*/
 	
 	var mdsArray = mdsCoords(shortestDists,dim); 
 	//console.log(mdsArray);
@@ -1039,11 +1039,14 @@ function displayGraphs(p){
 	function keypress(event, id){
 		var key = event.keyCode;
 		if (key == 13){ //trigger for enter key
+			console.log(id);
 			var inputFocus = document.getElementById(id);
 			var inVal = inputFocus.value; 
-			maps[mapFocus].internalEdges[id].distanceMod = inVal;
+			var idNum = id.split("_");
+			//console.log(idNum[1]);
+			maps[mapFocus].internalEdges[idNum[1]].distanceMod = inVal;
 			console.log(inVal); 
-			inputFocus.value = inVal + '/' + parseInt(maps[mapFocus].internalEdges[id].distance);
+			inputFocus.value = inVal + '/' + parseInt(maps[mapFocus].internalEdges[idNum[1]].distance);
 			maps[mapFocus].reCalculate();
 			}
 }
