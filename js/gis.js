@@ -17,6 +17,8 @@ var buttonDelaunay;
 var buttonCombine;
 //var buttonTrans;
 var buttonDim;
+var buttonBind;
+var bindTwo = false;
 var tSlider1, tSlider2;
 var nNodeSelect;
 var gridWSelect;
@@ -162,6 +164,12 @@ var l = function(p){
 	  buttonCombine.position(1020,200);
 	  buttonCombine.mousePressed(wormMode);
 	  
+	  buttonBind = p.createButton('bind two maps together');
+	  buttonBind.position(1120,200);
+	  buttonBind.mousePressed(bindMaps);
+	  var bB = p.createDiv('false').id('bBound');
+	  bB.position(1120,220);
+	  
 	  buttonMapFocus = p.createButton('change map focus');
 	  buttonMapFocus.position(1020,300);
 	  buttonMapFocus.mousePressed(p.changeFocus);
@@ -191,7 +199,7 @@ var l = function(p){
 			offX = maps[mapFocus].img.width + 50; 
 		} 	
 		p.append(maps,new Map(file.name,1,p.createImg(file.data).hide(),p, offX, maps.length));
-		console.log(maps.length);
+		//console.log(maps.length);
 		mapFocus = maps.length - 1; //change focus to last uploaded map
 		//array mapImages holds map images for three.js access
 		//images also added to Map objects
@@ -199,7 +207,7 @@ var l = function(p){
 		//currently unable to access img file from Map class for three.js, possible because
 		//stored as a p5 filetype (using file.data might fix)
 		mapImages.push(file.data);
-		console.log('map focus: ' + mapFocus);
+		//console.log('map focus: ' + mapFocus);
 		maps[mapFocus].reCalculate();
 	  } else {
 		console.log('Not an image file!');
@@ -216,7 +224,7 @@ var l = function(p){
 	p.resetMap = function(){
 		//find and delete all input DOM elements with class name of map's image
 		var allInputs = document.getElementsByClassName(maps[mapFocus].name);
-		console.log(allInputs);
+		//console.log(allInputs);
 		for(var i = allInputs.length-1; i >= 0; i--){
 			allInputs[i].remove();	
 		}
@@ -227,7 +235,7 @@ var l = function(p){
 	
 	p.hideIns = function(){
 		var allInputs = document.getElementsByClassName(maps[mapFocus].name);
-		console.log(allInputs);
+		//console.log(allInputs);
 		for(var i = allInputs.length-1; i >= 0; i--){
 			allInputs[i].remove();	
 		}
@@ -236,7 +244,7 @@ var l = function(p){
 	p.gridMode = function(){
 		//find and delete all input DOM elements with class name of map's image
 		var allInputs = document.getElementsByClassName(maps[mapFocus].name);
-		console.log(allInputs);
+		//console.log(allInputs);
 		for(var i = allInputs.length-1; i >= 0; i--){
 			allInputs[i].remove();	
 		}
@@ -247,7 +255,7 @@ var l = function(p){
 	p.gridMode2 = function(){
 		//find and delete all input DOM elements with class name of map's image
 		var allInputs = document.getElementsByClassName(maps[mapFocus].name);
-		console.log(allInputs);
+		//console.log(allInputs);
 		for(var i = allInputs.length-1; i >= 0; i--){
 			allInputs[i].remove();	
 		}
@@ -628,7 +636,7 @@ function Map(name, opac, img, p, xoff, id){
 		var nodeCount = 0;
 		var n = gridW;
 		var m = gridH;
-		console.log(n + ' ' + m);
+		//console.log(n + ' ' + m);
 		for(var i = 0; i <= m; i++){ //height
 			for(var j = 0; j <=n; j++){ //width
 				p.append(this.internalNodes, new Node(j*this.img.width/n,i*this.img.height/m));
@@ -792,7 +800,7 @@ function makeMatrix(p, focus){
 	
 	//calculate MDS
 	var mdsArray = mdsCoords(shortestDists,dim); 
-	console.log(mdsArray);
+	//console.log(mdsArray);
     //delaunay triangulation from https://github.com/ironwallaby/delaunay
    
     triangles = Delaunay.triangulate(vertices);
@@ -816,14 +824,12 @@ function combineMatrix(p, focus1, focus2){
 		var x = edges1[i].node1;
 		var y = edges1[i].node2;
 		var dis = parseFloat(edges1[i].distanceMod);
-		console.log(x + ' ' + y + ' ' + dis);
+		//console.log(x + ' ' + y + ' ' + dis);
 		//distances are equal in both directions
 		//populates both spots n matrix by switching x/y
 		matrix[x][y] = dis;
 		matrix[y][x] = dis;
 	}
-	
-	
 	
 	//add second image matrix
 	for(var i = 0; i < edges2.length; i++){
@@ -837,45 +843,61 @@ function combineMatrix(p, focus1, focus2){
 		matrix[y][x] = dis;
 	} 
 	
+	//binds all points in two maps to each other, if their grids are the same length
+	if(bindTwo){
+		if(nodes1.length == nodes2.length){
+			for(var i = 0; i < nodes1.length; i++){
+				var x = i; 
+				var y = i + nodes1.length; //offset to connect nodes across maps
+				matrix[x][y] = 200;
+				matrix[y][x] = 200;
+			}
+		} else {
+			bindTwo = false;
+			var div = document.getElementById('bBound');
+			div.innerHTML = bindTwo; 
+		}	
+		//connection for testing (last two nodes on each connected
+		matrix[nodes1.length-1][nodes1.length+nodes2.length-1] = 0;
+		matrix[nodes1.length+nodes2.length-1][nodes1.length-1] = 0;
+	} else {		
+		//connection for testing (last two nodes on each connected
+		matrix[nodes1.length-1][nodes1.length+nodes2.length-1] = 50;
+		matrix[nodes1.length+nodes2.length-1][nodes1.length-1] = 50;
 	
-		
-	//connection for testing (last two nodes on each connected
-	matrix[nodes1.length-1][nodes1.length+nodes2.length-1] = 50;
-	matrix[nodes1.length+nodes2.length-1][nodes1.length-1] = 50;
-	
-	matrix[nodes1.length-2][nodes1.length+nodes2.length-2] = 50;
-	matrix[nodes1.length+nodes2.length-2][nodes1.length-2] = 50;
+		matrix[nodes1.length-2][nodes1.length+nodes2.length-2] = 50;
+		matrix[nodes1.length+nodes2.length-2][nodes1.length-2] = 50;
+	}
 	
 	for(var y = 0; y < nodes1.length+nodes2.length; y++){
 		//cycle through all values replacing 'undefined' with 'Infinity'
-		//KLUDGE
 		for(var x = 0; x < nodes1.length+nodes2.length; x++){			
 			if(matrix[x][y] === undefined){
 				matrix[x][y] = 'Infinity';
 			}
 		}
 	}	
-		
-	var shortestDists = floydWarshall(matrix);
-	//uncomment to print floyd warshall matrix to console
-	/*
-	for(var i = 0; i < shortestDists.length; i++){
-		var entries = [];
-		for(var j = 0; j<shortestDists[i].length;j++){
-			entries.push(shortestDists[i][j]);
-		}
-		console.log(entries);
-	}*/
 	
 	//uncomment to print matrix
-	/*
+	
 	for(var i = 0; i < matrix.length; i++){
 		var entries = [];
 		for(var j = 0; j<matrix[i].length;j++){
 			entries.push(matrix[i][j]);
 		}
 		console.log(entries);
-	}*/
+	}
+		
+	var shortestDists = floydWarshall(matrix);
+	//uncomment to print floyd warshall matrix to console
+	
+	for(var i = 0; i < shortestDists.length; i++){
+		var entries = [];
+		for(var j = 0; j<shortestDists[i].length;j++){
+			entries.push(shortestDists[i][j]);
+		}
+		console.log(entries);
+	}
 	
 	var mdsArray = mdsCoords(shortestDists,dim); 
 	//console.log(mdsArray);
@@ -1149,6 +1171,16 @@ function dimensionChange(){
 		dim = 3;
 	}
 }	
+
+function bindMaps(){
+	if(bindTwo){
+		bindTwo = false;
+	} else {
+		bindTwo = true;
+	}
+	var div = document.getElementById('bBound');
+	div.innerHTML = bindTwo; 
+}		
 
 function transOne(pp){
 	maps[0].trans = tSlider1.value()/100;
