@@ -30,7 +30,7 @@ var mode = 0; //mode 0 = edit nodes, 1 = edit distances
 var imageOn = true;
 var rt = 0; //rotate variable
 var zoom = 1;
-var nNodes = 6;
+var nNodes = 4;
 //var trans = 1.0;
 var mapImages = [];
 var autoRotate = false;
@@ -908,8 +908,16 @@ function combineMatrix(p, focus1, focus2){
 	//separate mdsArray to return to respective map objects
 	var m1 = mdsArray.slice(0,nodes1.length); 
 	var m2 = mdsArray.slice(nodes1.length); 
+			
+	//adds 1 pixel to z-axis to offset maps in 2D mode
+	if(dim == 2){
+		for(var i = 0; i < m2.length; i++){
+			m2[i].push(1);
+		}
+	}
+	
 	console.log(m1);
-	console.log(m2);		
+	console.log(m2);
 	
 	maps[focus1].mdsMatrix = m1;
 	maps[focus2].mdsMatrix = m2;	
@@ -925,10 +933,10 @@ function resetThree(){
 
 function plotTriangles(coords, trias, focus){
 	var material = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture(mapImages[focus]), side: THREE.DoubleSide } );
-
 	material.setValues({wireframe:wireframeOn});
 	material.transparent = true;
 	material.opacity = maps[focus].trans;
+	//material.depthWrite = false;
 	if(trias.length > 1){
 		for(var i = 0; i < trias.length; i+=3){
 		
