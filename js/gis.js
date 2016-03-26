@@ -23,18 +23,21 @@ var tSlider1, tSlider2;
 var nNodeSelect;
 var gridWSelect;
 var gridHSelect;
-var gridW = 4;
-var gridH = 4;
+var gridW = 6;
+var gridH = 6;
 var dim = 3;
 var mode = 0; //mode 0 = edit nodes, 1 = edit distances
 var imageOn = true;
 var rt = 0; //rotate variable
 var zoom = 1;
-var nNodes = 4;
+var nNodes = 6;
 //var trans = 1.0;
 var mapImages = [];
 var autoRotate = false;
 var worm = false; 
+
+var canvaswidth = 1200;
+var canvasheight = 900;
 
 //BEGIN LEFT CANVAS
 //instance mode of p5.js https://github.com/processing/p5.js/wiki/p5.js-overview#instantiation--namespace
@@ -42,20 +45,20 @@ var l = function(p){
 
 	p.setup = function() {
 	  // create canvas
-	  var c = p.createCanvas(1000, 600);
+	  var c = p.createCanvas(canvaswidth, canvasheight);
 	  //p.colorMode('HSB',360,100,100,100)
 	  p.background(255,255,255,0);
 	  // Add an event for when a file is dropped onto the canvas
 	  c.drop(p.gotFile);
   
 	  buttonNodes = p.createButton('add nodes');
-	  buttonNodes.position(1020,5);
+	  buttonNodes.position(canvaswidth+20,5);
 	  buttonNodes.mousePressed(mode0); //must be a better way to do this
 	  
 	  var myDiv = p.createDiv('nearest nodes');
-	  myDiv.position(1070,25);
+	  myDiv.position(canvaswidth+70,25);
 	  nNodeSelect = p.createSelect();
-	  nNodeSelect.position(1020,25);
+	  nNodeSelect.position(canvaswidth+20,25);
 	  nNodeSelect.option(4);
 	  nNodeSelect.option(3);
 	  nNodeSelect.option(2);
@@ -70,9 +73,9 @@ var l = function(p){
 	  nNodeSelect.changed(nNodesChange);
 	  
 	  var gW = p.createDiv('rows');
-	  gW.position(1070,150);
+	  gW.position(canvaswidth+70,150);
 	  gridWSelect = p.createSelect();
-	  gridWSelect.position(1020,150);
+	  gridWSelect.position(canvaswidth+20,150);
 	  gridWSelect.option(4);
 	  gridWSelect.option(2);
 	  gridWSelect.option(3);
@@ -85,9 +88,9 @@ var l = function(p){
 	  gridWSelect.changed(gridWChange);
 	  
 	  var gW = p.createDiv('columns');
-	  gW.position(1070,130);
+	  gW.position(canvaswidth+70,130);
 	  gridHSelect = p.createSelect();
-	  gridHSelect.position(1020,130);
+	  gridHSelect.position(canvaswidth+20,130);
 	  gridHSelect.option(4);
 	  gridHSelect.option(2);
 	  gridHSelect.option(3);
@@ -100,16 +103,16 @@ var l = function(p){
 	  gridHSelect.changed(gridHChange);
 	  
 	  tSlider1 = p.createSlider(0,100,100);
-	  tSlider1.position(1020,400);
+	  tSlider1.position(canvaswidth+20,400);
 	  tSlider1.style('width', '100px');
 	  tSlider1.changed(p.trans1);
 	  tSlider2 = p.createSlider(0,100,100);
-	  tSlider2.position(1020,420);
+	  tSlider2.position(canvaswidth+20,420);
 	  tSlider2.style('width', '100px');
 	  tSlider2.changed(p.trans2);
 	  
 	  buttonDim = p.createButton('2D/3D');
-	  buttonDim.position(1020,180);
+	  buttonDim.position(canvaswidth+20,180);
 	  buttonDim.mousePressed(dimensionChange);
 	  
 	  /*buttonTestNodes = p.createButton('test nodes (100,100), (350,100)');
@@ -121,39 +124,39 @@ var l = function(p){
 	  buttonTestNodes.mousePressed(p.testNodes2);*/
 	  
 	  buttonDist = p.createButton('edit distances');
-	  buttonDist.position(1120,5);
+	  buttonDist.position(canvaswidth+120,5);
 	  buttonDist.mousePressed(mode1);
 	
 	  buttonToggleImg = p.createButton('toggle image');
-	  buttonToggleImg.position(1220,5);
+	  buttonToggleImg.position(canvaswidth+220,5);
 	  buttonToggleImg.mousePressed(p.imageTog);
 	  
 	  buttonWireframe = p.createButton('wireframe');
-	  buttonWireframe.position(1020,550);
+	  buttonWireframe.position(canvaswidth+20,550);
 	  buttonWireframe.mousePressed(wireFrameMode);
 	  
 	  buttonRotate = p.createButton('auto-rotate');
-	  buttonRotate.position(1020,570);
+	  buttonRotate.position(canvaswidth+20,570);
 	  buttonRotate.mousePressed(rotateMode);
 	  
 	  buttonReset = p.createButton('reset');
-	  buttonReset.position(1020,70);
+	  buttonReset.position(canvaswidth+20,70);
 	  buttonReset.mousePressed(p.resetMap);
 	  
 	  buttonGridMode = p.createButton('grid mode');
-	  buttonGridMode.position(1020,90);
+	  buttonGridMode.position(canvaswidth+20,90);
 	  buttonGridMode.mousePressed(p.gridMode);
 	  
 	  buttonGridMode2 = p.createButton('grid mode 2');
-	  buttonGridMode2.position(1120,90);
+	  buttonGridMode2.position(canvaswidth+120,90);
 	  buttonGridMode2.mousePressed(p.gridMode2);
 	  
 	  buttonHideInputs = p.createButton('hide input boxes');
-	  buttonHideInputs.position(1020,250);
+	  buttonHideInputs.position(canvaswidth+20,250);
 	  buttonHideInputs.mousePressed(p.hideIns);
 	  
 	  buttonDelaunay = p.createButton('delaunay on/off');
-	  buttonDelaunay.position(1020,270);
+	  buttonDelaunay.position(canvaswidth+20,270);
 	  buttonDelaunay.mousePressed(delaunay);
 	  
 	  /*buttonTrans = p.createButton('transparency on/off');
@@ -161,20 +164,20 @@ var l = function(p){
 	  buttonTrans.mousePressed(transToggle);*/
 	  
 	  buttonCombine = p.createButton('two map mode');
-	  buttonCombine.position(1020,200);
+	  buttonCombine.position(canvaswidth+20,200);
 	  buttonCombine.mousePressed(wormMode);
 	  
 	  buttonBind = p.createButton('bind two maps together');
-	  buttonBind.position(1120,200);
+	  buttonBind.position(canvaswidth+120,200);
 	  buttonBind.mousePressed(bindMaps);
 	  var bB = p.createDiv('false').id('bBound');
-	  bB.position(1120,220);
+	  bB.position(canvaswidth+120,220);
 	  
 	  buttonMapFocus = p.createButton('change map focus');
-	  buttonMapFocus.position(1020,300);
+	  buttonMapFocus.position(canvaswidth+20,300);
 	  buttonMapFocus.mousePressed(p.changeFocus);
 	  var mF = p.createDiv('map#1').id('mFocus');
-	  mF.position(1020,320);
+	  mF.position(canvaswidth+20,320);
 	  
 	  p.fill(0,0,0,100);
 	  p.noStroke();
@@ -849,8 +852,8 @@ function combineMatrix(p, focus1, focus2){
 			for(var i = 0; i < nodes1.length; i++){
 				var x = i; 
 				var y = i + nodes1.length; //offset to connect nodes across maps
-				matrix[x][y] = 200;
-				matrix[y][x] = 200;
+				matrix[x][y] = 180;
+				matrix[y][x] = 180;
 			}
 		} else {
 			bindTwo = false;
@@ -858,8 +861,8 @@ function combineMatrix(p, focus1, focus2){
 			div.innerHTML = bindTwo; 
 		}	
 		//connection for testing (last two nodes on each connected
-		matrix[nodes1.length-1][nodes1.length+nodes2.length-1] = 0;
-		matrix[nodes1.length+nodes2.length-1][nodes1.length-1] = 0;
+		matrix[nodes1.length-1][nodes1.length+nodes2.length-1] = 30;
+		matrix[nodes1.length+nodes2.length-1][nodes1.length-1] = 30;
 	} else {		
 		//connection for testing (last two nodes on each connected
 		matrix[nodes1.length-1][nodes1.length+nodes2.length-1] = 50;
