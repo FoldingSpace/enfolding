@@ -36,7 +36,7 @@ var nNodes = 4;
 var mapImages = [];
 var autoRotate = false;
 var worm = false; 
-var delaunayOn = true;
+var delaunayOn = false;
 var bindDist = 180;
 var connectDist = 50;
 
@@ -135,7 +135,7 @@ var l = function(p){
 	  buttonDelaunay = p.createButton('HIDE TRIANGLES');
 	  buttonDelaunay.position(canvaswidth+20,220);
 	  buttonDelaunay.mousePressed(delaunay);
-	  buttonDelaunay.style('background-color', '#FFF');
+	  buttonDelaunay.style('background-color', '#C3E4F6');
 	  
 	  buttonHideInputs = p.createButton('DELETE INPUT BOXES');
 	  buttonHideInputs.position(canvaswidth+20,240);
@@ -162,7 +162,7 @@ var l = function(p){
 	  buttonBind.mousePressed(bindMaps);
 	  buttonBind.style('background-color', '#FFF');
 	  
-	  var bDiv = p.createDiv('Change inter-map connection distance (0-300):');
+	  var bDiv = p.createDiv('Change lattice-to-lattice distance (0-300):');
 	  bDiv.position(canvaswidth+20,955);
 	  
 	  bSlider1 = p.createSlider(0,300,180);
@@ -170,7 +170,7 @@ var l = function(p){
 	  bSlider1.style('width', '150px');
 	  bSlider1.changed(p.bind1);
 	  
-	  var b2Div = p.createDiv('Change binding distance: (0-300)');
+	  var b2Div = p.createDiv('Change inter-map connection distance (0-300):');
 	  b2Div.position(canvaswidth+20,995);
 	  
 	  bSlider2 = p.createSlider(0,300,50);
@@ -495,11 +495,11 @@ function Map(name, opac, img, p, xoff, id){
 		p.stroke(0,0,0,150);
 		p.strokeWeight(1);
     	for(var i=0; i < this.internalNodes.length; i++){
-    		if((this.internalNodes.length-1 == i || this.internalNodes.length-2 == i) && !this.gridMode){
+    		/*if((this.internalNodes.length-1 == i || this.internalNodes.length-2 == i) && !this.gridMode){
     			p.stroke(255);
     			p.strokeWeight(3);
-    		}
-    		if(this.internalNodes.length-1 == i && this.gridMode){
+    		}*/
+    		if(this.internalNodes.length-1 == i){
     			p.stroke(255);
     			p.strokeWeight(3);
     		}
@@ -922,8 +922,8 @@ function combineMatrix(p, focus1, focus2){
 		matrix[nodes1.length-1][nodes1.length+nodes2.length-1] = connectDist;
 		matrix[nodes1.length+nodes2.length-1][nodes1.length-1] = connectDist;
 	
-		matrix[nodes1.length-2][nodes1.length+nodes2.length-2] = connectDist;
-		matrix[nodes1.length+nodes2.length-2][nodes1.length-2] = connectDist;
+		//matrix[nodes1.length-2][nodes1.length+nodes2.length-2] = connectDist;
+		//matrix[nodes1.length+nodes2.length-2][nodes1.length-2] = connectDist;
 	}
 	
 	for(var y = 0; y < nodes1.length+nodes2.length; y++){
