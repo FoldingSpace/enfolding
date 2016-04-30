@@ -20,6 +20,7 @@ var buttonDim;
 var buttonBind;
 var bindTwo = false;
 var tSlider1, tSlider2;
+var bSlider1, bSlider2;
 var nNodeSelect;
 var gridWSelect;
 var gridHSelect;
@@ -36,6 +37,8 @@ var mapImages = [];
 var autoRotate = false;
 var worm = false; 
 var delaunayOn = true;
+var bindDist = 180;
+var connectDist = 50;
 
 var canvaswidth = 1100;
 var canvasheight = 900;
@@ -159,20 +162,36 @@ var l = function(p){
 	  buttonBind.mousePressed(bindMaps);
 	  buttonBind.style('background-color', '#FFF');
 	  
+	  var bDiv = p.createDiv('Change inter-map connection distance (0-300):');
+	  bDiv.position(canvaswidth+20,955);
+	  
+	  bSlider1 = p.createSlider(0,300,180);
+	  bSlider1.position(canvaswidth+20,970);
+	  bSlider1.style('width', '150px');
+	  bSlider1.changed(p.bind1);
+	  
+	  var b2Div = p.createDiv('Change binding distance: (0-300)');
+	  b2Div.position(canvaswidth+20,995);
+	  
+	  bSlider2 = p.createSlider(0,300,50);
+	  bSlider2.position(canvaswidth+20,1010);
+	  bSlider2.style('width', '150px');
+	  bSlider2.changed(p.bind2);
+	  
 	  buttonRotate = p.createButton('auto-rotate');
-	  buttonRotate.position(canvaswidth+20,960);
+	  buttonRotate.position(canvaswidth+20,1060);
 	  buttonRotate.mousePressed(rotateMode);
 	  buttonRotate.style('background-color', '#FFF');
 	  
 	  var opDiv = p.createDiv('Change map opacity:');
-	  opDiv.position(canvaswidth+20,1000);
+	  opDiv.position(canvaswidth+20,1090);
 	  
-	  tSlider1 = p.createSlider(0,100,100);
-	  tSlider1.position(canvaswidth+20,1020);
+	  tSlider1 = p.createSlider(0,200,100);
+	  tSlider1.position(canvaswidth+20,1110);
 	  tSlider1.style('width', '150px');
 	  tSlider1.changed(p.trans1);
 	  tSlider2 = p.createSlider(0,100,100);
-	  tSlider2.position(canvaswidth+20,1040);
+	  tSlider2.position(canvaswidth+20,1130);
 	  tSlider2.style('width', '150px');
 	  tSlider2.changed(p.trans2);
 	  
@@ -302,6 +321,16 @@ var l = function(p){
 	
 	p.trans2 = function(){
 		transTwo(p);
+	}
+	
+	p.bind1 = function(){
+		bindDist = bSlider1.value();
+		reCalc(p);
+	}	
+	
+	p.bind2 = function(){
+		connectDist = bSlider2.value();
+		reCalc(p);
 	}
 	
 	p.keyPressed = function(){
@@ -466,6 +495,15 @@ function Map(name, opac, img, p, xoff, id){
 		p.stroke(0,0,0,150);
 		p.strokeWeight(1);
     	for(var i=0; i < this.internalNodes.length; i++){
+    		if((this.internalNodes.length-1 == i || this.internalNodes.length-2 == i) && !this.gridMode){
+    			p.stroke(255);
+    			p.strokeWeight(3);
+    		}
+    		if(this.internalNodes.length-1 == i && this.gridMode){
+    			p.stroke(255);
+    			p.strokeWeight(3);
+    		}
+    		
     		p.ellipse(this.internalNodes[i].xpos,this.internalNodes[i].ypos, 10, 10);
     		//p.text(i,this.internalNodes[i].xpos,this.internalNodes[i].ypos);
     	} 
@@ -869,23 +907,23 @@ function combineMatrix(p, focus1, focus2){
 			for(var i = 0; i < nodes1.length; i++){
 				var x = i; 
 				var y = i + nodes1.length; //offset to connect nodes across maps
-				matrix[x][y] = 180;
-				matrix[y][x] = 180;
+				matrix[x][y] = bindDist;
+				matrix[y][x] = bindDist;
 			}
 		} else {
 			bindTwo = false;
 			
 		}	
 		//connection for testing (last two nodes on each connected
-		matrix[nodes1.length-1][nodes1.length+nodes2.length-1] = 30;
-		matrix[nodes1.length+nodes2.length-1][nodes1.length-1] = 30;
+		matrix[nodes1.length-1][nodes1.length+nodes2.length-1] = connectDist;
+		matrix[nodes1.length+nodes2.length-1][nodes1.length-1] = connectDist;
 	} else {		
 		//connection for testing (last two nodes on each connected
-		matrix[nodes1.length-1][nodes1.length+nodes2.length-1] = 50;
-		matrix[nodes1.length+nodes2.length-1][nodes1.length-1] = 50;
+		matrix[nodes1.length-1][nodes1.length+nodes2.length-1] = connectDist;
+		matrix[nodes1.length+nodes2.length-1][nodes1.length-1] = connectDist;
 	
-		matrix[nodes1.length-2][nodes1.length+nodes2.length-2] = 50;
-		matrix[nodes1.length+nodes2.length-2][nodes1.length-2] = 50;
+		matrix[nodes1.length-2][nodes1.length+nodes2.length-2] = connectDist;
+		matrix[nodes1.length+nodes2.length-2][nodes1.length-2] = connectDist;
 	}
 	
 	for(var y = 0; y < nodes1.length+nodes2.length; y++){
@@ -1241,6 +1279,9 @@ function transTwo(pp){
 	maps[1].trans = tSlider2.value()/100;
 	reCalc(pp);
 }
+
+
+
 	
 //from http://www.benfrederickson.com/multidimensional-scaling/
 function mdsCoords(distances, dimensions) {
