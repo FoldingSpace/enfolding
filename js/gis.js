@@ -35,8 +35,9 @@ var nNodes = 4;
 var mapImages = [];
 var autoRotate = false;
 var worm = false; 
+var delaunayOn = true;
 
-var canvaswidth = 1200;
+var canvaswidth = 1100;
 var canvasheight = 900;
 
 //BEGIN LEFT CANVAS
@@ -51,14 +52,65 @@ var l = function(p){
 	  // Add an event for when a file is dropped onto the canvas
 	  c.drop(p.gotFile);
   
-	  buttonNodes = p.createButton('add nodes');
+	  /*buttonNodes = p.createButton('add nodes');
 	  buttonNodes.position(canvaswidth+20,5);
 	  buttonNodes.mousePressed(mode0); //must be a better way to do this
+	  */
 	  
-	  var myDiv = p.createDiv('nearest nodes');
-	  myDiv.position(canvaswidth+70,25);
+	  buttonReset = p.createButton('reset');
+	  buttonReset.position(canvaswidth+180,20);
+	  buttonReset.mousePressed(p.resetMap);
+	  
+	  buttonMapFocus = p.createButton('change map focus');
+	  buttonMapFocus.position(canvaswidth+20,60);
+	  buttonMapFocus.mousePressed(p.changeFocus);
+	  var mF = p.createDiv('map#1').id('mFocus');
+	  mF.position(canvaswidth+160,60);
+	  
+	  buttonGridMode2 = p.createButton('ADD GRID (SQUARE)');
+	  buttonGridMode2.position(canvaswidth+20,80);
+	  buttonGridMode2.mousePressed(p.gridMode2);
+	  
+	  buttonGridMode = p.createButton('ADD GRID (COMPLEX)');
+	  buttonGridMode.position(canvaswidth+20,100);
+	  buttonGridMode.mousePressed(p.gridMode);
+	  
+	  var gW = p.createDiv('rows');
+	  gW.position(canvaswidth+230,80);
+	  gridWSelect = p.createSelect();
+	  gridWSelect.position(canvaswidth+180,80);
+	  gridWSelect.option(4);
+	  gridWSelect.option(2);
+	  gridWSelect.option(3);
+	  gridWSelect.option(5);
+	  gridWSelect.option(6);
+	  gridWSelect.option(7);
+	  gridWSelect.option(8);
+	  gridWSelect.option(9);
+	  gridWSelect.option(10);
+	  gridWSelect.changed(gridWChange);
+	  
+	  var gW = p.createDiv('columns');
+	  gW.position(canvaswidth+230,100);
+	  gridHSelect = p.createSelect();
+	  gridHSelect.position(canvaswidth+180,100);
+	  gridHSelect.option(4);
+	  gridHSelect.option(2);
+	  gridHSelect.option(3);
+	  gridHSelect.option(5);
+	  gridHSelect.option(6);
+	  gridHSelect.option(7);
+	  gridHSelect.option(8);
+	  gridHSelect.option(9);
+	  gridHSelect.option(10);
+	  gridHSelect.changed(gridHChange);
+	  
+	  var nnDiv = p.createDiv('Double-click to add nodes, connect to:');
+	  nnDiv.position(canvaswidth+20,140);
+	  var nnDiv2 = p.createDiv('nearest nodes');
+	  nnDiv2.position(canvaswidth+80,160);
 	  nNodeSelect = p.createSelect();
-	  nNodeSelect.position(canvaswidth+20,25);
+	  nNodeSelect.position(canvaswidth+20,155);
 	  nNodeSelect.option(4);
 	  nNodeSelect.option(3);
 	  nNodeSelect.option(2);
@@ -72,48 +124,59 @@ var l = function(p){
 	  nNodeSelect.option(5);
 	  nNodeSelect.changed(nNodesChange);
 	  
-	  var gW = p.createDiv('rows');
-	  gW.position(canvaswidth+70,150);
-	  gridWSelect = p.createSelect();
-	  gridWSelect.position(canvaswidth+20,150);
-	  gridWSelect.option(4);
-	  gridWSelect.option(2);
-	  gridWSelect.option(3);
-	  gridWSelect.option(5);
-	  gridWSelect.option(6);
-	  gridWSelect.option(7);
-	  gridWSelect.option(8);
-	  gridWSelect.option(9);
-	  gridWSelect.option(10);
-	  gridWSelect.changed(gridWChange);
+	  buttonToggleImg = p.createButton('HIDE MAPS');
+	  buttonToggleImg.position(canvaswidth+20,200);
+	  buttonToggleImg.mousePressed(p.imageTog);
+	  buttonToggleImg.style('background-color', '#FFF');
 	  
-	  var gW = p.createDiv('columns');
-	  gW.position(canvaswidth+70,130);
-	  gridHSelect = p.createSelect();
-	  gridHSelect.position(canvaswidth+20,130);
-	  gridHSelect.option(4);
-	  gridHSelect.option(2);
-	  gridHSelect.option(3);
-	  gridHSelect.option(5);
-	  gridHSelect.option(6);
-	  gridHSelect.option(7);
-	  gridHSelect.option(8);
-	  gridHSelect.option(9);
-	  gridHSelect.option(10);
-	  gridHSelect.changed(gridHChange);
+	  buttonDelaunay = p.createButton('HIDE TRIANGLES');
+	  buttonDelaunay.position(canvaswidth+20,220);
+	  buttonDelaunay.mousePressed(delaunay);
+	  buttonDelaunay.style('background-color', '#FFF');
+	  
+	  buttonHideInputs = p.createButton('DELETE INPUT BOXES');
+	  buttonHideInputs.position(canvaswidth+20,240);
+	  buttonHideInputs.mousePressed(p.hideIns);
+	  buttonHideInputs.style('background-color', '#FFF');
+	  
+	  buttonDim = p.createButton('2D');
+	  buttonDim.position(canvaswidth+20,900);
+	  buttonDim.mousePressed(dimensionChange);
+	  buttonDim.style('background-color', '#FFF');
+	  
+	  buttonWireframe = p.createButton('wireframe');
+	  buttonWireframe.position(canvaswidth+120,900);
+	  buttonWireframe.mousePressed(wireFrameMode);
+	  buttonWireframe.style('background-color', '#FFF');
+	  
+	  buttonCombine = p.createButton('two map mode');
+	  buttonCombine.position(canvaswidth+20,920);
+	  buttonCombine.mousePressed(wormMode);
+	  buttonCombine.style('background-color', '#FFF');
+	  
+	  buttonBind = p.createButton('bind two maps together');
+	  buttonBind.position(canvaswidth+120,920);
+	  buttonBind.mousePressed(bindMaps);
+	  buttonBind.style('background-color', '#FFF');
+	  
+	  buttonRotate = p.createButton('auto-rotate');
+	  buttonRotate.position(canvaswidth+20,960);
+	  buttonRotate.mousePressed(rotateMode);
+	  buttonRotate.style('background-color', '#FFF');
+	  
+	  var opDiv = p.createDiv('Change map opacity:');
+	  opDiv.position(canvaswidth+20,1000);
 	  
 	  tSlider1 = p.createSlider(0,100,100);
-	  tSlider1.position(canvaswidth+20,400);
-	  tSlider1.style('width', '100px');
+	  tSlider1.position(canvaswidth+20,1020);
+	  tSlider1.style('width', '150px');
 	  tSlider1.changed(p.trans1);
 	  tSlider2 = p.createSlider(0,100,100);
-	  tSlider2.position(canvaswidth+20,420);
-	  tSlider2.style('width', '100px');
+	  tSlider2.position(canvaswidth+20,1040);
+	  tSlider2.style('width', '150px');
 	  tSlider2.changed(p.trans2);
 	  
-	  buttonDim = p.createButton('2D/3D');
-	  buttonDim.position(canvaswidth+20,180);
-	  buttonDim.mousePressed(dimensionChange);
+	 
 	  
 	  /*buttonTestNodes = p.createButton('test nodes (100,100), (350,100)');
 	  buttonTestNodes.position(1020,200);
@@ -123,61 +186,14 @@ var l = function(p){
 	  buttonTestNodes.position(1020,220);
 	  buttonTestNodes.mousePressed(p.testNodes2);*/
 	  
-	  buttonDist = p.createButton('edit distances');
+	  /*buttonDist = p.createButton('edit distances');
 	  buttonDist.position(canvaswidth+120,5);
 	  buttonDist.mousePressed(mode1);
-	
-	  buttonToggleImg = p.createButton('toggle image');
-	  buttonToggleImg.position(canvaswidth+220,5);
-	  buttonToggleImg.mousePressed(p.imageTog);
-	  
-	  buttonWireframe = p.createButton('wireframe');
-	  buttonWireframe.position(canvaswidth+20,550);
-	  buttonWireframe.mousePressed(wireFrameMode);
-	  
-	  buttonRotate = p.createButton('auto-rotate');
-	  buttonRotate.position(canvaswidth+20,570);
-	  buttonRotate.mousePressed(rotateMode);
-	  
-	  buttonReset = p.createButton('reset');
-	  buttonReset.position(canvaswidth+20,70);
-	  buttonReset.mousePressed(p.resetMap);
-	  
-	  buttonGridMode = p.createButton('grid mode');
-	  buttonGridMode.position(canvaswidth+20,90);
-	  buttonGridMode.mousePressed(p.gridMode);
-	  
-	  buttonGridMode2 = p.createButton('grid mode 2');
-	  buttonGridMode2.position(canvaswidth+120,90);
-	  buttonGridMode2.mousePressed(p.gridMode2);
-	  
-	  buttonHideInputs = p.createButton('hide input boxes');
-	  buttonHideInputs.position(canvaswidth+20,250);
-	  buttonHideInputs.mousePressed(p.hideIns);
-	  
-	  buttonDelaunay = p.createButton('delaunay on/off');
-	  buttonDelaunay.position(canvaswidth+20,270);
-	  buttonDelaunay.mousePressed(delaunay);
+	  */
 	  
 	  /*buttonTrans = p.createButton('transparency on/off');
 	  buttonTrans.position(1150,200);
 	  buttonTrans.mousePressed(transToggle);*/
-	  
-	  buttonCombine = p.createButton('two map mode');
-	  buttonCombine.position(canvaswidth+20,200);
-	  buttonCombine.mousePressed(wormMode);
-	  
-	  buttonBind = p.createButton('bind two maps together');
-	  buttonBind.position(canvaswidth+120,200);
-	  buttonBind.mousePressed(bindMaps);
-	  var bB = p.createDiv('false').id('bBound');
-	  bB.position(canvaswidth+120,220);
-	  
-	  buttonMapFocus = p.createButton('change map focus');
-	  buttonMapFocus.position(canvaswidth+20,300);
-	  buttonMapFocus.mousePressed(p.changeFocus);
-	  var mF = p.createDiv('map#1').id('mFocus');
-	  mF.position(canvaswidth+20,320);
 	  
 	  p.fill(0,0,0,100);
 	  p.noStroke();
@@ -190,7 +206,7 @@ var l = function(p){
 
 
 	p.draw = function() {
-		
+
 	};
 	
 	p.gotFile = function(file) {
@@ -216,9 +232,9 @@ var l = function(p){
 		console.log('Not an image file!');
 	  }
 	  var div = document.getElementById('mFocus');
-		div.innerHTML = 'map#' + (mapFocus + 1); 
+		div.innerHTML = 'map#' + (mapFocus + 1); 	
 	};
-	
+
 	//calls outside function and passes 'p' instance
 	p.imageTog = function(){
 		imgToggle(p);
@@ -276,7 +292,8 @@ var l = function(p){
 	}
 		
 	p.mouseReleased = function(){
-		reCalc(p);
+		maps[mapFocus].reCalculate();
+		wormCalc(p);
 	};
 	
 	p.trans1 = function(){
@@ -401,7 +418,7 @@ function Map(name, opac, img, p, xoff, id){
 	this.mdsMatrix = [];
 	this.gridMode = false; 
 	this.clickCount = 0; //count clicks for long distance edges in gridMode
-	this.delaunayOn = true;
+	//this.delaunayOn = true;
 	this.trans = 1.0;
 	
 	//start with 4 nodes at corners
@@ -428,7 +445,7 @@ function Map(name, opac, img, p, xoff, id){
 		if(imageOn){
 			p.image(this.img,0,0,this.img.width,this.img.height);
 		}	
-		if(this.delaunayOn){
+		if(delaunayOn){
 			if(this.trias.length % 3 == 0){
 				for(var i = 0; i < this.trias.length; i+=3){
 					var x1 = this.internalNodes[this.trias[i]].xpos;
@@ -857,8 +874,7 @@ function combineMatrix(p, focus1, focus2){
 			}
 		} else {
 			bindTwo = false;
-			var div = document.getElementById('bBound');
-			div.innerHTML = bindTwo; 
+			
 		}	
 		//connection for testing (last two nodes on each connected
 		matrix[nodes1.length-1][nodes1.length+nodes2.length-1] = 30;
@@ -916,8 +932,8 @@ function combineMatrix(p, focus1, focus2){
 		}
 	}
 	
-	console.log(m1);
-	console.log(m2);
+	//console.log(m1);
+	//console.log(m2);
 	
 	maps[focus1].mdsMatrix = m1;
 	maps[focus2].mdsMatrix = m2;	
@@ -1050,17 +1066,22 @@ function displayGraphs(p){
 	function keypress(event, id){
 		var key = event.keyCode;
 		if (key == 13){ //trigger for enter key
-			console.log(id);
+			//console.log(id);
 			var inputFocus = document.getElementById(id);
 			var inVal = inputFocus.value; 
 			var idNum = id.split("_");
 			//console.log(idNum[1]);
 			maps[mapFocus].internalEdges[idNum[1]].distanceMod = inVal;
-			console.log(inVal); 
+			//console.log(inVal); 
 			inputFocus.value = inVal + '/' + parseInt(maps[mapFocus].internalEdges[idNum[1]].distance);
 			maps[mapFocus].reCalculate();
 			}
 }
+
+window.ondblclick=function(){
+	reCalc(myp5);
+	maps[mapFocus].reCalculate();
+}	
 
 
 
@@ -1086,15 +1107,17 @@ function reCalc(p){
 			maps[mapFocus].addNode(p.mouseX, p.mouseY, p);
 			//console.log(p.mouseX + " " + p.mouseY);
 		} 
-		if(worm){
+	wormCalc(p);	
+}
+
+function wormCalc(p){
+	if(worm){
 			maps[mapFocus].reCalculateW();
 			combineMatrix(p,0,1);
 			resetThree();	
 			plotTriangles(maps[0].mdsMatrix, maps[0].trias, 0);
 			plotTriangles(maps[1].mdsMatrix, maps[1].trias, 1);
-		} else {
-			maps[mapFocus].reCalculate();
-		}	
+		} 
 }
 
 function mode0(){
@@ -1110,8 +1133,10 @@ function mode1(){
 function imgToggle(p){
 	if(imageOn){
 		imageOn = false;
+		buttonToggleImg.style('background-color', '#C3E4F6');
 	} else {
 		imageOn = true;
+		buttonToggleImg.style('background-color', '#FFF');
 	}
 	displayMaps(p);
     	//displayGraphs();
@@ -1123,24 +1148,30 @@ function imgToggle(p){
 function wireFrameMode(){
 	if(wireframeOn){
 		wireframeOn = false;
+		buttonWireframe.style('background-color', '#FFF');
 	} else {
 		wireframeOn = true;
+		buttonWireframe.style('background-color', '#C3E4F6');
 	}
 }	
 
 function wormMode(){
 	if(worm){
 		worm = false; 
+		buttonCombine.style('background-color', '#FFF');
 	} else {
 		worm = true;
+		buttonCombine.style('background-color', '#C3E4F6');
 	}
 }		
 
 function delaunay(){
-	if(maps[mapFocus].delaunayOn){
-		maps[mapFocus].delaunayOn = false;
+	if(delaunayOn){
+		delaunayOn = false;
+		buttonDelaunay.style('background-color', '#C3E4F6');
 	} else {
-		maps[mapFocus].delaunayOn = true;
+		delaunayOn = true;
+		buttonDelaunay.style('background-color', '#FFF');
 	}
 }
 
@@ -1155,8 +1186,10 @@ function delaunay(){
 function rotateMode(){
 	if(autoRotate){
 		autoRotate = false;
+		buttonRotate.style('background-color', '#FFF');
 	} else {
 		autoRotate = true;
+		buttonRotate.style('background-color', '#C3E4F6');
 	}
 }	
 
@@ -1181,19 +1214,22 @@ function gridHChange(){
 function dimensionChange(){
 	if(dim == 3){
 		dim = 2;
+		buttonDim.style('background-color', '#C3E4F6');
 	} else {
 		dim = 3;
+		buttonDim.style('background-color', '#FFF');
 	}
 }	
 
 function bindMaps(){
 	if(bindTwo){
 		bindTwo = false;
+		buttonBind.style('background-color', '#FFF');
 	} else {
 		bindTwo = true;
+		buttonBind.style('background-color', '#C3E4F6');
 	}
-	var div = document.getElementById('bBound');
-	div.innerHTML = bindTwo; 
+	
 }		
 
 function transOne(pp){
