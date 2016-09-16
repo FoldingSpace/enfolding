@@ -15,6 +15,7 @@ var buttonHideInputs;
 var buttonMapFocus;
 var buttonDelaunay; 
 var buttonCombine;
+var buttonOutOBJ;
 //var buttonTrans;
 var buttonDim;
 var buttonBind;
@@ -194,6 +195,10 @@ var l = function(p){
 	  tSlider2.position(canvaswidth+20,1130);
 	  tSlider2.style('width', '150px');
 	  tSlider2.changed(p.trans2);
+	  
+	  buttonOutOBJ = p.createButton('Output OBJ');
+	  buttonOutOBJ.position(canvaswidth+20,1160);
+	  buttonOutOBJ.mousePressed(outOBJ);
 	  
 	 
 	  
@@ -536,7 +541,7 @@ function Map(name, opac, img, p, xoff, id){
 		var matrices = makeMatrix(p, this.id);
 		this.mdsMatrix = matrices[0];
 		this.trias = matrices[1];
-		plotTriangles(this.mdsMatrix, this.trias, this.id);
+		plotTriangles(this.mdsMatrix, this.trias, this.id, false);
 		displayMaps(p);
 		console.log("recalculate");
 	};
@@ -545,7 +550,7 @@ function Map(name, opac, img, p, xoff, id){
 		var matrices = makeMatrix(p, this.id);
 		this.trias = matrices[1];
 		displayMaps(p);
-	}
+	};
 	
 	//called when mouseReleased
 		this.addNode = function(mx,my,p){
@@ -985,12 +990,13 @@ function resetThree(){
 	slices = []; 
 }
 
-function plotTriangles(coords, trias, focus){
+function plotTriangles(coords, trias, focus, outputObj){
 	var material = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture(mapImages[focus]), side: THREE.DoubleSide } );
 	material.setValues({wireframe:wireframeOn});
 	material.transparent = true;
 	material.opacity = maps[focus].trans;
 	//material.depthWrite = false;
+
 	if(trias.length > 1){
 		for(var i = 0; i < trias.length; i+=3){
 		
@@ -1010,16 +1016,14 @@ function plotTriangles(coords, trias, focus){
 			var z3 = coords[trias[i+2]][2]/zoom;
 		
 			//console.log("[" + i + "]" + "(" + x1 + "," + y1 + "," + z1 + ") " + "(" + x2 + "," + y2 + "," + z3 + ") " + "(" + x3 + "," + y3 + "," + z3 +")");
-			var geo = new THREE.Geometry();
 			
+			var geo = new THREE.Geometry();
 			geo.vertices.push(
 				new THREE.Vector3( x1, y1, z1 ),
 				new THREE.Vector3( x2, y2, z2 ),
 				new THREE.Vector3( x3, y3, z3 )
 			);	
-			
-			
-			
+						
 			var uvs = [];
 			//subtract 1 on y-axis because flipped in p5.js --> three.js
 			var uv1x = maps[focus].internalNodes[trias[i]].xpos/w;
@@ -1056,7 +1060,8 @@ function plotTriangles(coords, trias, focus){
 		//var cube = new THREE.CubeGeometry(300,300,300);
   		//var mesh = new THREE.Mesh(cube,material);
   		//scene.add(mesh);	
-  	//maps[focus].trias = trias;	
+  		//maps[focus].trias = trias;	
+  			
 }
 
 			
@@ -1153,8 +1158,8 @@ function wormCalc(p){
 			maps[mapFocus].reCalculateW();
 			combineMatrix(p,0,1);
 			resetThree();	
-			plotTriangles(maps[0].mdsMatrix, maps[0].trias, 0);
-			plotTriangles(maps[1].mdsMatrix, maps[1].trias, 1);
+			plotTriangles(maps[0].mdsMatrix, maps[0].trias, 0, false);
+			plotTriangles(maps[1].mdsMatrix, maps[1].trias, 1, false);
 		} 
 }
 
@@ -1280,7 +1285,12 @@ function transTwo(pp){
 	reCalc(pp);
 }
 
-
+function outOBJ(){
+    var exporter = new THREE.OBJExporter();
+		//console.log(exporter.parse(scene));
+		var blob = new Blob([exporter.parse(scene)], {type: "text/plain;charset=utf-8"});
+		saveAs(blob, "mesh.obj");
+}
 
 	
 //from http://www.benfrederickson.com/multidimensional-scaling/
