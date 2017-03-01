@@ -186,7 +186,7 @@ var l = function(p){
 	  nnDiv2.parent(menuNodes);
 
 
-		var textCons = p.createSpan("<h3>Inter-map connections section</h3>");
+		var textCons = p.createSpan("<h3>Inter-map connections section </h3>");
 		textCons.parent(menuNodes);
 
 	//3D MAP CONTROLS
