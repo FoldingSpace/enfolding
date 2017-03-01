@@ -3,17 +3,17 @@ var mapFocus = 0; //number in array to focus
 var buttonNodes;
 var buttonDist;
 var buttonMatrix;
-var buttonToggleImg;
 var buttonWireframe;
 var buttonRotate;
 var buttonReset;
+var buttonToggleImg;
+var buttonDelaunay;
+var buttonHideInputs;
 var buttonGridMode;
 var buttonGridMode2;
 var buttonTestNodes;
 var buttonTestNodes2;
-var buttonHideInputs;
 var buttonMapFocus;
-var buttonDelaunay;
 var buttonCombine;
 var buttonOutOBJ;
 //var buttonTrans;
@@ -61,28 +61,82 @@ var l = function(p){
 	  buttonNodes.mousePressed(mode0); //must be a better way to do this
 	  */
 
-	  buttonReset = p.createButton('reset');
-	  buttonReset.position(canvaswidth+180,20);
+	//MENU - MAIN div
+		var menuMain = p.createDiv('');
+		menuMain.position(canvaswidth+15,10);
+		//menuMain.style("border","2px gray dashed");
+
+	//MENU - MAPS SECTION
+		var menuMaps = p.createDiv('');
+		menuMaps.parent(menuMain);
+		menuMaps.style("margin-bottom","40px");
+		var titleMaps = p.createSpan("<h3>MAPS</h3>");
+		titleMaps.parent(menuMaps);
+
+		var imgMaps = p.createElement('img');
+		imgMaps.attribute('src','images/maps.gif');
+		imgMaps.parent(menuMaps);
+		imgMaps.style("display","block");
+
+		buttonReset = p.createButton('reset (move this button)');
+	  buttonReset.parent(menuMaps);
+		buttonReset.style("display","block");
 	  buttonReset.mousePressed(p.resetMap);
+		buttonReset.style('background-color', '#FFF');
 
-	  buttonMapFocus = p.createButton('change map focus');
-	  buttonMapFocus.position(canvaswidth+20,60);
+		buttonToggleImg = p.createButton('TOGGLE MAPS');
+	  buttonToggleImg.parent(menuMaps);
+	  buttonToggleImg.mousePressed(p.imageTog);
+	  buttonToggleImg.style('background-color', '#FFF');
+
+	  buttonDelaunay = p.createButton('TOGGLE TRIANGLES');
+	  buttonDelaunay.parent(menuMaps);;
+	  buttonDelaunay.mousePressed(p.delTog);
+	  buttonDelaunay.style('background-color', '#C3E4F6');
+
+	  buttonHideInputs = p.createButton('DELETE INPUT BOXES');
+	  buttonHideInputs.parent(menuMaps);
+	  buttonHideInputs.mousePressed(p.hideIns);
+	  buttonHideInputs.style('background-color', '#FFF');
+
+		buttonMapFocus = p.createButton('change map focus (TEMPORARY BUTTON--replace w/clickable map icons)');
+	  buttonMapFocus.parent(menuMaps);
 	  buttonMapFocus.mousePressed(p.changeFocus);
+		buttonMapFocus.style('background-color', '#FFF');
+		buttonMapFocus.style("display","block");
 	  var mF = p.createDiv('map#1').id('mFocus');
-	  mF.position(canvaswidth+160,60);
+	  mF.parent(menuMaps);
 
-	  buttonGridMode2 = p.createButton('ADD GRID (SQUARE)');
-	  buttonGridMode2.position(canvaswidth+20,80);
-	  buttonGridMode2.mousePressed(p.gridMode2);
+	//MENU - GRIDS SECTION
+		var menuGrids = p.createDiv("");
+		menuGrids.parent(menuMain);
+		menuGrids.style("border-top","2px gray dashed");
+		menuGrids.style("margin-bottom","40px");
+		var titleMaps = p.createSpan("<h3>GRIDS</h3>");
+		titleMaps.parent(menuGrids);
+		var imgGrid = p.createElement('img');
+		imgGrid.attribute('src','images/grid.gif');
+		imgGrid.parent(menuGrids);
 
-	  buttonGridMode = p.createButton('ADD GRID (COMPLEX)');
-	  buttonGridMode.position(canvaswidth+20,100);
-	  buttonGridMode.mousePressed(p.gridMode);
 
-	  var gW = p.createDiv('rows');
-	  gW.position(canvaswidth+230,80);
+		gridHSelect = p.createSelect().id('gridCols');
+	  gridHSelect.parent(menuGrids);
+		gridHSelect.style("position","relative");
+		gridHSelect.style("top","-50px");
+		gridHSelect.style("left","0px");
+	  gridHSelect.option(1);
+	  gridHSelect.option(2);
+	  gridHSelect.option(3);
+	  gridHSelect.option(4);
+	  gridHSelect.option(5);
+	  gridHSelect.option(6);
+	  gridHSelect.option(7);
+	  gridHSelect.option(8);
+	  gridHSelect.option(9);
+	  gridHSelect.option(10);
+
 	  gridWSelect = p.createSelect().id('gridRows');
-	  gridWSelect.position(canvaswidth+180,80);
+	  gridWSelect.parent(menuGrids);
 	  gridWSelect.option(1);
 	  gridWSelect.option(2);
 	  gridWSelect.option(3);
@@ -93,28 +147,29 @@ var l = function(p){
 	  gridWSelect.option(8);
 	  gridWSelect.option(9);
 	  gridWSelect.option(10);
+		gridWSelect.style("display","block");
 
-	  var gW = p.createDiv('columns');
-	  gW.position(canvaswidth+230,100);
-	  gridHSelect = p.createSelect().id('gridCols');
-	  gridHSelect.position(canvaswidth+180,100);
-	  gridHSelect.option(1);
-	  gridHSelect.option(2);
-	  gridHSelect.option(3);
-		gridHSelect.option(4);
-	  gridHSelect.option(5);
-	  gridHSelect.option(6);
-	  gridHSelect.option(7);
-	  gridHSelect.option(8);
-	  gridHSelect.option(9);
-	  gridHSelect.option(10);
+		buttonGridMode2 = p.createButton('ADD GRID (SQUARE)');
+	  buttonGridMode2.parent(menuGrids);
+	  buttonGridMode2.mousePressed(p.gridMode2);
+		buttonGridMode2.style("display","block");
+
+	  buttonGridMode = p.createButton('ADD GRID (COMPLEX)');
+	  buttonGridMode.parent(menuGrids);
+	  buttonGridMode.mousePressed(p.gridMode);
+		buttonGridMode.style("display","block");
+
+	//MENU - NODES SECTION
+		var menuNodes = p.createDiv("");
+		menuNodes.parent(menuMain);
+		menuNodes.style("border-top","2px gray dashed");
+		var titleMaps = p.createSpan("<h3>NODES</h3>");
+		titleMaps.parent(menuNodes);
 
 	  var nnDiv = p.createDiv('Double-click to add nodes, connect to:');
-	  nnDiv.position(canvaswidth+20,140);
-	  var nnDiv2 = p.createDiv('nearest nodes');
-	  nnDiv2.position(canvaswidth+80,160);
-	  nNodeSelect = p.createSelect();
-	  nNodeSelect.position(canvaswidth+20,155);
+	  nnDiv.parent(menuNodes);
+		nNodeSelect = p.createSelect();
+	  nNodeSelect.parent(menuNodes);
 	  nNodeSelect.option(4);
 	  nNodeSelect.option(3);
 	  nNodeSelect.option(2);
@@ -127,40 +182,32 @@ var l = function(p){
 	  nNodeSelect.option(6);
 	  nNodeSelect.option(5);
 	  nNodeSelect.changed(nNodesChange);
+	  var nnDiv2 = p.createDiv('nearest nodes');
+	  nnDiv2.parent(menuNodes);
 
-	  buttonToggleImg = p.createButton('HIDE MAPS');
-	  buttonToggleImg.position(canvaswidth+20,200);
-	  buttonToggleImg.mousePressed(p.imageTog);
-	  buttonToggleImg.style('background-color', '#FFF');
 
-	  buttonDelaunay = p.createButton('HIDE TRIANGLES');
-	  buttonDelaunay.position(canvaswidth+20,220);
-	  buttonDelaunay.mousePressed(delaunay);
-	  buttonDelaunay.style('background-color', '#C3E4F6');
+		var textCons = p.createSpan("<h3>Inter-map connections section</h3>");
+		textCons.parent(menuNodes);
 
-	  buttonHideInputs = p.createButton('DELETE INPUT BOXES');
-	  buttonHideInputs.position(canvaswidth+20,240);
-	  buttonHideInputs.mousePressed(p.hideIns);
-	  buttonHideInputs.style('background-color', '#FFF');
-
+	//3D MAP CONTROLS
 	  buttonDim = p.createButton('2D');
 	  buttonDim.position(canvaswidth+20,900);
-	  buttonDim.mousePressed(dimensionChange);
+	  buttonDim.mousePressed(p.dimensionChangeTog);
 	  buttonDim.style('background-color', '#FFF');
 
 	  buttonWireframe = p.createButton('wireframe');
 	  buttonWireframe.position(canvaswidth+120,900);
-	  buttonWireframe.mousePressed(wireFrameMode);
+	  buttonWireframe.mousePressed(p.wireFrameModeTog);
 	  buttonWireframe.style('background-color', '#FFF');
 
 	  buttonCombine = p.createButton('two map mode');
 	  buttonCombine.position(canvaswidth+20,920);
-	  buttonCombine.mousePressed(wormMode);
+	  buttonCombine.mousePressed(p.wormModeTog);
 	  buttonCombine.style('background-color', '#FFF');
 
 	  buttonBind = p.createButton('bind two maps together');
 	  buttonBind.position(canvaswidth+120,920);
-	  buttonBind.mousePressed(bindMaps);
+	  buttonBind.mousePressed(p.bindMapsTog);
 	  buttonBind.style('background-color', '#FFF');
 
 	  var bDiv = p.createDiv('Change lattice-to-lattice distance (0-300):');
@@ -285,6 +332,7 @@ var l = function(p){
 	}
 
 	p.gridMode = function(){
+		p.resetMap();
 		//find and delete all input DOM elements with class name of map's image
 		var allInputs = document.getElementsByClassName(maps[mapFocus].name);
 		//console.log(allInputs);
@@ -293,9 +341,11 @@ var l = function(p){
 		}
 		maps[mapFocus].grid(p);
 		gridMode = true;
+		maps[mapFocus].reCalculate(p);
 	}
 
 	p.gridMode2 = function(){
+		p.resetMap();
 		//find and delete all input DOM elements with class name of map's image
 		var allInputs = document.getElementsByClassName(maps[mapFocus].name);
 		//console.log(allInputs);
@@ -305,6 +355,7 @@ var l = function(p){
 		//maps[mapFocus].reset(p);
 		maps[mapFocus].grid2(p);
 		gridMode = true;
+		maps[mapFocus].reCalculate(p);
 	}
 
 	p.testNodes = function(){
@@ -340,6 +391,36 @@ var l = function(p){
 
 	p.keyPressed = function(){
 
+	}
+
+	p.delTog = function(){
+		delaunay();
+		maps[mapFocus].reCalculate();
+		wormCalc(p);
+	}
+
+	p.wormModeTog = function(){
+		wormMode();
+		maps[mapFocus].reCalculate();
+		wormCalc(p);
+	}
+
+	p.dimensionChangeTog = function(){
+		dimensionChange();
+		maps[mapFocus].reCalculate();
+		wormCalc(p);
+	}
+
+	p.wireFrameModeTog = function(){
+		wireFrameMode();
+		maps[mapFocus].reCalculate();
+		wormCalc(p);
+	}
+
+	p.bindMapsTog = function(){
+		bindMaps();
+		maps[mapFocus].reCalculate();
+		wormCalc(p);
 	}
 
 	p.changeFocus = function(){
@@ -690,7 +771,7 @@ function Map(name, opac, img, p, xoff, id){
 		*/
 		nodeCount = 0;
 		this.gridMode = true;
-		this.reCalculate();
+		//this.reCalculate();
 	};
 
 	this.grid2 = function(p){
@@ -724,11 +805,9 @@ function Map(name, opac, img, p, xoff, id){
 				nodeCount++;
 			}
 		}
-		console.log(this.internalNodes);
-		console.log(this.internalEdges);
 		nodeCount = 0;
 		this.gridMode = true;
-		this.reCalculate();
+		//this.reCalculate();
 	};
 
 	//add two test nodes, connect with edge and custom distance
