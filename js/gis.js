@@ -40,6 +40,7 @@ var worm = false;
 var delaunayOn = false;
 var bindDist = 180;
 var connectDist = 20;
+var connectLastNodes = 6; //connect last n-nodes in two map mode
 
 var canvaswidth = 1100;
 var canvasheight = 900;
@@ -1006,12 +1007,20 @@ function combineMatrix(p, focus1, focus2){
 
 		}
 		//connection for testing (last two nodes on each connected
-		matrix[nodes1.length-1][nodes1.length+nodes2.length-1] = connectDist;
-		matrix[nodes1.length+nodes2.length-1][nodes1.length-1] = connectDist;
+		for(var i = 0; i < connectLastNodes; i++){
+			matrix[nodes1.length-1-i][nodes1.length+nodes2.length-1-i] = connectDist;
+			matrix[nodes1.length+nodes2.length-1-i][nodes1.length-1-i] = connectDist;
+		}
+		// matrix[nodes1.length-1][nodes1.length+nodes2.length-1] = connectDist;
+		// matrix[nodes1.length+nodes2.length-1][nodes1.length-1] = connectDist;
 	} else {
+		for(var i = 0; i < connectLastNodes; i++){
+			matrix[nodes1.length-1-i][nodes1.length+nodes2.length-1-i] = connectDist;
+			matrix[nodes1.length+nodes2.length-1-i][nodes1.length-1-i] = connectDist;
+		}
 		//connection for testing (last two nodes on each connected
-		matrix[nodes1.length-1][nodes1.length+nodes2.length-1] = connectDist;
-		matrix[nodes1.length+nodes2.length-1][nodes1.length-1] = connectDist;
+		// matrix[nodes1.length-1][nodes1.length+nodes2.length-1] = connectDist;
+		// matrix[nodes1.length+nodes2.length-1][nodes1.length-1] = connectDist;
 
 		//matrix[nodes1.length-2][nodes1.length+nodes2.length-2] = connectDist;
 		//matrix[nodes1.length+nodes2.length-2][nodes1.length-2] = connectDist;
