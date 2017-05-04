@@ -40,7 +40,7 @@ var worm = false;
 var delaunayOn = false;
 var bindDist = 180;
 var connectDist = 20;
-var connectLastNodes = 6; //connect last n-nodes in two map mode
+var connectLastNodes = 1; //connect last n-nodes in two map mode
 
 var canvaswidth = 1100;
 var canvasheight = 900;
@@ -74,12 +74,12 @@ var l = function(p){
 		var titleMaps = p.createSpan("<h3>MAPS</h3>");
 		titleMaps.parent(menuMaps);
 
-		var imgMaps = p.createElement('img');
-		imgMaps.attribute('src','images/maps.gif');
-		imgMaps.parent(menuMaps);
-		imgMaps.style("display","block");
+		// var imgMaps = p.createElement('img');
+		// imgMaps.attribute('src','images/maps.gif');
+		// imgMaps.parent(menuMaps);
+		// imgMaps.style("display","block");
 
-		buttonReset = p.createButton('reset (move this button)');
+		buttonReset = p.createButton('RESET');
 	  buttonReset.parent(menuMaps);
 		buttonReset.style("display","block");
 	  buttonReset.mousePressed(p.resetMap);
@@ -95,12 +95,7 @@ var l = function(p){
 	  buttonDelaunay.mousePressed(p.delTog);
 	  buttonDelaunay.style('background-color', '#C3E4F6');
 
-	  buttonHideInputs = p.createButton('DELETE INPUT BOXES');
-	  buttonHideInputs.parent(menuMaps);
-	  buttonHideInputs.mousePressed(p.hideIns);
-	  buttonHideInputs.style('background-color', '#FFF');
-
-		buttonMapFocus = p.createButton('change map focus (TEMPORARY BUTTON--replace w/clickable map icons)');
+		buttonMapFocus = p.createButton('CHANGE MAP FOCUS');
 	  buttonMapFocus.parent(menuMaps);
 	  buttonMapFocus.mousePressed(p.changeFocus);
 		buttonMapFocus.style('background-color', '#FFF');
@@ -155,10 +150,20 @@ var l = function(p){
 	  buttonGridMode2.mousePressed(p.gridMode2);
 		buttonGridMode2.style("display","block");
 
-	  buttonGridMode = p.createButton('ADD GRID (COMPLEX)');
-	  buttonGridMode.parent(menuGrids);
-	  buttonGridMode.mousePressed(p.gridMode);
-		buttonGridMode.style("display","block");
+		buttonInputs = p.createButton('ADD INPUT BOXES');
+		buttonInputs.parent(menuGrids);
+		buttonInputs.mousePressed(p.addAllInputs);
+		buttonInputs.style("display","block");
+
+		buttonHideInputs = p.createButton('DELETE INPUT BOXES');
+	  buttonHideInputs.parent(menuGrids);
+	  buttonHideInputs.mousePressed(p.hideIns);
+		buttonInputs.style("display","block");
+
+	  // buttonGridMode = p.createButton('ADD GRID (COMPLEX)');
+	  // buttonGridMode.parent(menuGrids);
+	  // buttonGridMode.mousePressed(p.gridMode);
+		// buttonGridMode.style("display","block");
 
 	//MENU - NODES SECTION
 		var menuNodes = p.createDiv("");
@@ -187,8 +192,22 @@ var l = function(p){
 	  nnDiv2.parent(menuNodes);
 
 
-		var textCons = p.createSpan("<h3>Inter-map connections section </h3>");
+		var textCons = p.createSpan("<h3>INTER-MAP CONNECTIONS (FOR TWO MAP MODE) </h3>");
 		textCons.parent(menuNodes);
+
+		var consDiv = p.createDiv('Connect last');
+	  consDiv.parent(menuNodes);
+		cNodeSelect = p.createSelect();
+	  cNodeSelect.parent(menuNodes);
+	  cNodeSelect.option(1);
+	  cNodeSelect.option(2);
+	  cNodeSelect.option(3);
+	  cNodeSelect.option(4);
+	  cNodeSelect.option(5);
+	  cNodeSelect.option(6);
+	  cNodeSelect.changed(cNodesChange);
+		var ccDiv2 = p.createDiv('nodes of each map');
+	  ccDiv2.parent(menuNodes);
 
 	//3D MAP CONTROLS
 	  buttonDim = p.createButton('2D');
@@ -434,6 +453,10 @@ var l = function(p){
 		maps[mapFocus].reCalculate();
 	}
 
+	p.addAllInputs = function(){
+		maps[mapFocus].addInputs();
+	}
+
 };
 //END LEFT CANVAS
 
@@ -633,6 +656,12 @@ function Map(name, opac, img, p, xoff, id){
 		this.trias = matrices[1];
 		displayMaps(p);
 	};
+
+	this.addInputs = function(){
+		for(var i = 0; i < this.internalEdges.length; i++){
+			makeInput(this.internalEdges[i], this.internalNodes, i, this.offSetX, this.offSetY,p, this.name);
+		}
+	}
 
 	//called when mouseReleased
 		this.addNode = function(mx,my,p){
@@ -1334,6 +1363,11 @@ function rotateMode(){
 function nNodesChange(){
 	var item = nNodeSelect.value();
 	nNodes = item;
+}
+
+function cNodesChange(){
+	var item = cNodeSelect.value();
+	connectLastNodes = item;
 }
 
 //these are backwards!
