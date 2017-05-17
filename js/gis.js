@@ -130,6 +130,16 @@ var l = function(p){
 	  gridHSelect.option(8);
 	  gridHSelect.option(9);
 	  gridHSelect.option(10);
+		gridHSelect.option(11);
+	  gridHSelect.option(12);
+	  gridHSelect.option(13);
+	  gridHSelect.option(14);
+	  gridHSelect.option(15);
+	  gridHSelect.option(16);
+		gridHSelect.option(17);
+	  gridHSelect.option(18);
+	  gridHSelect.option(19);
+	  gridHSelect.option(20);
 
 	  gridWSelect = p.createSelect().id('gridRows');
 	  gridWSelect.parent(menuGrids);
@@ -143,6 +153,16 @@ var l = function(p){
 	  gridWSelect.option(8);
 	  gridWSelect.option(9);
 	  gridWSelect.option(10);
+		gridWSelect.option(11);
+	  gridWSelect.option(12);
+	  gridWSelect.option(13);
+	  gridWSelect.option(14);
+	  gridWSelect.option(15);
+	  gridWSelect.option(16);
+		gridWSelect.option(17);
+	  gridWSelect.option(18);
+	  gridWSelect.option(19);
+	  gridWSelect.option(20);
 		gridWSelect.style("display","block");
 
 		buttonGridMode2 = p.createButton('ADD GRID (SQUARE)');
@@ -648,7 +668,7 @@ function Map(name, opac, img, p, xoff, id){
 		this.trias = matrices[1];
 		plotTriangles(this.mdsMatrix, this.trias, this.id, false);
 		displayMaps(p);
-		console.log("recalculate");
+		//console.log("recalculate");
 	};
 
 	this.reCalculateW = function(){
@@ -980,10 +1000,9 @@ function makeMatrix(p, focus){
 	//calculate MDS
 	var mdsArray = mdsCoords(shortestDists,dim);
 	//console.log(mdsArray);
-    //delaunay triangulation from https://github.com/ironwallaby/delaunay
-
-    triangles = Delaunay.triangulate(vertices);
-    return [mdsArray, triangles];
+    //delaunay triangulation from https://github.com/mapbox/delaunator
+    var delaunay = new Delaunator(vertices);
+    return [mdsArray, delaunay.triangles];
 	//plotTriangles(mdsArray,triangles);
 }
 

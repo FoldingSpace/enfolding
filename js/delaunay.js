@@ -1,234 +1,411 @@
-var Delaunay;
+// from https://github.com/mapbox/delaunator
 
-(function() {
-  "use strict";
+module.exports = Delaunator;
 
-  var EPSILON = 1.0 / 1048576.0;
+function Delaunator(points, getX, getY) {
 
-  function supertriangle(vertices) {
-    var xmin = Number.POSITIVE_INFINITY,
-        ymin = Number.POSITIVE_INFINITY,
-        xmax = Number.NEGATIVE_INFINITY,
-        ymax = Number.NEGATIVE_INFINITY,
-        i, dx, dy, dmax, xmid, ymid;
+    if (!getX) getX = defaultGetX;
+    if (!getY) getY = defaultGetY;
 
-    for(i = vertices.length; i--; ) {
-      if(vertices[i][0] < xmin) xmin = vertices[i][0];
-      if(vertices[i][0] > xmax) xmax = vertices[i][0];
-      if(vertices[i][1] < ymin) ymin = vertices[i][1];
-      if(vertices[i][1] > ymax) ymax = vertices[i][1];
+    var minX = Infinity;
+    var minY = Infinity;
+    var maxX = -Infinity;
+    var maxY = -Infinity;
+
+    var coords = this.coords = [];
+    var ids = this.ids = new Uint32Array(points.length);
+
+    for (var i = 0; i < points.length; i++) {
+        var p = points[i];
+        var x = getX(p);
+        var y = getY(p);
+        ids[i] = i;
+        coords[2 * i] = x;
+        coords[2 * i + 1] = y;
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
     }
 
-    dx = xmax - xmin;
-    dy = ymax - ymin;
-    dmax = Math.max(dx, dy);
-    xmid = xmin + dx * 0.5;
-    ymid = ymin + dy * 0.5;
+    var cx = (minX + maxX) / 2;
+    var cy = (minY + maxY) / 2;
 
-    return [
-      [xmid - 20 * dmax, ymid -      dmax],
-      [xmid            , ymid + 20 * dmax],
-      [xmid + 20 * dmax, ymid -      dmax]
-    ];
-  }
+    var minDist = Infinity;
+    var i0, i1, i2;
 
-  function circumcircle(vertices, i, j, k) {
-    var x1 = vertices[i][0],
-        y1 = vertices[i][1],
-        x2 = vertices[j][0],
-        y2 = vertices[j][1],
-        x3 = vertices[k][0],
-        y3 = vertices[k][1],
-        fabsy1y2 = Math.abs(y1 - y2),
-        fabsy2y3 = Math.abs(y2 - y3),
-        xc, yc, m1, m2, mx1, mx2, my1, my2, dx, dy;
-
-    /* Check for coincident points */
-    if(fabsy1y2 < EPSILON && fabsy2y3 < EPSILON)
-      throw new Error("Eek! Coincident points!");
-
-    if(fabsy1y2 < EPSILON) {
-      m2  = -((x3 - x2) / (y3 - y2));
-      mx2 = (x2 + x3) / 2.0;
-      my2 = (y2 + y3) / 2.0;
-      xc  = (x2 + x1) / 2.0;
-      yc  = m2 * (xc - mx2) + my2;
-    }
-
-    else if(fabsy2y3 < EPSILON) {
-      m1  = -((x2 - x1) / (y2 - y1));
-      mx1 = (x1 + x2) / 2.0;
-      my1 = (y1 + y2) / 2.0;
-      xc  = (x3 + x2) / 2.0;
-      yc  = m1 * (xc - mx1) + my1;
-    }
-
-    else {
-      m1  = -((x2 - x1) / (y2 - y1));
-      m2  = -((x3 - x2) / (y3 - y2));
-      mx1 = (x1 + x2) / 2.0;
-      mx2 = (x2 + x3) / 2.0;
-      my1 = (y1 + y2) / 2.0;
-      my2 = (y2 + y3) / 2.0;
-      xc  = (m1 * mx1 - m2 * mx2 + my2 - my1) / (m1 - m2);
-      yc  = (fabsy1y2 > fabsy2y3) ?
-        m1 * (xc - mx1) + my1 :
-        m2 * (xc - mx2) + my2;
-    }
-
-    dx = x2 - xc;
-    dy = y2 - yc;
-    return {i: i, j: j, k: k, x: xc, y: yc, r: dx * dx + dy * dy};
-  }
-
-  function dedup(edges) {
-    var i, j, a, b, m, n;
-
-    for(j = edges.length; j; ) {
-      b = edges[--j];
-      a = edges[--j];
-
-      for(i = j; i; ) {
-        n = edges[--i];
-        m = edges[--i];
-
-        if((a === m && b === n) || (a === n && b === m)) {
-          edges.splice(j, 2);
-          edges.splice(i, 2);
-          break;
+    // pick a seed point close to the centroid
+    for (i = 0; i < points.length; i++) {
+        var d = dist(cx, cy, coords[2 * i], coords[2 * i + 1]);
+        if (d < minDist) {
+            i0 = i;
+            minDist = d;
         }
-      }
     }
-  }
 
-  Delaunay = {
-    triangulate: function(vertices, key) {
-      var n = vertices.length,
-          i, j, indices, st, open, closed, edges, dx, dy, a, b, c;
+    minDist = Infinity;
 
-      /* Bail if there aren't enough vertices to form any triangles. */
-      if(n < 3)
-        return [];
+    // find the point closest to the seed
+    for (i = 0; i < points.length; i++) {
+        if (i === i0) continue;
+        d = dist(coords[2 * i0], coords[2 * i0 + 1], coords[2 * i], coords[2 * i + 1]);
+        if (d < minDist && d > 0) {
+            i1 = i;
+            minDist = d;
+        }
+    }
 
-      /* Slice out the actual vertices from the passed objects. (Duplicate the
-       * array even if we don't, though, since we need to make a supertriangle
-       * later on!) */
-      vertices = vertices.slice(0);
+    var minRadius = Infinity;
 
-      if(key)
-        for(i = n; i--; )
-          vertices[i] = vertices[i][key];
+    // find the third point which forms the smallest circumcircle with the first two
+    for (i = 0; i < points.length; i++) {
+        if (i === i0 || i === i1) continue;
 
-      /* Make an array of indices into the vertex array, sorted by the
-       * vertices' x-position. */
-      indices = new Array(n);
+        var r = circumradius(
+            coords[2 * i0], coords[2 * i0 + 1],
+            coords[2 * i1], coords[2 * i1 + 1],
+            coords[2 * i], coords[2 * i + 1]);
 
-      for(i = n; i--; )
-        indices[i] = i;
+        if (r < minRadius) {
+            i2 = i;
+            minRadius = r;
+        }
+    }
 
-      indices.sort(function(i, j) {
-        return vertices[j][0] - vertices[i][0];
-      });
+    if (minRadius === Infinity) {
+        throw new Error('No Delaunay triangulation exists for this input.');
+    }
 
-      /* Next, find the vertices of the supertriangle (which contains all other
-       * triangles), and append them onto the end of a (copy of) the vertex
-       * array. */
-      st = supertriangle(vertices);
-      vertices.push(st[0], st[1], st[2]);
-      
-      /* Initialize the open list (containing the supertriangle and nothing
-       * else) and the closed list (which is empty since we havn't processed
-       * any triangles yet). */
-      open   = [circumcircle(vertices, n + 0, n + 1, n + 2)];
-      closed = [];
-      edges  = [];
+    // swap the order of the seed points for counter-clockwise orientation
+    if (area(coords[2 * i0], coords[2 * i0 + 1],
+             coords[2 * i1], coords[2 * i1 + 1],
+             coords[2 * i2], coords[2 * i2 + 1]) < 0) {
 
-      /* Incrementally add each vertex to the mesh. */
-      for(i = indices.length; i--; edges.length = 0) {
-        c = indices[i];
+        var tmp = i1;
+        i1 = i2;
+        i2 = tmp;
+    }
 
-        /* For each open triangle, check to see if the current point is
-         * inside it's circumcircle. If it is, remove the triangle and add
-         * it's edges to an edge list. */
-        for(j = open.length; j--; ) {
-          /* If this point is to the right of this triangle's circumcircle,
-           * then this triangle should never get checked again. Remove it
-           * from the open list, add it to the closed list, and skip. */
-          dx = vertices[c][0] - open[j].x;
-          if(dx > 0.0 && dx * dx > open[j].r) {
-            closed.push(open[j]);
-            open.splice(j, 1);
-            continue;
-          }
+    var i0x = coords[2 * i0];
+    var i0y = coords[2 * i0 + 1];
+    var i1x = coords[2 * i1];
+    var i1y = coords[2 * i1 + 1];
+    var i2x = coords[2 * i2];
+    var i2y = coords[2 * i2 + 1];
 
-          /* If we're outside the circumcircle, skip this triangle. */
-          dy = vertices[c][1] - open[j].y;
-          if(dx * dx + dy * dy - open[j].r > EPSILON)
-            continue;
+    var center = circumcenter(i0x, i0y, i1x, i1y, i2x, i2y);
 
-          /* Remove the triangle and add it's edges to the edge list. */
-          edges.push(
-            open[j].i, open[j].j,
-            open[j].j, open[j].k,
-            open[j].k, open[j].i
-          );
-          open.splice(j, 1);
+    // sort the points by distance from the seed triangle circumcenter
+    quicksort(ids, coords, 0, ids.length - 1, center.x, center.y);
+
+    // initialize a circular doubly-linked list that will hold an advancing convex hull
+    this.hull = insertNode(coords, i0);
+    this.hull.t = 0;
+    this.hull = insertNode(coords, i1, this.hull);
+    this.hull.t = 1;
+    this.hull = insertNode(coords, i2, this.hull);
+    this.hull.t = 2;
+
+    var maxTriangles = 2 * points.length - 5;
+    var triangles = this.triangles = new Uint32Array(maxTriangles * 3);
+    triangles[0] = i0;
+    triangles[1] = i1;
+    triangles[2] = i2;
+    this.trianglesLen = 3;
+
+    var adjacent = this.adjacent = new Int32Array(maxTriangles * 3);
+    adjacent[0] = -1;
+    adjacent[1] = -1;
+    adjacent[2] = -1;
+
+    var xp, yp;
+    for (var k = 0; k < ids.length; k++) {
+        i = ids[k];
+        x = coords[2 * i];
+        y = coords[2 * i + 1];
+
+        // skip duplicate points
+        if (x === xp && y === yp) continue;
+        xp = x;
+        yp = y;
+
+        // skip seed triangle points
+        if ((x === i0x && y === i0y) ||
+            (x === i1x && y === i1y) ||
+            (x === i2x && y === i2y)) continue;
+
+        // find a visible edge on the convex hull
+        var e = this.hull;
+        while (area(x, y, e.x, e.y, e.next.x, e.next.y) >= 0) {
+            e = e.next;
+            if (e === this.hull) {
+                throw new Error('Something is wrong with the input points.');
+            }
+        }
+        var walkBack = e === this.hull;
+
+        // add the first triangle from the point
+        var t = this._addTriangle(i, e);
+        adjacent[t] = -1;
+        adjacent[t + 1] = -1;
+        this._link(t + 2, e.t);
+
+        e.t = t; // keep track of boundary triangles on the hull
+        e = insertNode(coords, i, e);
+
+        // recursively flip triangles from the point until they satisfy the Delaunay condition
+        e.t = this._legalize(t + 2);
+
+        // walk forward through the hull, adding more triangles and flipping recursively
+        var q = e.next;
+        while (area(x, y, q.x, q.y, q.next.x, q.next.y) < 0) {
+
+            t = this._addTriangle(i, q);
+            this._link(t, q.prev.t);
+            adjacent[t + 1] = -1;
+            this._link(t + 2, q.t);
+
+            q.prev.t = this._legalize(t + 2);
+
+            this.hull = removeNode(q);
+            q = q.next;
         }
 
-        /* Remove any doubled edges. */
-        dedup(edges);
+        if (!walkBack) continue;
 
-        /* Add a new triangle for each edge. */
-        for(j = edges.length; j; ) {
-          b = edges[--j];
-          a = edges[--j];
-          open.push(circumcircle(vertices, a, b, c));
+        // walk backward from the other side, adding more triangles and flipping
+        q = e.prev;
+        while (area(x, y, q.prev.x, q.prev.y, q.x, q.y) < 0) {
+
+            t = this._addTriangle(i, q.prev);
+            adjacent[t] = -1;
+            this._link(t + 1, q.t);
+            this._link(t + 2, q.prev.t);
+
+            this._legalize(t + 2);
+
+            q.prev.t = t;
+            this.hull = removeNode(q);
+            q = q.prev;
         }
-      }
+    }
 
-      /* Copy any remaining open triangles to the closed list, and then
-       * remove any triangles that share a vertex with the supertriangle,
-       * building a list of triplets that represent triangles. */
-      for(i = open.length; i--; )
-        closed.push(open[i]);
-      open.length = 0;
+    // trim typed triangle mesh arrays
+    this.triangles = triangles.subarray(0, this.trianglesLen);
+    this.adjacent = adjacent.subarray(0, this.trianglesLen);
+}
 
-      for(i = closed.length; i--; )
-        if(closed[i].i < n && closed[i].j < n && closed[i].k < n)
-          open.push(closed[i].i, closed[i].j, closed[i].k);
+Delaunator.prototype = {
 
-      /* Yay, we're done! */
-      return open;
+    _legalize: function (a) {
+        var triangles = this.triangles;
+        var coords = this.coords;
+        var adjacent = this.adjacent;
+
+        var b = adjacent[a];
+
+        var a0 = a - a % 3;
+        var b0 = b - b % 3;
+
+        var al = a0 + (a + 1) % 3;
+        var ar = a0 + (a + 2) % 3;
+        var br = b0 + (b + 1) % 3;
+        var bl = b0 + (b + 2) % 3;
+
+        var p0 = triangles[ar];
+        var pr = triangles[a];
+        var pl = triangles[al];
+        var p1 = triangles[bl];
+
+        var illegal = inCircle(
+            coords[2 * p0], coords[2 * p0 + 1],
+            coords[2 * pr], coords[2 * pr + 1],
+            coords[2 * pl], coords[2 * pl + 1],
+            coords[2 * p1], coords[2 * p1 + 1]);
+
+        if (illegal) {
+            triangles[a] = p1;
+            triangles[b] = p0;
+
+            this._link(a, adjacent[bl]);
+            this._link(b, adjacent[ar]);
+            this._link(ar, bl);
+
+            this._legalize(a);
+            return this._legalize(br);
+        }
+
+        return ar;
     },
-    contains: function(tri, p) {
-      /* Bounding box test first, for quick rejections. */
-      if((p[0] < tri[0][0] && p[0] < tri[1][0] && p[0] < tri[2][0]) ||
-         (p[0] > tri[0][0] && p[0] > tri[1][0] && p[0] > tri[2][0]) ||
-         (p[1] < tri[0][1] && p[1] < tri[1][1] && p[1] < tri[2][1]) ||
-         (p[1] > tri[0][1] && p[1] > tri[1][1] && p[1] > tri[2][1]))
-        return null;
 
-      var a = tri[1][0] - tri[0][0],
-          b = tri[2][0] - tri[0][0],
-          c = tri[1][1] - tri[0][1],
-          d = tri[2][1] - tri[0][1],
-          i = a * d - b * c;
+    _link: function (a, b) {
+        this.adjacent[a] = b;
+        if (b !== -1) this.adjacent[b] = a;
+    },
 
-      /* Degenerate tri. */
-      if(i === 0.0)
-        return null;
-
-      var u = (d * (p[0] - tri[0][0]) - b * (p[1] - tri[0][1])) / i,
-          v = (a * (p[1] - tri[0][1]) - c * (p[0] - tri[0][0])) / i;
-
-      /* If we're outside the tri, fail. */
-      if(u < 0.0 || v < 0.0 || (u + v) > 1.0)
-        return null;
-
-      return [u, v];
+    _addTriangle(i, e) {
+        var t = this.trianglesLen;
+        this.triangles[t] = e.i;
+        this.triangles[t + 1] = i;
+        this.triangles[t + 2] = e.next.i;
+        this.trianglesLen += 3;
+        return t;
     }
-  };
+};
 
-  if(typeof module !== "undefined")
-    module.exports = Delaunay;
-})();
+function dist(ax, ay, bx, by) {
+    var dx = ax - bx;
+    var dy = ay - by;
+    return dx * dx + dy * dy;
+}
+
+function area(px, py, qx, qy, rx, ry) {
+    return (qy - py) * (rx - qx) - (qx - px) * (ry - qy);
+}
+
+function inCircle(ax, ay, bx, by, cx, cy, px, py) {
+    ax -= px;
+    ay -= py;
+    bx -= px;
+    by -= py;
+    cx -= px;
+    cy -= py;
+
+    var ap = ax * ax + ay * ay;
+    var bp = bx * bx + by * by;
+    var cp = cx * cx + cy * cy;
+
+    var det = ax * (by * cp - bp * cy) -
+              ay * (bx * cp - bp * cx) +
+              ap * (bx * cy - by * cx);
+
+    return det < 0;
+}
+
+function circumradius(ax, ay, bx, by, cx, cy) {
+    bx -= ax;
+    by -= ay;
+    cx -= ax;
+    cy -= ay;
+
+    var bl = bx * bx + by * by;
+    var cl = cx * cx + cy * cy;
+
+    if (bl === 0 || cl === 0) return Infinity;
+
+    var d = bx * cy - by * cx;
+    if (d === 0) return Infinity;
+
+    var x = (cy * bl - by * cl) * 0.5 / d;
+    var y = (bx * cl - cx * bl) * 0.5 / d;
+
+    return x * x + y * y;
+}
+
+function circumcenter(ax, ay, bx, by, cx, cy) {
+    bx -= ax;
+    by -= ay;
+    cx -= ax;
+    cy -= ay;
+
+    var bl = bx * bx + by * by;
+    var cl = cx * cx + cy * cy;
+
+    var d = bx * cy - by * cx;
+
+    var x = (cy * bl - by * cl) * 0.5 / d;
+    var y = (bx * cl - cx * bl) * 0.5 / d;
+
+    return {
+        x: ax + x,
+        y: ay + y
+    };
+}
+
+// create a new node in a doubly linked list
+function insertNode(coords, i, prev) {
+    var node = {
+        i: i,
+        x: coords[2 * i],
+        y: coords[2 * i + 1],
+        t: 0,
+        prev: null,
+        next: null
+    };
+
+    if (!prev) {
+        node.prev = node;
+        node.next = node;
+
+    } else {
+        node.next = prev.next;
+        node.prev = prev;
+        prev.next.prev = node;
+        prev.next = node;
+    }
+    return node;
+}
+
+function removeNode(node) {
+    node.prev.next = node.next;
+    node.next.prev = node.prev;
+    return node.prev;
+}
+
+function quicksort(ids, coords, left, right, cx, cy) {
+    var i, j, temp;
+
+    if (right - left <= 20) {
+        for (i = left + 1; i <= right; i++) {
+            temp = ids[i];
+            j = i - 1;
+            while (j >= left && compare(coords, ids[j], temp, cx, cy) > 0) ids[j + 1] = ids[j--];
+            ids[j + 1] = temp;
+        }
+    } else {
+        var median = (left + right) >> 1;
+        i = left + 1;
+        j = right;
+        swap(ids, median, i);
+        if (compare(coords, ids[left], ids[right], cx, cy) > 0) swap(ids, left, right);
+        if (compare(coords, ids[i], ids[right], cx, cy) > 0) swap(ids, i, right);
+        if (compare(coords, ids[left], ids[i], cx, cy) > 0) swap(ids, left, i);
+
+        temp = ids[i];
+        while (true) {
+            do i++; while (compare(coords, ids[i], temp, cx, cy) < 0);
+            do j--; while (compare(coords, ids[j], temp, cx, cy) > 0);
+            if (j < i) break;
+            swap(ids, i, j);
+        }
+        ids[left + 1] = ids[j];
+        ids[j] = temp;
+
+        if (right - i + 1 >= j - left) {
+            quicksort(ids, coords, i, right, cx, cy);
+            quicksort(ids, coords, left, j - 1, cx, cy);
+        } else {
+            quicksort(ids, coords, left, j - 1, cx, cy);
+            quicksort(ids, coords, i, right, cx, cy);
+        }
+    }
+}
+
+function compare(coords, i, j, cx, cy) {
+    var d1 = dist(coords[2 * i], coords[2 * i + 1], cx, cy);
+    var d2 = dist(coords[2 * j], coords[2 * j + 1], cx, cy);
+    return (d1 - d2) || (coords[2 * i] - coords[2 * j]) || (coords[2 * i + 1] - coords[2 * j + 1]);
+}
+
+function swap(arr, i, j) {
+    var tmp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = tmp;
+}
+
+function defaultGetX(p) {
+    return p[0];
+}
+function defaultGetY(p) {
+    return p[1];
+}
