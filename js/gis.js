@@ -661,7 +661,7 @@ function Map(name, opac, img, p, xoff, id){
 	};
 
 	this.reCalculate = function(){
-		updateData(p);
+		//updateData(p);
 		resetThree();
 		var matrices = makeMatrix(p, this.id);
 		this.mdsMatrix = matrices[0];
@@ -709,7 +709,7 @@ function Map(name, opac, img, p, xoff, id){
 					}
 					//console.log(this.internalEdges[this.internalEdges.length-1]);
 			displayMaps(p);
-			updateData(p);
+			//updateData(p);
 			}
 		};
 	};
@@ -723,7 +723,7 @@ function Map(name, opac, img, p, xoff, id){
 				//makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY,p, this.name);
 			}
 			displayMaps(p);
-	    updateData(p);
+	    //updateData(p);
 	};
 
 	this.reset = function(p){
@@ -1326,7 +1326,7 @@ function imgToggle(p){
 	}
 	displayMaps(p);
     	//displayGraphs();
-    updateData(p);
+    //updateData(p);
 	//makeMatrix(p);
 
 }
