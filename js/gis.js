@@ -71,6 +71,7 @@ var l = function(p){
 		var menuMaps = p.createDiv('');
 		menuMaps.parent(menuMain);
 		menuMaps.style("margin-bottom","40px");
+		menuMaps.style("margin-top","35px");
 		var titleMaps = p.createSpan("<h3>MAPS</h3>");
 		titleMaps.parent(menuMaps);
 
@@ -328,7 +329,8 @@ var l = function(p){
 		if(maps.length > 0){
 			offX = maps[mapFocus].img.width + 50;
 		}
-		p.append(maps,new Map(file.name,1,p.createImg(file.data).hide(),p, offX, maps.length));
+		var imageIn = p.createImg(file.data).hide();
+		p.append(maps,new Map(file.name,1,imageIn,p, offX, maps.length));
 		//console.log(maps.length);
 		mapFocus = maps.length - 1; //change focus to last uploaded map
 		//array mapImages holds map images for three.js access
@@ -585,6 +587,7 @@ function Map(name, opac, img, p, xoff, id){
 	p.append(this.internalNodes, new Node(this.img.width,0));
 	p.append(this.internalNodes, new Node(this.img.width, this.img.height));
 	p.append(this.internalNodes, new Node(0,this.img.height));
+
 
 	//and 4 edges that connect them
 	p.append(this.internalEdges, new Edge(0,1,nodeDist(this.internalNodes[0],this.internalNodes[1],p)));
