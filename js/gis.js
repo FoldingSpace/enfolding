@@ -759,7 +759,7 @@ function Map(name, opac, img, p, xoff, id){
 
 	//called when mouseReleased
 		this.addNode = function(mx,my,p){
-		if(mx >this.offSetX && mx < this.img.width+this.offSetX && mx < p.width && my > 0 && my <  this.img.height+this.offSetY){ //check if on map
+		if(mx >this.offSetX && mx < this.img.width+this.offSetX && my > 0 && my <  this.img.height+this.offSetY){ //check if on map
 			if(this.gridMode){
 				if(this.clickCount % 2 == 0){//evens are first clicks
 					this.autoAddNode(mx-this.offSetX,my-this.offSetY,p);
