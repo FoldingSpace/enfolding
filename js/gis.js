@@ -51,6 +51,7 @@ var dragDiffX = 0;
 var dragDiffY = 0;
 var dragOffX = 0;
 var dragOffY = 0;
+var dragging = false;
 
 //BEGIN LEFT CANVAS
 //instance mode of p5.js https://github.com/processing/p5.js/wiki/p5.js-overview#instantiation--namespace
@@ -383,6 +384,19 @@ var l = function(p){
 		}
 	}
 
+	p.moveIns = function(){
+		var allInputs = document.getElementsByClassName("mapIn");
+		for(var i = 0; i < allInputs.length; i++){
+			var ogY = parseInt(allInputs[i].dataset.ypos);
+			var ogX = parseInt(allInputs[i].dataset.xpos);
+			allInputs[i].style.top = ogY + dragOffY;
+			allInputs[i].style.left = ogX + dragOffX;
+		}
+	}
+
+	//input.attribute("data-xpos", posX);
+	//input.attribute("data-ypos", posY);
+
 	p.showDefaultIns = function(){
 		var allInputs = document.getElementsByClassName("mapIn");
 		for(var i = 0; i < allInputs.length; i++){
@@ -430,8 +444,11 @@ var l = function(p){
 	}
 
 	p.mouseReleased = function(){
-			//maps[mapFocus].reCalculate();
-			//wormCalc(p);
+			if(dragging){
+				p.moveIns();
+				p.showDefaultIns();
+				dragging = false;
+			}
 	};
 
 	p.mousePressed = function(){
@@ -442,12 +459,12 @@ var l = function(p){
 	}
 
 	p.mouseDragged = function(){
+		dragging = true;
+		p.hideIns();
 		if(editMode){
 			dragOffX = p.mouseX - dragDiffX;
 			dragOffY = p.mouseY - dragDiffY;
 			displayMaps(p);
-			p.addAllInputs();
-			p.showDefaultIns();
 		}
 	}
 
@@ -805,7 +822,7 @@ function Map(name, opac, img, p, xoff, id){
 		p.append(this.internalEdges, new Edge(3,0,nodeDist(this.internalNodes[3],this.internalNodes[0],p)));
 
 		for(var j = 0; j < this.internalEdges.length; j++){
-			makeInput(this.internalEdges[j], this.internalNodes, j, this.offSetX, this.offSetY,p,this.name);
+			makeInput(this.internalEdges[j], this.internalNodes, j, this.offSetX, this.offSetY,p,this.name + " defaultIn");
 		}
 		this.gridMode = false;
 		this.clickCount = 0;
@@ -992,11 +1009,16 @@ function makeInput(edge, nodes, n, xOff, yOff,p, nm){
 	var y2 = nodes[edge.node2].ypos+yOff+dragOffY;
 
 	//console.log(edge.node1);
-    input.position(x1+(x2-x1)/2, y1+(y2-y1)/2);
+	  var posX = x1+(x2-x1)/2;
+		var posY = y1+(y2-y1)/2;
+    input.position(posX, posY);
     input.value(p.int(edge.distance));
     input.id(nm + "_" + n); //adds id that refers to edge
     input.class(nm + " mapIn" ); //uses image name for class for deletion later
     input.attribute("onkeydown", "keypress(event, " + "'" + nm + "_" + n + "')");
+		input.attribute("data-xpos", posX-dragOffX);
+		input.attribute("data-ypos", posY-dragOffY);
+
 }
 
 //returns distance btw node and x,y
