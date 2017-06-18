@@ -11,7 +11,6 @@
   <script language="javascript" type="text/javascript" src="js/OrbitControls.js"></script>
   <script language="javascript" type="text/javascript" src="js/OBJExporter.js"></script>
   <script language="javascript" type="text/javascript" src="js/FileSaver.min.js"></script>
-  <script language="javascript" type="text/javascript" src="js/gis.js"></script>
   <script language="javascript" type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
   <style>
   	body{font-size:12px;font-family:sans-serif;margin:0;}
@@ -39,26 +38,14 @@
 </head>
 <body>
   <div id="nav"><img src="images/logo.png" /> enfolding
-      <button id="goInterface" class="button">INTERFACE</button>
+      <button id="goInterface" class="button">EDIT</button>
       <button id="goRender" class="button">RENDER</button>
   </div>
 	<div id="leftCanv"></div>
 	<div id="rightCanv"></div>
 	<div id="dataResults"></div>
 
-  <script>
-    $( "#goInterface" ).click(function() {
-      $("#leftCanv").css( "display", "block" );
-      $("#rightCanv").css( "display", "none");
-      $("#goInterface").css("background-color","#666");
-      $("#goRender").css("background-color","#333")
-    });
-    $( "#goRender" ).click(function() {
-      $("#leftCanv").css( "display", "none" );
-      $("#rightCanv").css( "display", "block");
-      $("#goRender").css("background-color","#666");
-      $("#goInterface").css("background-color","#333");
-    });
-  </script>
+  <script language="javascript" type="text/javascript" src="js/gis.js"></script>
+
 </body>
 </html>

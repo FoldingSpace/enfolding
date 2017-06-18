@@ -41,9 +41,16 @@ var delaunayOn = false;
 var bindDist = 180;
 var connectDist = 20;
 var connectLastNodes = 1; //connect last n-nodes in two map mode
+var scrollLock = false;
+var editMode = true;
 
 var canvaswidth = 1100;
 var canvasheight = 900;
+
+var dragDiffX = 0;
+var dragDiffY = 0;
+var dragOffX = 0;
+var dragOffY = 0;
 
 //BEGIN LEFT CANVAS
 //instance mode of p5.js https://github.com/processing/p5.js/wiki/p5.js-overview#instantiation--namespace
@@ -118,9 +125,9 @@ var l = function(p){
 
 		gridHSelect = p.createSelect().id('gridCols');
 	  gridHSelect.parent(menuGrids);
-		gridHSelect.style("position","relative");
-		gridHSelect.style("top","-50px");
-		gridHSelect.style("left","0px");
+		//gridHSelect.style("position","relative");
+		//gridHSelect.style("top","50px");
+		//gridHSelect.style("left","0px");
 	  gridHSelect.option(1);
 	  gridHSelect.option(2);
 	  gridHSelect.option(3);
@@ -315,11 +322,7 @@ var l = function(p){
 	  //p.createDiv('data: ').id('dataResults');
 	};
 
-
-
-	p.draw = function() {
-
-	};
+	p.draw = function() {};
 
 	p.gotFile = function(file) {
 	  //console.log(file);
@@ -365,11 +368,29 @@ var l = function(p){
 		maps[mapFocus].reset(p);
 	}
 
-	p.hideIns = function(){
+	p.deleteIns = function(){
 		var allInputs = document.getElementsByClassName(maps[mapFocus].name);
 		//console.log(allInputs);
 		for(var i = allInputs.length-1; i >= 0; i--){
 			allInputs[i].remove();
+		}
+	}
+
+	p.hideIns = function(){
+		var allInputs = document.getElementsByClassName("mapIn");
+		for(var i = 0; i < allInputs.length; i++){
+			allInputs[i].style.visibility = "hidden";
+		}
+	}
+
+	p.showDefaultIns = function(){
+		var allInputs = document.getElementsByClassName("mapIn");
+		for(var i = 0; i < allInputs.length; i++){
+			allInputs[i].style.visibility = "hidden";
+		}
+		var allInputs = document.getElementsByClassName("defaultIn");
+		for(var i = 0; i < allInputs.length; i++){
+			allInputs[i].style.visibility = "visible";
 		}
 	}
 
@@ -412,6 +433,31 @@ var l = function(p){
 			//maps[mapFocus].reCalculate();
 			//wormCalc(p);
 	};
+
+	p.mousePressed = function(){
+		if(editMode){
+			dragDiffX = p.mouseX - dragOffX;
+			dragDiffY = p.mouseY - dragOffY;
+		}
+	}
+
+	p.mouseDragged = function(){
+		if(editMode){
+			dragOffX = p.mouseX - dragDiffX;
+			dragOffY = p.mouseY - dragDiffY;
+			displayMaps(p);
+			p.addAllInputs();
+			p.showDefaultIns();
+		}
+	}
+
+	//FUNCTION FOR ZOOMING IN ON MAPS IN EDIT MODE
+	// p.mouseWheel = function(event){
+	// 	if(!scrollLock){
+	// 		maps[mapFocus].mapZoom(event.delta,p);
+	// 	}
+	// 	return false;
+	// }
 
 	p.trans1 = function(){
 		transOne(p);
@@ -581,6 +627,7 @@ function Map(name, opac, img, p, xoff, id){
 	this.clickCount = 0; //count clicks for long distance edges in gridMode
 	//this.delaunayOn = true;
 	this.trans = 1.0;
+	this.zoomScroll = 1.0;
 
 	//start with 4 nodes at corners
 	p.append(this.internalNodes, new Node(0,0));
@@ -596,14 +643,15 @@ function Map(name, opac, img, p, xoff, id){
 	p.append(this.internalEdges, new Edge(3,0,nodeDist(this.internalNodes[3],this.internalNodes[0],p)));
 
 	for(var j = 0; j < this.internalEdges.length; j++){
-		makeInput(this.internalEdges[j], this.internalNodes, j, this.offSetX, this.offSetY,p, this.name);
+		makeInput(this.internalEdges[j], this.internalNodes, j, this.offSetX, this.offSetY,p, this.name + " defaultIn");
 	}
 
 	p.strokeWeight(3);
 	p.stroke(0,0,0,100);
 	this.display = function(p){
+		//p.scale(this.zoomScroll);
 		p.push();
-		p.translate(this.offSetX,this.offSetY);
+		p.translate(this.offSetX + dragOffX,this.offSetY + dragOffY);
 		if(imageOn){
 			p.image(this.img,0,0,this.img.width,this.img.height);
 		}
@@ -656,7 +704,7 @@ function Map(name, opac, img, p, xoff, id){
 	this.blur = function(p){
 		p.noStroke();
 		p.fill(255,150);
-		p.rect(0+this.offSetX,0+this.offSetY,this.img.width+this.offSetX,this.img.height+this.offSetY);
+		p.rect(0+this.offSetX+dragOffX,0+this.offSetY+dragOffY,this.img.width+this.offSetX,this.img.height+this.offSetY);
 	};
 
 	this.returnImg = function(p){
@@ -680,7 +728,13 @@ function Map(name, opac, img, p, xoff, id){
 		displayMaps(p);
 	};
 
+	this.mapZoom = function(scrollVal,p){
+		this.zoomScroll += scrollVal/30;
+		displayMaps(p);
+	}
+
 	this.addInputs = function(){
+		p.deleteIns();
 		for(var i = 0; i < this.internalEdges.length; i++){
 			makeInput(this.internalEdges[i], this.internalNodes, i, this.offSetX, this.offSetY,p, this.name);
 		}
@@ -696,7 +750,7 @@ function Map(name, opac, img, p, xoff, id){
 					this.autoAddNode(mx-this.offSetX,my-this.offSetY,p);
 					var d = nodeDist(this.internalNodes[this.internalNodes.length-2], this.internalNodes[this.internalNodes.length-1],p);
 					p.append(this.internalEdges, new Edge(this.internalNodes.length-2,this.internalNodes.length-1,d)); //connect two above nodes
-					makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY,p, this.name);
+					makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY,p, this.name + " defaultIn");
 				}
 				this.clickCount++;
 			} else {
@@ -708,7 +762,7 @@ function Map(name, opac, img, p, xoff, id){
 					for(var i = 0; i < nodeShort.length; i++){
 						//subtract offsets from mx, my because nodes start from (0,0), then translated
 						p.append(this.internalEdges, new Edge(nodeShort[i], this.internalNodes.length - 1, nodeDistXY(this.internalNodes[nodeShort[i]], mx-this.offSetX,my-this.offSetY,p)));
-						makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY,p, this.name);
+						makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY,p, this.name + " defaultIn");
 					}
 					//console.log(this.internalEdges[this.internalEdges.length-1]);
 			displayMaps(p);
@@ -730,6 +784,8 @@ function Map(name, opac, img, p, xoff, id){
 	};
 
 	this.reset = function(p){
+		dragOffX = 0;
+		dragOffY = 0;
 		p.resetMatrix();
 		this.internalNodes = [];
 		this.internalEdges = [];
@@ -824,6 +880,7 @@ function Map(name, opac, img, p, xoff, id){
 		*/
 		nodeCount = 0;
 		this.gridMode = true;
+		this.addInputs();
 		//this.reCalculate();
 	};
 
@@ -929,17 +986,16 @@ function nodeDist(nn1,nn2,p){
 //make dist input box
 function makeInput(edge, nodes, n, xOff, yOff,p, nm){
 	input = p.createInput();
-	var x1 = nodes[edge.node1].xpos+xOff;
-	var x2 = nodes[edge.node2].xpos+xOff;
-	var y1 = nodes[edge.node1].ypos+yOff;
-	var y2 = nodes[edge.node2].ypos+yOff;
+	var x1 = nodes[edge.node1].xpos+xOff+dragOffX;
+	var x2 = nodes[edge.node2].xpos+xOff+dragOffX;
+	var y1 = nodes[edge.node1].ypos+yOff+dragOffY;
+	var y2 = nodes[edge.node2].ypos+yOff+dragOffY;
 
 	//console.log(edge.node1);
-
     input.position(x1+(x2-x1)/2, y1+(y2-y1)/2);
     input.value(p.int(edge.distance));
     input.id(nm + "_" + n); //adds id that refers to edge
-    input.class(nm); //uses image name for class for deletion later
+    input.class(nm + " mapIn" ); //uses image name for class for deletion later
     input.attribute("onkeydown", "keypress(event, " + "'" + nm + "_" + n + "')");
 }
 
@@ -1214,7 +1270,7 @@ function plotTriangles(coords, trias, focus, outputObj){
 function plotCoords(coords, es,p){
 	//p.background(255,255,255);
 	p.push();
-    p.translate(0,0,2); //offset 2 pixels from triangulation graph
+  p.translate(0,0,2); //offset 2 pixels from triangulation graph
 	for(var i = 0; i < es.length; i++){
 		var x1 = coords[es[i].node1][0]/zoom;
 		var x2 = coords[es[i].node2][0]/zoom;
@@ -1272,8 +1328,6 @@ window.ondblclick=function(){
 	maps[mapFocus].reCalculate();
 }
 
-
-
 //add data to end of page
 function updateData(p){
 	var div = document.getElementById('dataResults');
@@ -1293,7 +1347,7 @@ function updateData(p){
 
 function reCalc(p){
 	if(mode == 0){
-			maps[mapFocus].addNode(p.mouseX, p.mouseY, p);
+			maps[mapFocus].addNode(p.mouseX-dragOffX, p.mouseY-dragOffY, p);
 			//console.log(p.mouseX + " " + p.mouseY);
 		}
 	wormCalc(p);
@@ -1471,6 +1525,21 @@ function mdsCoords(distances, dimensions) {
 		return numeric.mul(row, eigenValues).splice(0, dimensions);
 	});
 };
+
+$( "#goInterface" ).click(function() {
+	$("#leftCanv").css( "display", "block" );
+	$("#rightCanv").css( "display", "none");
+	$("#goInterface").css("background-color","#666");
+	$("#goRender").css("background-color","#333");
+	editMode = true;
+});
+$( "#goRender" ).click(function() {
+	$("#leftCanv").css( "display", "none" );
+	$("#rightCanv").css( "display", "block");
+	$("#goRender").css("background-color","#666");
+	$("#goInterface").css("background-color","#333");
+	editMode = false;
+});
 
 //from https://mgechev.github.io/javascript-algorithms/graphs_shortest-path_floyd-warshall.js.html
 (function (exports) {
