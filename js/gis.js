@@ -574,7 +574,7 @@ function Map(name, opac, img, p, xoff, id){
 	this.internalNodes = [];
 	this.internalEdges = [];
 	this.offSetX = xoff;
-	this.offSetY = 30;
+	this.offSetY = 50;
 	this.trias = [0];
 	this.mdsMatrix = [];
 	this.gridMode = false;
