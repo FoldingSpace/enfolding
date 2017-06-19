@@ -12,40 +12,19 @@
   <script language="javascript" type="text/javascript" src="js/OBJExporter.js"></script>
   <script language="javascript" type="text/javascript" src="js/FileSaver.min.js"></script>
   <script language="javascript" type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
-  <style>
-  	body{font-size:12px;font-family:sans-serif;margin:0;}
-  	#dataResults{font-size:10px;color:#999;margin-top:350px;width:200px;float:left;}
-  	input{width:75px;opacity:.8;}
-    #nav{
-      overflow: hidden;
-      background-color: #000;
-      position: fixed;
-      top: 0;
-      width: 100%;
-      color: #ddd;
-      font-family: Baskerville, sans-serif;
-      font-size:14px;
-      }
-    .button{background-color: #333;border:none;text-align:center;
-      display:inline-block;padding:5px 10px;border-radius: 8px;
-      -webkit-transition-duration: 0.4s; /* Safari */
-      transition-duration: 0.4s;margin:5px 5px;color:#ddd;}
-    .button:hover {color: white;}
-  	#leftCanv{width:1100px;height:900px;float:left;}
-  	#rightCanv{width:1100px;height:900px;float:left;display: none;}
-    #goInterface{margin-left:50px;background-color:#666;}
-  </style>
+  <link rel="stylesheet" type="text/css" href="style/style.css">
 </head>
 <body>
   <div id="nav"><img src="images/logo.png" /> enfolding
       <button id="goInterface" class="button">EDIT</button>
       <button id="goRender" class="button">RENDER</button>
+      <button id="objOut" class="button">SAVE OBJ</button>
   </div>
 	<div id="leftCanv"></div>
 	<div id="rightCanv"></div>
 	<div id="dataResults"></div>
 
   <script language="javascript" type="text/javascript" src="js/gis.js"></script>
-
+  <script language="javascript" type="text/javascript" src="js/gisUI.js"></script>
 </body>
 </html>

@@ -292,12 +292,6 @@ var l = function(p){
 	  tSlider2.style('width', '150px');
 	  tSlider2.changed(p.trans2);
 
-	  buttonOutOBJ = p.createButton('Output OBJ');
-	  buttonOutOBJ.position(canvaswidth+20,1160);
-	  buttonOutOBJ.mousePressed(outOBJ);
-
-
-
 	  /*buttonTestNodes = p.createButton('test nodes (100,100), (350,100)');
 	  buttonTestNodes.position(1020,200);
 	  buttonTestNodes.mousePressed(p.testNodes);
@@ -1547,21 +1541,6 @@ function mdsCoords(distances, dimensions) {
 		return numeric.mul(row, eigenValues).splice(0, dimensions);
 	});
 };
-
-$( "#goInterface" ).click(function() {
-	$("#leftCanv").css( "display", "block" );
-	$("#rightCanv").css( "display", "none");
-	$("#goInterface").css("background-color","#666");
-	$("#goRender").css("background-color","#333");
-	editMode = true;
-});
-$( "#goRender" ).click(function() {
-	$("#leftCanv").css( "display", "none" );
-	$("#rightCanv").css( "display", "block");
-	$("#goRender").css("background-color","#666");
-	$("#goInterface").css("background-color","#333");
-	editMode = false;
-});
 
 //from https://mgechev.github.io/javascript-algorithms/graphs_shortest-path_floyd-warshall.js.html
 (function (exports) {

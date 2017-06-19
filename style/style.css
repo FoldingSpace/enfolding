@@ -1,0 +1,32 @@
+/*general*/
+body{font-size:12px;font-family:sans-serif;margin:0;}
+input{width:75px;opacity:.8;}
+
+/*navigation*/
+#nav{
+  overflow: hidden;
+  background-color: #000;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  color: #ddd;
+  font-family: Baskerville, sans-serif;
+  font-size:14px;
+  }
+.button{
+  background-color: #333;
+  border:none;text-align:center;
+  display:inline-block;
+  padding:5px 10px;
+  border-radius: 8px;
+  -webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
+  margin:5px 5px;color:#ddd;}
+.button:hover {color: white;}
+#objOut{margin-left:100px;}
+#goInterface{margin-left:50px;background-color:#666;}
+
+/*main section*/
+#leftCanv{width:1100px;height:900px;float:left;}
+#rightCanv{width:1100px;height:900px;float:left;display: none;}
+#dataResults{font-size:10px;color:#999;margin-top:350px;width:200px;float:left;}
