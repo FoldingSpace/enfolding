@@ -44,8 +44,9 @@ var connectLastNodes = 1; //connect last n-nodes in two map mode
 var scrollLock = false;
 var editMode = true;
 
-var canvaswidth = 1100;
-var canvasheight = 900;
+//these generated dynamically to fit screen
+var canvaswidth = 0;
+var canvasheight = 0;
 
 var dragDiffX = 0;
 var dragDiffY = 0;
@@ -59,9 +60,11 @@ var l = function(p){
 
 	p.setup = function() {
 	  // create canvas
+		canvaswidth = document.getElementById('leftCanv').clientWidth;
+		canvasheight = document.getElementById('leftCanv').clientHeight;
 	  var c = p.createCanvas(canvaswidth, canvasheight);
 	  //p.colorMode('HSB',360,100,100,100)
-	  p.background(255,255,255,0);
+	  p.background(255,100,100,0);
 	  // Add an event for when a file is dropped onto the canvas
 	  c.drop(p.gotFile);
 
@@ -72,27 +75,18 @@ var l = function(p){
 
 	//MENU - MAIN div
 		var menuMain = p.createDiv('');
-		menuMain.position(canvaswidth+15,10);
+		var mm = document.getElementById('menu');
+		menuMain.parent(mm);
+		//menuMain.position(canvaswidth+15,10);
 		//menuMain.style("border","2px gray dashed");
 
 	//MENU - MAPS SECTION
 		var menuMaps = p.createDiv('');
-		menuMaps.parent(menuMain);
+		menuMaps.parent(mm);
 		menuMaps.style("margin-bottom","40px");
 		menuMaps.style("margin-top","35px");
 		var titleMaps = p.createSpan("<h3>MAPS</h3>");
 		titleMaps.parent(menuMaps);
-
-		// var imgMaps = p.createElement('img');
-		// imgMaps.attribute('src','images/maps.gif');
-		// imgMaps.parent(menuMaps);
-		// imgMaps.style("display","block");
-
-		buttonReset = p.createButton('RESET');
-	  buttonReset.parent(menuMaps);
-		buttonReset.style("display","block");
-	  buttonReset.mousePressed(p.resetMap);
-		buttonReset.style('background-color', '#FFF');
 
 		buttonToggleImg = p.createButton('TOGGLE MAPS');
 	  buttonToggleImg.parent(menuMaps);
@@ -104,17 +98,12 @@ var l = function(p){
 	  buttonDelaunay.mousePressed(p.delTog);
 	  buttonDelaunay.style('background-color', '#C3E4F6');
 
-		buttonMapFocus = p.createButton('CHANGE MAP FOCUS');
-	  buttonMapFocus.parent(menuMaps);
-	  buttonMapFocus.mousePressed(p.changeFocus);
-		buttonMapFocus.style('background-color', '#FFF');
-		buttonMapFocus.style("display","block");
 	  var mF = p.createDiv('map#1').id('mFocus');
 	  mF.parent(menuMaps);
 
 	//MENU - GRIDS SECTION
 		var menuGrids = p.createDiv("");
-		menuGrids.parent(menuMain);
+		menuGrids.parent(mm);
 		menuGrids.style("border-top","2px gray dashed");
 		menuGrids.style("margin-bottom","40px");
 		var titleMaps = p.createSpan("<h3>GRIDS</h3>");
@@ -196,7 +185,7 @@ var l = function(p){
 
 	//MENU - NODES SECTION
 		var menuNodes = p.createDiv("");
-		menuNodes.parent(menuMain);
+		menuNodes.parent(mm);
 		menuNodes.style("border-top","2px gray dashed");
 		var titleMaps = p.createSpan("<h3>NODES</h3>");
 		titleMaps.parent(menuNodes);
@@ -240,55 +229,55 @@ var l = function(p){
 
 	//3D MAP CONTROLS
 	  buttonDim = p.createButton('2D');
-	  buttonDim.position(canvaswidth+20,900);
 	  buttonDim.mousePressed(p.dimensionChangeTog);
 	  buttonDim.style('background-color', '#FFF');
+		buttonDim.parent(mm);
 
 	  buttonWireframe = p.createButton('wireframe');
-	  buttonWireframe.position(canvaswidth+120,900);
 	  buttonWireframe.mousePressed(p.wireFrameModeTog);
 	  buttonWireframe.style('background-color', '#FFF');
+		buttonWireframe.parent(mm);
 
 	  buttonCombine = p.createButton('two map mode');
-	  buttonCombine.position(canvaswidth+20,920);
 	  buttonCombine.mousePressed(p.wormModeTog);
 	  buttonCombine.style('background-color', '#FFF');
+		buttonCombine.parent(mm);
 
 	  buttonBind = p.createButton('bind two maps together');
-	  buttonBind.position(canvaswidth+120,920);
 	  buttonBind.mousePressed(p.bindMapsTog);
 	  buttonBind.style('background-color', '#FFF');
+		buttonBind.parent(mm);
 
 	  var bDiv = p.createDiv('Change lattice-to-lattice distance (0-300):');
-	  bDiv.position(canvaswidth+20,955);
+		bDiv.parent(mm);
 
 	  bSlider1 = p.createSlider(0,300,180);
-	  bSlider1.position(canvaswidth+20,970);
 	  bSlider1.style('width', '150px');
 	  bSlider1.changed(p.bind1);
+		bSlider1.parent(mm);
 
 	  var b2Div = p.createDiv('Change inter-map connection distance (0-300):');
-	  b2Div.position(canvaswidth+20,995);
+		b2Div.parent(mm);
 
 	  bSlider2 = p.createSlider(0,300,50);
-	  bSlider2.position(canvaswidth+20,1010);
 	  bSlider2.style('width', '150px');
 	  bSlider2.changed(p.bind2);
+		bSlider2.parent(mm);
 
 	  buttonRotate = p.createButton('auto-rotate');
-	  buttonRotate.position(canvaswidth+20,1060);
 	  buttonRotate.mousePressed(rotateMode);
 	  buttonRotate.style('background-color', '#FFF');
+		buttonRotate.parent(mm);
 
 	  var opDiv = p.createDiv('Change map opacity:');
-	  opDiv.position(canvaswidth+20,1090);
+		opDiv.parent(mm);
 
 	  tSlider1 = p.createSlider(0,200,100);
-	  tSlider1.position(canvaswidth+20,1110);
 	  tSlider1.style('width', '150px');
+		tSlider1.parent(mm);
 	  tSlider1.changed(p.trans1);
 	  tSlider2 = p.createSlider(0,100,100);
-	  tSlider2.position(canvaswidth+20,1130);
+		tSlider2.parent(mm);
 	  tSlider2.style('width', '150px');
 	  tSlider2.changed(p.trans2);
 
@@ -351,18 +340,6 @@ var l = function(p){
 		imgToggle(p);
 	};
 
-	p.resetMap = function(){
-		//find and delete all input DOM elements with class name of map's image
-		var allInputs = document.getElementsByClassName(maps[mapFocus].name);
-		//console.log(allInputs);
-		for(var i = allInputs.length-1; i >= 0; i--){
-			allInputs[i].remove();
-		}
-
-		//run object reset routine
-		maps[mapFocus].reset(p);
-	}
-
 	p.deleteIns = function(){
 		var allInputs = document.getElementsByClassName(maps[mapFocus].name);
 		//console.log(allInputs);
@@ -416,7 +393,7 @@ var l = function(p){
 	}
 
 	p.gridMode2 = function(){
-		p.resetMap();
+		resetMaps();
 		//find and delete all input DOM elements with class name of map's image
 		var allInputs = document.getElementsByClassName(maps[mapFocus].name);
 		//console.log(allInputs);
@@ -520,16 +497,6 @@ var l = function(p){
 		bindMaps();
 		maps[mapFocus].reCalculate();
 		wormCalc(p);
-	}
-
-	p.changeFocus = function(){
-		mapFocus++;
-		if(mapFocus > maps.length-1){
-			mapFocus = 0;
-		}
-		var div = document.getElementById('mFocus');
-		div.innerHTML = 'map#' + (mapFocus + 1);
-		maps[mapFocus].reCalculate();
 	}
 
 	p.addAllInputs = function(){
@@ -1434,6 +1401,18 @@ function delaunay(){
 	}
 }
 
+function resetMaps(){
+	//find and delete all input DOM elements with class name of map's image
+	var allInputs = document.getElementsByClassName(maps[mapFocus].name);
+	//console.log(allInputs);
+	for(var i = allInputs.length-1; i >= 0; i--){
+		allInputs[i].remove();
+	}
+
+	//run object reset routine
+	maps[mapFocus].reset(myp5);
+}
+
 /*function transToggle(){
 	if(trans == 1.0){
 		trans = 0.75;
@@ -1511,6 +1490,16 @@ function outOBJ(){
 		//console.log(exporter.parse(scene));
 		var blob = new Blob([exporter.parse(scene)], {type: "text/plain;charset=utf-8"});
 		saveAs(blob, "mesh.obj");
+}
+
+function changeFocus(){
+	mapFocus++;
+	if(mapFocus > maps.length-1){
+		mapFocus = 0;
+	}
+	var div = document.getElementById('mFocus');
+	div.innerHTML = 'map#' + (mapFocus + 1);
+	maps[mapFocus].reCalculate();
 }
 
 

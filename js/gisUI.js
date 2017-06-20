@@ -12,6 +12,12 @@ $( "#goRender" ).click(function() {
 	$("#goInterface").css("background-color","#333");
 	editMode = false;
 });
+$( "#resetMaps").click(function(){
+	resetMaps();
+})
 $( "#objOut" ).click(function() {
   outOBJ();
+});
+$( "#changeFocus").click(function(){
+	changeFocus();
 });
