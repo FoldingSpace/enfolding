@@ -60,8 +60,6 @@ var l = function(p){
 
 	p.setup = function() {
 	  // create canvas
-		canvaswidth = document.getElementById('leftCanv').clientWidth;
-		canvasheight = document.getElementById('leftCanv').clientHeight;
 	  var c = p.createCanvas(canvaswidth, canvasheight);
 	  //p.colorMode('HSB',360,100,100,100)
 	  p.background(255,100,100,0);
@@ -327,7 +325,7 @@ var l = function(p){
 		//stored as a p5 filetype (using file.data might fix)
 		mapImages.push(file.data);
 		//console.log('map focus: ' + mapFocus);
-		maps[mapFocus].reCalculate();
+		console.log(file.data);
 	  } else {
 		console.log('Not an image file!');
 	  }
@@ -419,6 +417,8 @@ var l = function(p){
 				p.moveIns();
 				p.showDefaultIns();
 				dragging = false;
+			} else {
+				maps[mapFocus].selectNode(p.mouseX,p.mouseY,p);
 			}
 	};
 
@@ -515,6 +515,8 @@ var l = function(p){
 
 
 	window.onload = function() {
+		canvaswidth = document.getElementById('leftCanv').clientWidth;
+		canvasheight = document.getElementById('leftCanv').clientHeight;
 		initThree();
 		animateThree();
 	};
@@ -524,16 +526,16 @@ var l = function(p){
 		scene = new THREE.Scene();
 		camera = new THREE.PerspectiveCamera(
                 75,             // Field of view
-                1000 / 600,      // Aspect ratio
+                canvaswidth / canvasheight,      // Aspect ratio
                 0.1,            // Near plane
                 100000           // Far plane
             );
-    	camera.position.set( 0, 0, 500 );
+    	camera.position.set( 0, 0, canvaswidth/2 );
     	camera.up = new THREE.Vector3(0,0,1);
     	camera.lookAt( new THREE.Vector3(0,0,0));
 	 	scene.add(camera);
 
-			renderer.setSize( 1000, 600 );
+			renderer.setSize( canvaswidth, canvasheight );
 			var div = document.getElementById('rightCanv');
 			//console.log(div);
 			div.appendChild(renderer.domElement);
@@ -589,7 +591,7 @@ var l = function(p){
 	};
 //END RIGHT CANVAS
 
-//map class
+//map class, contains main data structure
 function Map(name, opac, img, p, xoff, id){
 	this.name = name;
 	this.opac = opac;
@@ -603,6 +605,9 @@ function Map(name, opac, img, p, xoff, id){
 	this.mdsMatrix = [];
 	this.gridMode = false;
 	this.clickCount = 0; //count clicks for long distance edges in gridMode
+	this.selectNo = 0; //0 = nothing selected, 1 = first node selected
+	this.selectedOne;
+	this.selectedTwo;
 	//this.delaunayOn = true;
 	this.trans = 1.0;
 	this.zoomScroll = 1.0;
@@ -654,15 +659,16 @@ function Map(name, opac, img, p, xoff, id){
 		p.stroke(0,0,0,150);
 		p.strokeWeight(1);
     	for(var i=0; i < this.internalNodes.length; i++){
-    		/*if((this.internalNodes.length-1 == i || this.internalNodes.length-2 == i) && !this.gridMode){
-    			p.stroke(255);
-    			p.strokeWeight(3);
-    		}*/
-    		if(this.internalNodes.length-1 == i){
-    			p.stroke(255);
-    			p.strokeWeight(3);
-    		}
-
+    		// if(this.internalNodes.length-1 == i){
+    		// 	p.stroke(255);
+    		// 	p.strokeWeight(3);
+    		// }
+				//if node is selected, turn on highlight color
+				if(this.internalNodes[i].nodeHL == true){
+					p.fill(255,0,0,100);
+				} else {
+					p.fill(0,0,0,100);
+				}
     		p.ellipse(this.internalNodes[i].xpos,this.internalNodes[i].ypos, 10, 10);
     		//p.text(i,this.internalNodes[i].xpos,this.internalNodes[i].ypos);
     	}
@@ -717,6 +723,47 @@ function Map(name, opac, img, p, xoff, id){
 			makeInput(this.internalEdges[i], this.internalNodes, i, this.offSetX, this.offSetY,p, this.name);
 		}
 	}
+
+	this.selectNode = function(mx,my,p){
+		mx = mx-this.offSetX-dragOffX;
+		my = my-this.offSetY-dragOffY;
+		for(var i = 0; i < this.internalNodes.length; i++){
+			if(p.dist(mx,my,this.internalNodes[i].xpos,this.internalNodes[i].ypos) < 10){
+				if(this.selectNo == 0){
+			    this.unHighlightNodes();
+					this.selectedOne = i;
+					this.selectNo = 1;
+				} else if(this.selectNo == 1){
+					this.selectedTwo = i;
+					this.selectNo = 0;
+					this.checkForEdge(this.selectedOne,this.selectedTwo,p);
+				}
+				this.internalNodes[i].nodeHL = true;
+			}
+		}
+		this.display(p);
+	}
+
+	this.unHighlightNodes = function(){
+		for(var i = 0; i < this.internalNodes.length; i++){
+			this.internalNodes[i].nodeHL = false;
+		}
+	}
+		this.checkForEdge = function(one,two,p){
+			var foundEdge = false;
+			for(var i = 0; i < this.internalEdges.length; i++){
+				if(this.internalEdges[i].node1 == one && this.internalEdges[i].node2 == two){
+					foundEdge = true;
+					makeInput(this.internalEdges[i], this.internalNodes, i, this.offSetX, this.offSetY,p, this.name);
+				} else if(this.internalEdges[i].node1 == two && this.internalEdges[i].node2 == one){
+					makeInput(this.internalEdges[i], this.internalNodes, i, this.offSetX, this.offSetY,p, this.name);
+					foundEdge = true;
+				}
+			}
+			if(!foundEdge){
+				alert('no edge');
+			}
+		}
 
 	//called when mouseReleased
 		this.addNode = function(mx,my,p){
@@ -921,6 +968,7 @@ function Map(name, opac, img, p, xoff, id){
 function Node(xpos, ypos){
 	this.xpos = xpos;
 	this.ypos = ypos;
+	this.nodeHL = false;
 
 	this.display = function(){
 		ellipse(this.xpos, this.ypos);
@@ -973,7 +1021,11 @@ function makeInput(edge, nodes, n, xOff, yOff,p, nm){
 	  var posX = x1+(x2-x1)/2;
 		var posY = y1+(y2-y1)/2;
     input.position(posX, posY);
-    input.value(p.int(edge.distance));
+		if(p.int(edge.distance) != p.int(edge.distanceMod)){
+    	input.value(p.int(edge.distanceMod)+'/'+p.int(edge.distance));
+		} else {
+			input.value(p.int(edge.distance));
+		}
     input.id(nm + "_" + n); //adds id that refers to edge
     input.class(nm + " mapIn" ); //uses image name for class for deletion later
     input.attribute("onkeydown", "keypress(event, " + "'" + nm + "_" + n + "')");
