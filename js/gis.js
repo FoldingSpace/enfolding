@@ -322,8 +322,6 @@ var l = function(p){
 		} else {
 			console.log('Not an image file!');
 	 	}
-		var div = document.getElementById('mFocus');
-		div.innerHTML = 'map#' + (mapFocus + 1);
 	};
 
 	p.addMap = function(imgLoaded){
@@ -331,9 +329,12 @@ var l = function(p){
 		if(maps.length > 0){
 			offX = maps[mapFocus].img.width + 50;
 		}
-		p.append(maps,new Map('blah',1,imgLoaded,p, offX, maps.length));
+		p.append(maps,new Map('map'+maps.length,1,imgLoaded,p, offX, maps.length));
 		mapFocus = maps.length - 1; //change focus to last uploaded map
 		maps[mapFocus].makeNew(p);
+		maps[mapFocus].reCalculate();
+		var div = document.getElementById('mFocus');
+		div.innerHTML = 'map#' + (mapFocus + 1);
 	}
 
 	//calls outside function and passes 'p' instance
