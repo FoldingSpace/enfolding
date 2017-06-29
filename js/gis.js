@@ -60,11 +60,10 @@ var l = function(p){
 
 	p.setup = function() {
 	  // create canvas
+		p.noLoop();
 	  var c = p.createCanvas(canvaswidth, canvasheight);
 	  //p.colorMode('HSB',360,100,100,100)
 	  p.background(255,100,100,0);
-	  // Add an event for when a file is dropped onto the canvas
-	  c.drop(p.gotFile);
 
 	  /*buttonNodes = p.createButton('add nodes');
 	  buttonNodes.position(canvaswidth+20,5);
@@ -301,6 +300,8 @@ var l = function(p){
 	  p.textSize(24);
 	  p.textAlign('CENTER');
 	  p.text('Drag and drop a map', p.width/4, p.height/2);
+		// Add an event for when a file is dropped onto the canvas
+	  c.drop(p.gotFile);
 	  //p.createDiv('data: ').id('dataResults');
 	};
 
@@ -309,29 +310,31 @@ var l = function(p){
 	p.gotFile = function(file) {
 	  //console.log(file);
 	  if (file.type === 'image') {
-		// Create an image DOM element and add to maps array
+			// Create an image DOM element and add to maps array
+			p.loadImage(file.data,p.addMap);//callback to addMap once image loaded
+			//array mapImages holds map images for three.js access
+			//images also added to Map objects
+			//double storage should be consolidated in future versions
+			//currently unable to access img file from Map class for three.js, possible because
+			//stored as a p5 filetype (using file.data might fix)
+			mapImages.push(file.data);
+			//console.log('map focus: ' + mapFocus);
+		} else {
+			console.log('Not an image file!');
+	 	}
+		var div = document.getElementById('mFocus');
+		div.innerHTML = 'map#' + (mapFocus + 1);
+	};
+
+	p.addMap = function(imgLoaded){
 		var offX = 30
 		if(maps.length > 0){
 			offX = maps[mapFocus].img.width + 50;
 		}
-		var imageIn = p.createImg(file.data).hide();
-		p.append(maps,new Map(file.name,1,imageIn,p, offX, maps.length));
-		//console.log(maps.length);
+		p.append(maps,new Map('blah',1,imgLoaded,p, offX, maps.length));
 		mapFocus = maps.length - 1; //change focus to last uploaded map
-		//array mapImages holds map images for three.js access
-		//images also added to Map objects
-		//double storage should be consolidated in future versions
-		//currently unable to access img file from Map class for three.js, possible because
-		//stored as a p5 filetype (using file.data might fix)
-		mapImages.push(file.data);
-		//console.log('map focus: ' + mapFocus);
-		console.log(file.data);
-	  } else {
-		console.log('Not an image file!');
-	  }
-	  var div = document.getElementById('mFocus');
-		div.innerHTML = 'map#' + (mapFocus + 1);
-	};
+		maps[mapFocus].makeNew(p);
+	}
 
 	//calls outside function and passes 'p' instance
 	p.imageTog = function(){
@@ -612,25 +615,30 @@ function Map(name, opac, img, p, xoff, id){
 	this.trans = 1.0;
 	this.zoomScroll = 1.0;
 
-	//start with 4 nodes at corners
-	p.append(this.internalNodes, new Node(0,0));
-	p.append(this.internalNodes, new Node(this.img.width,0));
-	p.append(this.internalNodes, new Node(this.img.width, this.img.height));
-	p.append(this.internalNodes, new Node(0,this.img.height));
+
+  this.makeNew = function(p){
+		//start with 4 nodes at corners
+		p.append(this.internalNodes, new Node(0,0));
+		p.append(this.internalNodes, new Node(this.img.width,0));
+		p.append(this.internalNodes, new Node(this.img.width, this.img.height));
+		p.append(this.internalNodes, new Node(0,this.img.height));
 
 
-	//and 4 edges that connect them
-	p.append(this.internalEdges, new Edge(0,1,nodeDist(this.internalNodes[0],this.internalNodes[1],p)));
-	p.append(this.internalEdges, new Edge(1,2,nodeDist(this.internalNodes[1],this.internalNodes[2],p)));
-	p.append(this.internalEdges, new Edge(2,3,nodeDist(this.internalNodes[2],this.internalNodes[3],p)));
-	p.append(this.internalEdges, new Edge(3,0,nodeDist(this.internalNodes[3],this.internalNodes[0],p)));
+		//and 4 edges that connect them
+		p.append(this.internalEdges, new Edge(0,1,nodeDist(this.internalNodes[0],this.internalNodes[1],p)));
+		p.append(this.internalEdges, new Edge(1,2,nodeDist(this.internalNodes[1],this.internalNodes[2],p)));
+		p.append(this.internalEdges, new Edge(2,3,nodeDist(this.internalNodes[2],this.internalNodes[3],p)));
+		p.append(this.internalEdges, new Edge(3,0,nodeDist(this.internalNodes[3],this.internalNodes[0],p)));
 
-	for(var j = 0; j < this.internalEdges.length; j++){
-		makeInput(this.internalEdges[j], this.internalNodes, j, this.offSetX, this.offSetY,p, this.name + " defaultIn");
+		for(var j = 0; j < this.internalEdges.length; j++){
+			makeInput(this.internalEdges[j], this.internalNodes, j, this.offSetX, this.offSetY,p, this.name + " defaultIn");
+		}
+
+		p.strokeWeight(3);
+		p.stroke(0,0,0,100);
+		this.display(p);
 	}
 
-	p.strokeWeight(3);
-	p.stroke(0,0,0,100);
 	this.display = function(p){
 		//p.scale(this.zoomScroll);
 		p.push();
@@ -811,7 +819,7 @@ function Map(name, opac, img, p, xoff, id){
 	this.reset = function(p){
 		dragOffX = 0;
 		dragOffY = 0;
-		p.resetMatrix();
+		//p.resetMatrix();
 		this.internalNodes = [];
 		this.internalEdges = [];
 		this.trias = [0];
@@ -1664,4 +1672,4 @@ function mdsCoords(distances, dimensions) {
   exports.floydWarshall = floydWarshall;
 })(typeof window === 'undefined' ? module.exports : window);
 
-var myp5 = new p5(l,'leftCanv');
+	var myp5 = new p5(l,'leftCanv');
