@@ -111,6 +111,11 @@ function cNodesChange(obj){
 	recalcMaps();
 }
 
+function bindslide(obj){
+	bindDist = obj.value;
+	bindMaps(obj);
+}
+
 function rotateMode(obj){
 	if(!obj.checked){
 		autoRotate = false;

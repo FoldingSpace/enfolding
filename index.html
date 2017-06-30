@@ -72,12 +72,15 @@
       <input type="checkbox" name="3D" onchange="dimensionChange(this)" checked>3D<br />
       <input type="checkbox" name="2maps" onchange="wormMode(this)">Two map mode<br />
       <div id="nodeConnect" style="display:none;padding-left:15px;">
-        <input type="checkbox" name="bindmaps" onchange="bindMaps(this)">Bind maps together<br />
+        <input type="checkbox" id="bindCheck" name="bindmaps" onchange="bindMaps(this)">Bind maps together<br />
         <span>Connect last</span>
         <select onchange="cNodesChange(this)"><option value="1">1</option><option value="2">2</option><option value="3">3</option>
               <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-            </select>
-      <span>nodes of each map</span>
+          </select>
+      <span>nodes of each map</span><br />
+      <!-- BIND DIST CHANGE NOT WORKING
+      <input min="0" max="1000" value="200" id="0" onchange="bindslide(this)" style="width: 150px;" type="range">
+    -->
     </div>
     <input type="checkbox" name="rotate" onchange="rotateMode(this)">Rotate<br />
     <hr>

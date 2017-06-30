@@ -54,7 +54,7 @@ input{width:75px;opacity:.8;}
     text-decoration: none;
     display: inline-block;
     font-size: 12px;
-    box-shadow: 2px 2px 2px #333;
+    box-shadow: 1px 1px 1px #333;
 }
 
 .menu select{

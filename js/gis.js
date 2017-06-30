@@ -458,7 +458,7 @@ function Map(name, opac, img, p, xoff, id){
 	};
 
 	this.reCalculateW = function(){
-		var matrices = makeMatrix(p, this.id);
+		var matrices = makeMatrix(myp5, this.id);
 		this.trias = matrices[1];
 		displayMaps(p);
 	};
@@ -897,7 +897,11 @@ function combineMatrix(p, focus1, focus2){
 				matrix[y][x] = bindDist;
 			}
 		} else {
-			//bindTwo = false;
+			if(!editMode){
+				alert("Error: maps must have same number of points to bind");
+			}
+			document.getElementById("bindCheck").checked=false;
+			bindTwo = false;
 
 		}
 		//connection for testing (last two nodes on each connected
@@ -1106,7 +1110,7 @@ function displayGraphs(p){
 			maps[mapFocus].internalEdges[idNum[1]].distanceMod = inVal;
 			//console.log(inVal);
 			inputFocus.value = inVal + '/' + parseInt(maps[mapFocus].internalEdges[idNum[1]].distance);
-			maps[mapFocus].reCalculate();
+			recalcMaps();
 			}
 }
 
@@ -1164,11 +1168,6 @@ function recalcMaps(){
 	for(var i = 0; i < maps.length; i++){
 		maps[i].reCalculate();
 	}
-	wormCalc(myp5);
-}
-
-function bindDists(obj){
-	bindDist = obj.value;
 	wormCalc(myp5);
 }
 
