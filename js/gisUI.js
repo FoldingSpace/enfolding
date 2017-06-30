@@ -119,6 +119,11 @@ function rotateMode(obj){
 	}
 }
 
+function tslide(obj){
+	maps[obj.id].trans = obj.value/100;
+	recalcMaps();
+}
+
 function wireFrameMode(obj){
 	if(!obj.checked){
 		wireframeOn = false;

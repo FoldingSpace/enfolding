@@ -116,8 +116,21 @@ var l = function(p){
 		mapFocus = maps.length - 1; //change focus to last uploaded map
 		maps[mapFocus].makeNew(p);
 		maps[mapFocus].reCalculate();
-		//var div = document.getElementById('mFocus');
-		//div.innerHTML = 'map#' + (mapFocus + 1);
+
+		//create new transparency slider for map
+		var div = document.getElementById('transSliders');
+		var newSlider = document.createElement("INPUT");
+		newSlider.setAttribute("type", "range");
+		newSlider.setAttribute("min", 0);
+		newSlider.setAttribute("max", 100);
+		newSlider.setAttribute("value", 100);
+		newSlider.setAttribute("id",maps.length-1);
+		newSlider.setAttribute("onchange","tslide(this)");
+		newSlider.style.width = "150px";
+		var targetDiv = document.getElementById("transSliders");
+		targetDiv.innerHTML += "Opacity, map#" + maps.length + " <br />";
+		targetDiv.appendChild(newSlider);
+		targetDiv.innerHTML += "<br />";
 	}
 
 	p.deleteIns = function(){
