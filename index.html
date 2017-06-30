@@ -11,16 +11,20 @@
   <script language="javascript" type="text/javascript" src="js/OrbitControls.js"></script>
   <script language="javascript" type="text/javascript" src="js/OBJExporter.js"></script>
   <script language="javascript" type="text/javascript" src="js/FileSaver.min.js"></script>
-  <script language="javascript" type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
   <link rel="stylesheet" type="text/css" href="style/style.css">
 </head>
 <body>
+  <!--TOP MENU-->
   <div id="nav"><img src="images/logo.png" /> enfolding
-      <button id="goInterface" class="button">EDIT</button>
-      <button id="goRender" class="button">RENDER</button>
+      <button id="goInterface" class="button" onclick="goInterface()">EDIT</button>
+      <button id="goRender" class="button" onclick="goRender()">RENDER</button>
   </div>
+
+  <!--EDIT & RENDER CANVASES-->
 	<div id="leftCanv"></div>
 	<div id="rightCanv"></div>
+
+  <!--SIDE MENU, EDIT MODE-->
   <div id="menuEdit" class="menu">
     <header>MAPS</header>
       <button onclick="changeFocus()">FOCUS</button>
@@ -47,7 +51,6 @@
       </div>
       <button onclick="myp5.gridMode2()">ADD GRID</button>
     <hr>
-
     <header>ADVANCED</header>
       <input type="checkbox" name="triangles" onchange="delaunay(myp5,this)">Show triangles <br />
       <input type="checkbox" name="maps" onchange="imgToggle(myp5,this)" checked>Show maps <br />
@@ -60,6 +63,7 @@
       <button onclick="myp5.gridMode()">ADD GRID (COMPLEX)</button><br />
     </div>
 
+  <!--SIDE MENU, RENDER MODE-->
   <div id="menuRender" class="menu">
     <header>OUTPUT</header>
       <button id="objOut" class="button" onclick="outOBJ()">SAVE OBJ</button>
@@ -79,11 +83,9 @@
     <hr>
     <header>ADVANCED</header>
     <input type="checkbox" name="wireframe" onchange="wireFrameMode(this)">Wireframe<br />
-
   </div>
 
 	<div id="dataResults"></div>
-
   <script language="javascript" type="text/javascript" src="js/gis.js"></script>
   <script language="javascript" type="text/javascript" src="js/gisUI.js"></script>
 </body>

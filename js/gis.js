@@ -1,32 +1,9 @@
 var maps = []; //array to store images
 var mapFocus = 0; //number in array to focus
-var buttonNodes;
-var buttonDist;
-var buttonMatrix;
-var buttonWireframe;
-var buttonRotate;
-var buttonReset;
-var buttonToggleImg;
-var buttonDelaunay;
-var buttonHideInputs;
-var buttonGridMode;
-var buttonGridMode2;
-var buttonTestNodes;
-var buttonTestNodes2;
-var buttonMapFocus;
-var buttonCombine;
-var buttonOutOBJ;
-//var buttonTrans;
-var buttonDim;
-var buttonBind;
 var bindTwo = false;
 var tSlider1, tSlider2;
 var bSlider1, bSlider2;
 var nNodeSelect;
-var gridWSelect;
-var gridHSelect;
-//var gridW = 6;
-//var gridH = 6;
 var dim = 3;
 var mode = 0; //mode 0 = edit nodes, 1 = edit distances
 var imageOn = true;
@@ -85,11 +62,6 @@ var l = function(p){
 	  bSlider2.changed(p.bind2);
 		bSlider2.parent(mm);
 
-	  buttonRotate = p.createButton('auto-rotate');
-	  buttonRotate.mousePressed(rotateMode);
-	  buttonRotate.style('background-color', '#FFF');
-		buttonRotate.parent(mm);
-
 	  var opDiv = p.createDiv('Change map opacity:');
 		opDiv.parent(mm);
 
@@ -101,19 +73,6 @@ var l = function(p){
 		tSlider2.parent(mm);
 	  tSlider2.style('width', '150px');
 	  tSlider2.changed(p.trans2);
-
-	  /*buttonTestNodes = p.createButton('test nodes (100,100), (350,100)');
-	  buttonTestNodes.position(1020,200);
-	  buttonTestNodes.mousePressed(p.testNodes);
-
-	  buttonTestNodes = p.createButton('test nodes (100,100), (100,350)');
-	  buttonTestNodes.position(1020,220);
-	  buttonTestNodes.mousePressed(p.testNodes2);*/
-
-	  /*buttonDist = p.createButton('edit distances');
-	  buttonDist.position(canvaswidth+120,5);
-	  buttonDist.mousePressed(mode1);
-	  */
 
 	  /*buttonTrans = p.createButton('transparency on/off');
 	  buttonTrans.position(1150,200);
@@ -198,14 +157,15 @@ var l = function(p){
 	}
 
 	p.gridMode = function(){
-		resetMaps();
+		//resetMaps();
 		maps[mapFocus].grid(p);
 		gridMode = true;
 		recalcMaps();
 	}
 
 	p.gridMode2 = function(){
-		resetMaps();
+		//resetMaps();
+		p.deleteIns();
 		//maps[mapFocus].reset(p);
 		maps[mapFocus].grid2(p);
 		gridMode = true;
@@ -223,7 +183,7 @@ var l = function(p){
 	p.mouseReleased = function(){
 			if(dragging){
 				p.moveIns();
-				p.showDefaultIns();
+				//p.showDefaultIns();
 				dragging = false;
 			} else {
 				maps[mapFocus].selectNode(p.mouseX,p.mouseY,p);
@@ -1187,75 +1147,6 @@ function mode1(){
 	console.log('mode = 1');
 }
 
-function imgToggle(p,obj){
-	if(!obj.checked){
-		imageOn = false;
-	} else {
-		imageOn = true;
-	}
-	displayMaps(p);
-    	//displayGraphs();
-    //updateData(p);
-	//makeMatrix(p);
-
-}
-
-function wireFrameMode(obj){
-	if(!obj.checked){
-		wireframeOn = false;
-	} else {
-		wireframeOn = true;
-	}
-	recalcMaps();
-}
-
-function wormMode(obj){
-	if(!obj.checked){
-		worm = false;
-		document.getElementById("nodeConnect").style.display = "none";
-	} else {
-		worm = true;
-		document.getElementById("nodeConnect").style.display = "block";
-	}
-	recalcMaps();
-}
-
-function delaunay(p,obj){
-	if(!obj.checked){
-		delaunayOn = false;
-	} else {
-		delaunayOn = true;
-	}
-	maps[mapFocus].reCalculate();
-	wormCalc(p);
-}
-
-insToggle = function(p,obj){
-	if(!obj.checked){
-		var allInputs = document.getElementsByClassName("mapIn");
-		for(var i = 0; i < allInputs.length; i++){
-			allInputs[i].style.visibility = "hidden";
-		}
-	} else {
-		var allInputs = document.getElementsByClassName("mapIn");
-		for(var i = 0; i < allInputs.length; i++){
-			allInputs[i].style.visibility = "visible";
-		}
-	}
-}
-
-function resetMaps(){
-	//find and delete all input DOM elements with class name of map's image
-	var allInputs = document.getElementsByClassName(maps[mapFocus].name);
-	//console.log(allInputs);
-	for(var i = allInputs.length-1; i >= 0; i--){
-		allInputs[i].remove();
-	}
-
-	//run object reset routine
-	maps[mapFocus].reset(myp5);
-}
-
 function recalcMaps(){
 	for(var i = 0; i < maps.length; i++){
 		maps[i].reCalculate();
@@ -1263,53 +1154,8 @@ function recalcMaps(){
 	wormCalc(myp5);
 }
 
-/*function transToggle(){
-	if(trans == 1.0){
-		trans = 0.75;
-	} else {
-		trans = 1.0;
-	}
-}*/
-
-function rotateMode(obj){
-	if(!obj.checked){
-		autoRotate = false;
-	} else {
-		autoRotate = true;
-	}
-}
-
-function nNodesChange(obj){
-	var item = obj.value;
-	nNodes = item;
-}
-
-function cNodesChange(obj){
-	var item = obj.value;
-	connectLastNodes = item;
-	recalcMaps();
-}
-
-function dimensionChange(obj){
-	if(!obj.checked){
-		dim = 2;
-	} else {
-		dim = 3;
-	}
-	recalcMaps();
-}
-
 function bindDists(obj){
 	bindDist = obj.value;
-	wormCalc(myp5);
-}
-
-function bindMaps(obj){
-	if(!obj.checked){
-		bindTwo = false;
-	} else {
-		bindTwo = true;
-	}
 	wormCalc(myp5);
 }
 
@@ -1329,15 +1175,6 @@ function outOBJ(){
 		var blob = new Blob([exporter.parse(scene)], {type: "text/plain;charset=utf-8"});
 		saveAs(blob, "mesh.obj");
 }
-
-function changeFocus(){
-	mapFocus++;
-	if(mapFocus > maps.length-1){
-		mapFocus = 0;
-	}
-	displayMaps(myp5);
-}
-
 
 //from http://www.benfrederickson.com/multidimensional-scaling/
 function mdsCoords(distances, dimensions) {
