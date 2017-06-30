@@ -65,31 +65,7 @@ var l = function(p){
 	  //p.colorMode('HSB',360,100,100,100)
 	  p.background(255,100,100,0);
 
-	  /*buttonNodes = p.createButton('add nodes');
-	  buttonNodes.position(canvaswidth+20,5);
-	  buttonNodes.mousePressed(mode0); //must be a better way to do this
-	  */
-
-	//MENU - MAIN div
-		var menuMain = p.createDiv('');
-		var mm = document.getElementById('menu');
-		menuMain.parent(mm);
-		//menuMain.position(canvaswidth+15,10);
-		//menuMain.style("border","2px gray dashed");
-
-	//MENU - MAPS SECTION
-		var menuMaps = p.createDiv('');
-		menuMaps.parent(mm);
-		menuMaps.style("margin-bottom","40px");
-		menuMaps.style("margin-top","35px");
-		var titleMaps = p.createSpan("<h3>MAPS</h3>");
-		titleMaps.parent(menuMaps);
-
-		buttonToggleImg = p.createButton('TOGGLE MAPS');
-	  buttonToggleImg.parent(menuMaps);
-	  buttonToggleImg.mousePressed(p.imageTog);
-	  buttonToggleImg.style('background-color', '#FFF');
-
+/*
 	  buttonDelaunay = p.createButton('TOGGLE TRIANGLES');
 	  buttonDelaunay.parent(menuMaps);;
 	  buttonDelaunay.mousePressed(p.delTog);
@@ -99,66 +75,7 @@ var l = function(p){
 	  mF.parent(menuMaps);
 
 	//MENU - GRIDS SECTION
-		var menuGrids = p.createDiv("");
-		menuGrids.parent(mm);
-		menuGrids.style("border-top","2px gray dashed");
-		menuGrids.style("margin-bottom","40px");
-		var titleMaps = p.createSpan("<h3>GRIDS</h3>");
-		titleMaps.parent(menuGrids);
-		var imgGrid = p.createElement('img');
-		imgGrid.attribute('src','images/grid.gif');
-		imgGrid.parent(menuGrids);
 
-
-		gridHSelect = p.createSelect().id('gridCols');
-	  gridHSelect.parent(menuGrids);
-		//gridHSelect.style("position","relative");
-		//gridHSelect.style("top","50px");
-		//gridHSelect.style("left","0px");
-	  gridHSelect.option(1);
-	  gridHSelect.option(2);
-	  gridHSelect.option(3);
-	  gridHSelect.option(4);
-	  gridHSelect.option(5);
-	  gridHSelect.option(6);
-	  gridHSelect.option(7);
-	  gridHSelect.option(8);
-	  gridHSelect.option(9);
-	  gridHSelect.option(10);
-		gridHSelect.option(11);
-	  gridHSelect.option(12);
-	  gridHSelect.option(13);
-	  gridHSelect.option(14);
-	  gridHSelect.option(15);
-	  gridHSelect.option(16);
-		gridHSelect.option(17);
-	  gridHSelect.option(18);
-	  gridHSelect.option(19);
-	  gridHSelect.option(20);
-
-	  gridWSelect = p.createSelect().id('gridRows');
-	  gridWSelect.parent(menuGrids);
-	  gridWSelect.option(1);
-	  gridWSelect.option(2);
-	  gridWSelect.option(3);
-		gridWSelect.option(4);
-	  gridWSelect.option(5);
-	  gridWSelect.option(6);
-	  gridWSelect.option(7);
-	  gridWSelect.option(8);
-	  gridWSelect.option(9);
-	  gridWSelect.option(10);
-		gridWSelect.option(11);
-	  gridWSelect.option(12);
-	  gridWSelect.option(13);
-	  gridWSelect.option(14);
-	  gridWSelect.option(15);
-	  gridWSelect.option(16);
-		gridWSelect.option(17);
-	  gridWSelect.option(18);
-	  gridWSelect.option(19);
-	  gridWSelect.option(20);
-		gridWSelect.style("display","block");
 
 		buttonGridMode2 = p.createButton('ADD GRID (SQUARE)');
 	  buttonGridMode2.parent(menuGrids);
@@ -333,14 +250,9 @@ var l = function(p){
 		mapFocus = maps.length - 1; //change focus to last uploaded map
 		maps[mapFocus].makeNew(p);
 		maps[mapFocus].reCalculate();
-		var div = document.getElementById('mFocus');
-		div.innerHTML = 'map#' + (mapFocus + 1);
+		//var div = document.getElementById('mFocus');
+		//div.innerHTML = 'map#' + (mapFocus + 1);
 	}
-
-	//calls outside function and passes 'p' instance
-	p.imageTog = function(){
-		imgToggle(p);
-	};
 
 	p.deleteIns = function(){
 		var allInputs = document.getElementsByClassName(maps[mapFocus].name);
@@ -471,12 +383,6 @@ var l = function(p){
 
 	p.keyPressed = function(){
 
-	}
-
-	p.delTog = function(){
-		delaunay();
-		maps[mapFocus].reCalculate();
-		wormCalc(p);
 	}
 
 	p.wormModeTog = function(){
@@ -924,8 +830,10 @@ function Map(name, opac, img, p, xoff, id){
 		this.internalEdges = [];
 
 		var nodeCount = 0;
-		var n = gridWSelect.value();
-		var m = gridHSelect.value();
+		var e = document.getElementById("yval");
+		var n = e.options[e.selectedIndex].value;
+		var f = document.getElementById("xval");
+		var m = f.options[f.selectedIndex].value;
 		//console.log(n + ' ' + m);
 
 		for(var i = 0; i <= m; i++){ //height
@@ -1417,13 +1325,11 @@ function mode1(){
 	console.log('mode = 1');
 }
 
-function imgToggle(p){
-	if(imageOn){
+function imgToggle(p,obj){
+	if(!obj.checked){
 		imageOn = false;
-		buttonToggleImg.style('background-color', '#C3E4F6');
 	} else {
 		imageOn = true;
-		buttonToggleImg.style('background-color', '#FFF');
 	}
 	displayMaps(p);
     	//displayGraphs();
@@ -1452,14 +1358,14 @@ function wormMode(){
 	}
 }
 
-function delaunay(){
-	if(delaunayOn){
+function delaunay(p,obj){
+	if(!obj.checked){
 		delaunayOn = false;
-		buttonDelaunay.style('background-color', '#C3E4F6');
 	} else {
 		delaunayOn = true;
-		buttonDelaunay.style('background-color', '#FFF');
 	}
+	maps[mapFocus].reCalculate();
+	wormCalc(p);
 }
 
 function resetMaps(){
@@ -1558,9 +1464,7 @@ function changeFocus(){
 	if(mapFocus > maps.length-1){
 		mapFocus = 0;
 	}
-	var div = document.getElementById('mFocus');
-	div.innerHTML = 'map#' + (mapFocus + 1);
-	maps[mapFocus].reCalculate();
+	displayMaps(myp5);
 }
 
 

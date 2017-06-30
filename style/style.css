@@ -10,10 +10,10 @@ input{width:75px;opacity:.8;}
   top: 0;
   width: 100%;
   color: #ddd;
-  font-family: Baskerville, sans-serif;
+  font-family: Baskerville, Georgia, serif;
   font-size:14px;
   }
-.button{
+#nav .button{
   background-color: #333;
   border:none;text-align:center;
   display:inline-block;
@@ -22,16 +22,65 @@ input{width:75px;opacity:.8;}
   -webkit-transition-duration: 0.4s; /* Safari */
   transition-duration: 0.4s;
   margin:5px 5px;color:#ddd;}
-.button:hover {color: white;}
-#objOut{margin-left:100px;}
-#goInterface{margin-left:50px;background-color:#666;}
-#changeFocus{margin-left: 50px;}
+#nav .button:hover {color: white;}
+#nav #goInterface{margin-left:150px;background-color:#666;}
 
 /*menu*/
-#menu{
-  width:18%;height:900px;float:left;background-color: #ddd;
-  padding:10px;
+.menu{
+  width:18%;height:900px;float:left;background-color: #ccc;
+  padding:50px 10px;
 }
+
+.menu header{
+  font-size:18px;
+  font-weight: bold;
+  font-family: Helvetica, Arial, sans-serif;
+  margin-bottom:10px;
+}
+
+.menu hr{
+  margin-top:10px;
+}
+
+#menuRender{
+  display:none;
+}
+.menu button {
+    background-color: #08519c;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    box-shadow: 2px 2px 2px #333;
+}
+
+.menu select{
+    background-color: #08519c;
+    color: white;
+    padding: 3px 5px;
+    font-size: 10px;
+
+}
+
+#grids{
+  position:relative;
+  height:130px;
+}
+
+#yval{
+  position:absolute;
+  top:30px;
+  left:95px;
+}
+#xval{
+  position:absolute;
+  top:95px;
+  left:30px;
+}
+
 
 /*main section*/
 #leftCanv{width:80%;height:900px;float:left;}

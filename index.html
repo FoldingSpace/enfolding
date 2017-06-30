@@ -18,13 +18,54 @@
   <div id="nav"><img src="images/logo.png" /> enfolding
       <button id="goInterface" class="button">EDIT</button>
       <button id="goRender" class="button">RENDER</button>
-      <button id="changeFocus" class="button">FOCUS</button>
-      <button id="resetMaps" class="button">RESET</button>
-      <button id="objOut" class="button">SAVE OBJ</button>
   </div>
 	<div id="leftCanv"></div>
 	<div id="rightCanv"></div>
-  <div id="menu"></div>
+  <div id="menuEdit" class="menu">
+    <header>MAPS</header>
+      <button onclick="changeFocus()">FOCUS</button>
+      <button onclick="resetMaps();">RESET</button>
+    <hr>
+    <header>GRIDS</header>
+      <div id="grids">
+        <img src="images/grid.gif" />
+        <select id="yval">
+          <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+          <option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+          <option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+          <option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option>
+          <option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option>
+        </select>
+        <br />
+        <select id="xval">
+          <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+          <option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+          <option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+          <option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option>
+          <option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option>
+        </select>
+      </div>
+      <button onclick="myp5.gridMode2()">ADD GRID</button>
+    <hr>
+
+    <header>ADVANCED</header>
+      <input type="checkbox" name="triangles" value="trianglesOn" onchange="delaunay(myp5,this)">Show triangles <br />
+      <input type="checkbox" name="maps" value="mapsOn" onchange="imgToggle(myp5,this)" checked>Show maps <br />
+
+      <!--
+      <button onclick="">ADD GRID (COMPLEX)</button><br />
+      <span>Connect new nodes to:</span>
+        <select><option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+        </select>
+      <span>nearest nodes</span>
+    -->
+  </div>
+
+  <div id="menuRender" class="menu">
+    <button id="objOut" class="button" onclick="outOBJ()">SAVE OBJ</button>
+  </div>
+
 	<div id="dataResults"></div>
 
   <script language="javascript" type="text/javascript" src="js/gis.js"></script>
