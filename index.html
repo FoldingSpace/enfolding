@@ -31,7 +31,7 @@
         <img src="images/grid.gif" />
         <select id="yval">
           <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
-          <option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+          <option value="5" selected="selected">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
           <option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
           <option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option>
           <option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option>
@@ -39,7 +39,7 @@
         <br />
         <select id="xval">
           <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
-          <option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+          <option value="5" selected="selected">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
           <option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
           <option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option>
           <option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option>
@@ -49,21 +49,37 @@
     <hr>
 
     <header>ADVANCED</header>
-      <input type="checkbox" name="triangles" value="trianglesOn" onchange="delaunay(myp5,this)">Show triangles <br />
-      <input type="checkbox" name="maps" value="mapsOn" onchange="imgToggle(myp5,this)" checked>Show maps <br />
-
-      <!--
-      <button onclick="">ADD GRID (COMPLEX)</button><br />
+      <input type="checkbox" name="triangles" onchange="delaunay(myp5,this)">Show triangles <br />
+      <input type="checkbox" name="maps" onchange="imgToggle(myp5,this)" checked>Show maps <br />
+      <input type="checkbox" name="ins" onchange="insToggle(myp5,this)" checked>Show inputs <br /><br />
       <span>Connect new nodes to:</span>
-        <select><option value="1">1</option><option value="2">2</option><option value="3">3</option>
-                <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+        <select onchange="nNodesChange(this)"><option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                <option selected="selected" value="4">4</option><option value="5">5</option><option value="6">6</option>
         </select>
-      <span>nearest nodes</span>
-    -->
-  </div>
+      <span>nearest nodes</span><br /><br />
+      <button onclick="myp5.gridMode()">ADD GRID (COMPLEX)</button><br />
+    </div>
 
   <div id="menuRender" class="menu">
-    <button id="objOut" class="button" onclick="outOBJ()">SAVE OBJ</button>
+    <header>OUTPUT</header>
+      <button id="objOut" class="button" onclick="outOBJ()">SAVE OBJ</button>
+    <hr>
+    <header>MAP CONTROLS</header>
+      <input type="checkbox" name="3D" onchange="dimensionChange(this)" checked>3D<br />
+      <input type="checkbox" name="2maps" onchange="wormMode(this)">Two map mode<br />
+      <div id="nodeConnect" style="display:none;padding-left:15px;">
+        <input type="checkbox" name="bindmaps" onchange="bindMaps(this)">Bind maps together<br />
+        <span>Connect last</span>
+        <select onchange="cNodesChange(this)"><option value="1">1</option><option value="2">2</option><option value="3">3</option>
+              <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+            </select>
+      <span>nodes of each map</span>
+    </div>
+    <input type="checkbox" name="rotate" onchange="rotateMode(this)">Rotate<br />
+    <hr>
+    <header>ADVANCED</header>
+    <input type="checkbox" name="wireframe" onchange="wireFrameMode(this)">Wireframe<br />
+
   </div>
 
 	<div id="dataResults"></div>

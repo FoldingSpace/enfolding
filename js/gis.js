@@ -66,101 +66,8 @@ var l = function(p){
 	  p.background(255,100,100,0);
 
 /*
-	  buttonDelaunay = p.createButton('TOGGLE TRIANGLES');
-	  buttonDelaunay.parent(menuMaps);;
-	  buttonDelaunay.mousePressed(p.delTog);
-	  buttonDelaunay.style('background-color', '#C3E4F6');
-
-	  var mF = p.createDiv('map#1').id('mFocus');
-	  mF.parent(menuMaps);
-
-	//MENU - GRIDS SECTION
-
-
-		buttonGridMode2 = p.createButton('ADD GRID (SQUARE)');
-	  buttonGridMode2.parent(menuGrids);
-	  buttonGridMode2.mousePressed(p.gridMode2);
-		buttonGridMode2.style("display","block");
-
-		buttonInputs = p.createButton('ADD INPUT BOXES');
-		buttonInputs.parent(menuGrids);
-		buttonInputs.mousePressed(p.addAllInputs);
-		buttonInputs.style("display","block");
-
-		buttonHideInputs = p.createButton('DELETE INPUT BOXES');
-	  buttonHideInputs.parent(menuGrids);
-	  buttonHideInputs.mousePressed(p.hideIns);
-		buttonInputs.style("display","block");
-
-	  // buttonGridMode = p.createButton('ADD GRID (COMPLEX)');
-	  // buttonGridMode.parent(menuGrids);
-	  // buttonGridMode.mousePressed(p.gridMode);
-		// buttonGridMode.style("display","block");
-
-	//MENU - NODES SECTION
-		var menuNodes = p.createDiv("");
-		menuNodes.parent(mm);
-		menuNodes.style("border-top","2px gray dashed");
-		var titleMaps = p.createSpan("<h3>NODES</h3>");
-		titleMaps.parent(menuNodes);
-
-	  var nnDiv = p.createDiv('Double-click to add nodes, connect to:');
-	  nnDiv.parent(menuNodes);
-		nNodeSelect = p.createSelect();
-	  nNodeSelect.parent(menuNodes);
-	  nNodeSelect.option(4);
-	  nNodeSelect.option(3);
-	  nNodeSelect.option(2);
-	  nNodeSelect.option(1);
-	  nNodeSelect.option(0);
-	  nNodeSelect.option(10);
-	  nNodeSelect.option(9);
-	  nNodeSelect.option(8);
-	  nNodeSelect.option(7);
-	  nNodeSelect.option(6);
-	  nNodeSelect.option(5);
-	  nNodeSelect.changed(nNodesChange);
-	  var nnDiv2 = p.createDiv('nearest nodes');
-	  nnDiv2.parent(menuNodes);
-
-
-		var textCons = p.createSpan("<h3>INTER-MAP CONNECTIONS (FOR TWO MAP MODE) </h3>");
-		textCons.parent(menuNodes);
-
-		var consDiv = p.createDiv('Connect last');
-	  consDiv.parent(menuNodes);
-		cNodeSelect = p.createSelect();
-	  cNodeSelect.parent(menuNodes);
-	  cNodeSelect.option(1);
-	  cNodeSelect.option(2);
-	  cNodeSelect.option(3);
-	  cNodeSelect.option(4);
-	  cNodeSelect.option(5);
-	  cNodeSelect.option(6);
-	  cNodeSelect.changed(cNodesChange);
-		var ccDiv2 = p.createDiv('nodes of each map');
-	  ccDiv2.parent(menuNodes);
 
 	//3D MAP CONTROLS
-	  buttonDim = p.createButton('2D');
-	  buttonDim.mousePressed(p.dimensionChangeTog);
-	  buttonDim.style('background-color', '#FFF');
-		buttonDim.parent(mm);
-
-	  buttonWireframe = p.createButton('wireframe');
-	  buttonWireframe.mousePressed(p.wireFrameModeTog);
-	  buttonWireframe.style('background-color', '#FFF');
-		buttonWireframe.parent(mm);
-
-	  buttonCombine = p.createButton('two map mode');
-	  buttonCombine.mousePressed(p.wormModeTog);
-	  buttonCombine.style('background-color', '#FFF');
-		buttonCombine.parent(mm);
-
-	  buttonBind = p.createButton('bind two maps together');
-	  buttonBind.mousePressed(p.bindMapsTog);
-	  buttonBind.style('background-color', '#FFF');
-		buttonBind.parent(mm);
 
 	  var bDiv = p.createDiv('Change lattice-to-lattice distance (0-300):');
 		bDiv.parent(mm);
@@ -262,11 +169,8 @@ var l = function(p){
 		}
 	}
 
-	p.hideIns = function(){
-		var allInputs = document.getElementsByClassName("mapIn");
-		for(var i = 0; i < allInputs.length; i++){
-			allInputs[i].style.visibility = "hidden";
-		}
+	p.addAllInputs = function(){
+		maps[mapFocus].addInputs();
 	}
 
 	p.moveIns = function(){
@@ -294,30 +198,18 @@ var l = function(p){
 	}
 
 	p.gridMode = function(){
-		p.resetMap();
-		//find and delete all input DOM elements with class name of map's image
-		var allInputs = document.getElementsByClassName(maps[mapFocus].name);
-		//console.log(allInputs);
-		for(var i = allInputs.length-1; i >= 0; i--){
-			allInputs[i].remove();
-		}
+		resetMaps();
 		maps[mapFocus].grid(p);
 		gridMode = true;
-		maps[mapFocus].reCalculate(p);
+		recalcMaps();
 	}
 
 	p.gridMode2 = function(){
 		resetMaps();
-		//find and delete all input DOM elements with class name of map's image
-		var allInputs = document.getElementsByClassName(maps[mapFocus].name);
-		//console.log(allInputs);
-		for(var i = allInputs.length-1; i >= 0; i--){
-			allInputs[i].remove();
-		}
 		//maps[mapFocus].reset(p);
 		maps[mapFocus].grid2(p);
 		gridMode = true;
-		maps[mapFocus].reCalculate(p);
+		recalcMaps();
 	}
 
 	p.testNodes = function(){
@@ -347,7 +239,7 @@ var l = function(p){
 
 	p.mouseDragged = function(){
 		dragging = true;
-		p.hideIns();
+		//p.hideIns();
 		if(editMode){
 			dragOffX = p.mouseX - dragDiffX;
 			dragOffY = p.mouseY - dragDiffY;
@@ -384,35 +276,6 @@ var l = function(p){
 	p.keyPressed = function(){
 
 	}
-
-	p.wormModeTog = function(){
-		wormMode();
-		maps[mapFocus].reCalculate();
-		wormCalc(p);
-	}
-
-	p.dimensionChangeTog = function(){
-		dimensionChange();
-		maps[mapFocus].reCalculate();
-		wormCalc(p);
-	}
-
-	p.wireFrameModeTog = function(){
-		wireFrameMode();
-		maps[mapFocus].reCalculate();
-		wormCalc(p);
-	}
-
-	p.bindMapsTog = function(){
-		bindMaps();
-		maps[mapFocus].reCalculate();
-		wormCalc(p);
-	}
-
-	p.addAllInputs = function(){
-		maps[mapFocus].addInputs();
-	}
-
 };
 //END LEFT CANVAS
 
@@ -757,8 +620,10 @@ function Map(name, opac, img, p, xoff, id){
 		this.internalEdges = [];
 
 		var nodeCount = 0;
-		var n = gridWSelect.value();
-		var m = gridHSelect.value();
+		var e = document.getElementById("yval");
+		var n = e.options[e.selectedIndex].value;
+		var f = document.getElementById("xval");
+		var m = f.options[f.selectedIndex].value;
 		for(var i = 0; i <= m; i++){ //height
 			for(var j = 0; j <=n; j++){ //width
 				p.append(this.internalNodes, new Node(j*img.width/n,i*img.height/m));
@@ -774,8 +639,6 @@ function Map(name, opac, img, p, xoff, id){
 						p.append(this.internalEdges,new Edge(nodeCount-(n+1),nodeCount,
 							nodeDist(this.internalNodes[nodeCount-(n+1)],this.internalNodes[nodeCount],p)));
 					}
-					//console.log(nodeCount);
-					//console.log(nodeDist(this.internalNodes[nodeCount-(n+1)],this.internalNodes[nodeCount],p));
 
 				}
 				//console.log(this.internalNodes.length + ' ' + nodeCount);
@@ -820,7 +683,6 @@ function Map(name, opac, img, p, xoff, id){
 		*/
 		nodeCount = 0;
 		this.gridMode = true;
-		this.addInputs();
 		//this.reCalculate();
 	};
 
@@ -1062,7 +924,7 @@ function combineMatrix(p, focus1, focus2){
 				matrix[y][x] = bindDist;
 			}
 		} else {
-			bindTwo = false;
+			//bindTwo = false;
 
 		}
 		//connection for testing (last two nodes on each connected
@@ -1277,7 +1139,7 @@ function displayGraphs(p){
 
 window.ondblclick=function(){
 	reCalc(myp5);
-	maps[mapFocus].reCalculate();
+	recalcMaps();
 }
 
 //add data to end of page
@@ -1338,24 +1200,24 @@ function imgToggle(p,obj){
 
 }
 
-function wireFrameMode(){
-	if(wireframeOn){
+function wireFrameMode(obj){
+	if(!obj.checked){
 		wireframeOn = false;
-		buttonWireframe.style('background-color', '#FFF');
 	} else {
 		wireframeOn = true;
-		buttonWireframe.style('background-color', '#C3E4F6');
 	}
+	recalcMaps();
 }
 
-function wormMode(){
-	if(worm){
+function wormMode(obj){
+	if(!obj.checked){
 		worm = false;
-		buttonCombine.style('background-color', '#FFF');
+		document.getElementById("nodeConnect").style.display = "none";
 	} else {
 		worm = true;
-		buttonCombine.style('background-color', '#C3E4F6');
+		document.getElementById("nodeConnect").style.display = "block";
 	}
+	recalcMaps();
 }
 
 function delaunay(p,obj){
@@ -1366,6 +1228,20 @@ function delaunay(p,obj){
 	}
 	maps[mapFocus].reCalculate();
 	wormCalc(p);
+}
+
+insToggle = function(p,obj){
+	if(!obj.checked){
+		var allInputs = document.getElementsByClassName("mapIn");
+		for(var i = 0; i < allInputs.length; i++){
+			allInputs[i].style.visibility = "hidden";
+		}
+	} else {
+		var allInputs = document.getElementsByClassName("mapIn");
+		for(var i = 0; i < allInputs.length; i++){
+			allInputs[i].style.visibility = "visible";
+		}
+	}
 }
 
 function resetMaps(){
@@ -1380,6 +1256,13 @@ function resetMaps(){
 	maps[mapFocus].reset(myp5);
 }
 
+function recalcMaps(){
+	for(var i = 0; i < maps.length; i++){
+		maps[i].reCalculate();
+	}
+	wormCalc(myp5);
+}
+
 /*function transToggle(){
 	if(trans == 1.0){
 		trans = 0.75;
@@ -1388,58 +1271,46 @@ function resetMaps(){
 	}
 }*/
 
-function rotateMode(){
-	if(autoRotate){
+function rotateMode(obj){
+	if(!obj.checked){
 		autoRotate = false;
-		buttonRotate.style('background-color', '#FFF');
 	} else {
 		autoRotate = true;
-		buttonRotate.style('background-color', '#C3E4F6');
 	}
 }
 
-function nNodesChange(){
-	var item = nNodeSelect.value();
+function nNodesChange(obj){
+	var item = obj.value;
 	nNodes = item;
 }
 
-function cNodesChange(){
-	var item = cNodeSelect.value();
+function cNodesChange(obj){
+	var item = obj.value;
 	connectLastNodes = item;
+	recalcMaps();
 }
 
-//these are backwards!
-function gridWChange(){
-	var w = gridWSelect.value();
-	gridH = w;
-	console.log(gridH);
-}
-
-function gridHChange(){
-	var h = gridHSelect.value();
-	gridW = h;
-	console.log(gridW);
-}
-
-function dimensionChange(){
-	if(dim == 3){
+function dimensionChange(obj){
+	if(!obj.checked){
 		dim = 2;
-		buttonDim.style('background-color', '#C3E4F6');
 	} else {
 		dim = 3;
-		buttonDim.style('background-color', '#FFF');
 	}
+	recalcMaps();
 }
 
-function bindMaps(){
-	if(bindTwo){
+function bindDists(obj){
+	bindDist = obj.value;
+	wormCalc(myp5);
+}
+
+function bindMaps(obj){
+	if(!obj.checked){
 		bindTwo = false;
-		buttonBind.style('background-color', '#FFF');
 	} else {
 		bindTwo = true;
-		buttonBind.style('background-color', '#C3E4F6');
 	}
-
+	wormCalc(myp5);
 }
 
 function transOne(pp){
