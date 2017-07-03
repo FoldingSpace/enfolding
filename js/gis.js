@@ -1110,7 +1110,7 @@ function displayGraphs(p){
 			maps[mapFocus].internalEdges[idNum[1]].distanceMod = inVal;
 			//console.log(inVal);
 			inputFocus.value = inVal + '/' + parseInt(maps[mapFocus].internalEdges[idNum[1]].distance);
-			recalcMaps();
+			recalc
 			}
 }
 

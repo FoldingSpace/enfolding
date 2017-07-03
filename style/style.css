@@ -72,13 +72,13 @@ input{width:75px;opacity:.8;}
 
 #yval{
   position:absolute;
-  top:30px;
-  left:95px;
+  top:95px;
+  left:30px;
 }
 #xval{
   position:absolute;
-  top:95px;
-  left:30px;
+  top:30px;
+  left:95px;
 }
 
 
