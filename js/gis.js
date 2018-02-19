@@ -280,7 +280,7 @@ var l = function(p){
                 100000           // Far plane
             );
     	camera.position.set( 0, 0, canvaswidth/2 );
-    	camera.up = new THREE.Vector3(0,0,1);
+    	camera.up = new THREE.Vector3(0.1,0.1,1);
     	camera.lookAt( new THREE.Vector3(0,0,0));
 	 	  scene.add(camera);
 
@@ -301,11 +301,11 @@ var l = function(p){
   			scene.add(dLight);
 
   			var dLight2 = new THREE.DirectionalLight(0xFFFFFF, 0.5);
-  			dLight2.position.set(0,5,-5);
+  			dLight2.position.set(0.1,5,-5);
   			//scene.add(dLight2);
 
   			var dLight3 = new THREE.DirectionalLight(0xFFFFFF, 0.5);
-  			dLight3.position.set(0,0,5);
+  			dLight3.position.set(0.1,0.1,5);
   			//scene.add(dLight3);
 
   			var dLight4 = new THREE.DirectionalLight(0xFFFFFF, 0.2);
