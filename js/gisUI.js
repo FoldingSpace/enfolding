@@ -137,3 +137,13 @@ function wireFrameMode(obj){
 	}
 	recalcMaps();
 }
+
+function vrMode(obj){
+	if(!obj.checked){
+		vrModeOn = false;
+	} else {
+		vrModeOn = true;
+	}
+	initThree();
+	recalcMaps();
+}

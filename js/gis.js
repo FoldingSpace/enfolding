@@ -31,6 +31,8 @@ var dragOffX = 0;
 var dragOffY = 0;
 var dragging = false;
 
+var vrModeOn = false;
+
 //BEGIN LEFT CANVAS
 //instance mode of p5.js https://github.com/processing/p5.js/wiki/p5.js-overview#instantiation--namespace
 var l = function(p){
@@ -268,7 +270,17 @@ var l = function(p){
 	};
 
 	function initThree() {
-		renderer = new THREE.WebGLRenderer({ alpha: true });
+		if(vrModeOn){
+			renderer = VRViewer({
+				autoEnter: true,
+				emptyRoom: true,
+				THREE
+			});
+			console.log("VR on");
+		} else {
+			renderer = new THREE.WebGLRenderer({ alpha: true });
+			console.log("VR off");
+		}
 		scene = new THREE.Scene();
 		camera = new THREE.PerspectiveCamera(
                 75,             // Field of view
@@ -279,7 +291,7 @@ var l = function(p){
     	camera.position.set( 0, 0, canvaswidth/2 );
     	camera.up = new THREE.Vector3(0,0,1);
     	camera.lookAt( new THREE.Vector3(0,0,0));
-	 	scene.add(camera);
+	 	  scene.add(camera);
 
 			renderer.setSize( canvaswidth, canvasheight );
 			var div = document.getElementById('rightCanv');
