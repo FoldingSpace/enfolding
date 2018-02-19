@@ -272,7 +272,6 @@ var l = function(p){
 
 	function initThree() {
 		renderer = new THREE.WebGLRenderer({ alpha: true });
-		renderer.vr.enabled = true;
 		scene = new THREE.Scene();
 		camera = new THREE.PerspectiveCamera(
                 75,             // Field of view
@@ -286,9 +285,13 @@ var l = function(p){
 	 	  scene.add(camera);
 
 			renderer.setSize( canvaswidth, canvasheight );
+			renderer.vr.enabled = true;
+
 			var div = document.getElementById('rightCanv');
 			//console.log(div);
 			div.appendChild(renderer.domElement);
+			document.body.appendChild( WEBVR.createButton( renderer ) );
+
 			controls = new THREE.OrbitControls(camera, renderer.domElement);
 
 			scene.add( new THREE.AmbientLight( 0xC0C0C0 ) );
@@ -312,7 +315,7 @@ var l = function(p){
   			var light = new THREE.AmbientLight( 0x404040 ); // soft white light
 			//scene.add( light );
 
-			renderer.setClearColor(0xdffffff, 1);
+			renderer.setClearColor(0xbbbbbb, 1);
 
             //plotTriangles(mdsArray,triangles);
 		};

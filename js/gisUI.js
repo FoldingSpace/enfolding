@@ -137,13 +137,3 @@ function wireFrameMode(obj){
 	}
 	recalcMaps();
 }
-
-function vrMode(obj){
-	if(!obj.checked){
-		renderer.vr.enabled = false;
-		console.log("vr off");
-	} else {
-		renderer.vr.enabled = true;
-		console.log("vr on");
-	}
-}
