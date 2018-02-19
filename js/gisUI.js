@@ -140,10 +140,11 @@ function wireFrameMode(obj){
 
 function vrMode(obj){
 	if(!obj.checked){
-		vrModeOn = false;
+		renderer.vr.enabled = false;
+		console.log("vr off");
 	} else {
-		vrModeOn = true;
+		renderer.vr.enabled = true;
+		console.log("vr on");
 	}
-	initThree();
 	recalcMaps();
 }

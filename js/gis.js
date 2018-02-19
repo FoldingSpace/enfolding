@@ -32,6 +32,7 @@ var dragOffY = 0;
 var dragging = false;
 
 var vrModeOn = false;
+var renderer;
 
 //BEGIN LEFT CANVAS
 //instance mode of p5.js https://github.com/processing/p5.js/wiki/p5.js-overview#instantiation--namespace
@@ -255,7 +256,7 @@ var l = function(p){
 //END LEFT CANVAS
 
 //BEGIN RIGHT CANVAS, THREE.JS
-	var renderer, scene, camera;
+	var scene, camera;
 	var wireframeOn = false;
 
 	//var material = new THREE.MeshLambertMaterial( { color: 0x0000FF, transparent: true, opacity: 0.8, side: THREE.DoubleSide, wireframe:wireframeOn } );
@@ -270,17 +271,7 @@ var l = function(p){
 	};
 
 	function initThree() {
-		if(vrModeOn){
-			renderer = VRViewer({
-				autoEnter: true,
-				emptyRoom: true,
-				THREE
-			});
-			console.log("VR on");
-		} else {
-			renderer = new THREE.WebGLRenderer({ alpha: true });
-			console.log("VR off");
-		}
+		renderer = new THREE.WebGLRenderer({ alpha: true });
 		scene = new THREE.Scene();
 		camera = new THREE.PerspectiveCamera(
                 75,             // Field of view
