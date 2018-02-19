@@ -272,6 +272,7 @@ var l = function(p){
 
 	function initThree() {
 		renderer = new THREE.WebGLRenderer({ alpha: true });
+		renderer.vr.enabled = true;
 		scene = new THREE.Scene();
 		camera = new THREE.PerspectiveCamera(
                 75,             // Field of view
@@ -987,7 +988,8 @@ function resetThree(){
 }
 
 function plotTriangles(coords, trias, focus, outputObj){
-	var material = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture(mapImages[focus]), side: THREE.DoubleSide } );
+	var triaTexture = new THREE.TextureLoader().load(mapImages[focus]);
+	var material = new THREE.MeshPhongMaterial( { map: triaTexture, side: THREE.DoubleSide } );
 	material.setValues({wireframe:wireframeOn});
 	material.transparent = true;
 	material.opacity = maps[focus].trans;

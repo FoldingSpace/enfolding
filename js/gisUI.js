@@ -146,5 +146,4 @@ function vrMode(obj){
 		renderer.vr.enabled = true;
 		console.log("vr on");
 	}
-	recalcMaps();
 }
