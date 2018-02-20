@@ -290,9 +290,16 @@ var l = function(p){
 			var div = document.getElementById('rightCanv');
 			//console.log(div);
 			div.appendChild(renderer.domElement);
-			document.body.appendChild( WEBVR.createButton( renderer ) );
+			div.appendChild( WEBVR.createButton( renderer ) );
 
 			controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+			//test webvr
+			room = new THREE.Mesh(
+					new THREE.BoxGeometry( 6, 6, 6, 8, 8, 8 ),
+					new THREE.MeshBasicMaterial( { color: 0x404040, wireframe: true } )
+				);
+				scene.add( room );
 
 			scene.add( new THREE.AmbientLight( 0xC0C0C0 ) );
 
