@@ -260,7 +260,7 @@ var l = function(p){
 	var wireframeOn = false;
 
 	//var material = new THREE.MeshLambertMaterial( { color: 0x0000FF, transparent: true, opacity: 0.8, side: THREE.DoubleSide, wireframe:wireframeOn } );
-    var slices = [];
+  var slices = [];
 
 
 	window.onload = function() {
@@ -269,6 +269,7 @@ var l = function(p){
 		initThree();
 		animateThree();
 	};
+
 
 	function initThree() {
 		renderer = new THREE.WebGLRenderer({ alpha: true });
@@ -279,27 +280,19 @@ var l = function(p){
                 0.1,            // Near plane
                 100000           // Far plane
             );
-    	camera.position.set( 0, 0, canvaswidth/2 );
-    	camera.up = new THREE.Vector3(0,0,1);
-    	camera.lookAt( new THREE.Vector3(0,0,0));
+		  camera.position.set( 0, 0, canvaswidth/2 );
+			camera.up = new THREE.Vector3(0,0,1);
+			camera.lookAt( new THREE.Vector3(0,0,0));
 	 	  scene.add(camera);
 
 			renderer.setSize( canvaswidth, canvasheight );
-			renderer.vr.enabled = true;
+			//renderer.vr.enabled = true;
 
 			var div = document.getElementById('rightCanv');
 			//console.log(div);
 			div.appendChild(renderer.domElement);
-			div.appendChild( WEBVR.createButton( renderer ) );
 
 			controls = new THREE.OrbitControls(camera, renderer.domElement);
-
-			//test webvr
-			room = new THREE.Mesh(
-					new THREE.BoxGeometry( 6, 6, 6, 8, 8, 8 ),
-					new THREE.MeshBasicMaterial( { color: 0x404040, wireframe: true } )
-				);
-				scene.add( room );
 
 			scene.add( new THREE.AmbientLight( 0xC0C0C0 ) );
 
@@ -323,6 +316,9 @@ var l = function(p){
 			//scene.add( light );
 
 			renderer.setClearColor(0xffffff, 1);
+			//The X axis is red. The Y axis is green. The Z axis is blue.
+				//var axesHelper = new THREE.AxesHelper( 5 );
+				//scene.add( axesHelper );
 
             //plotTriangles(mdsArray,triangles);
 		};
@@ -341,7 +337,7 @@ var l = function(p){
 						//slice.x += .00001;
 					}
 				}
-
+				controls.update();
 				renderer.render(scene, camera);
 
 
@@ -349,6 +345,7 @@ var l = function(p){
 			render();
 
 	};
+
 //END RIGHT CANVAS
 
 //map class, contains main data structure
@@ -1013,15 +1010,15 @@ function plotTriangles(coords, trias, focus, outputObj){
 			var w = maps[focus].img.width;
 			var h = maps[focus].img.height;
 
-			var x1 = coords[trias[i]][0]/zoom;
-			var y1 = coords[trias[i]][1]/zoom;
-			var z1 = coords[trias[i]][2]/zoom;
-			var x2 = coords[trias[i+1]][0]/zoom;
-			var y2 = coords[trias[i+1]][1]/zoom;
-			var z2 = coords[trias[i+1]][2]/zoom;
-			var x3 = coords[trias[i+2]][0]/zoom;
-			var y3 = coords[trias[i+2]][1]/zoom;
-			var z3 = coords[trias[i+2]][2]/zoom;
+			var x1 = coords[trias[i]][0];
+			var y1 = coords[trias[i]][1];
+			var z1 = coords[trias[i]][2];
+			var x2 = coords[trias[i+1]][0];
+			var y2 = coords[trias[i+1]][1];
+			var z2 = coords[trias[i+1]][2];
+			var x3 = coords[trias[i+2]][0];
+			var y3 = coords[trias[i+2]][1];
+			var z3 = coords[trias[i+2]][2];
 
 			//console.log("[" + i + "]" + "(" + x1 + "," + y1 + "," + z1 + ") " + "(" + x2 + "," + y2 + "," + z3 + ") " + "(" + x3 + "," + y3 + "," + z3 +")");
 
@@ -1063,6 +1060,16 @@ function plotTriangles(coords, trias, focus, outputObj){
 			//console.log(x1 + ' ' + y1 + ' ' + z1);
 
 		}
+
+		//move mesh away from origin
+		if(vrModeOn){
+			for(var i = 0; i < slices.length; i++){
+				slices[i].position.x += 300;
+			  slices[i].position.y += 300;
+				slices[i].position.z += 300;
+			}
+			console.log('webVR on');
+		}
 	}
 		//var material2 = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('images/texture.jpg'), side: THREE.DoubleSide } );
 		//var cube = new THREE.CubeGeometry(300,300,300);
@@ -1078,12 +1085,12 @@ function plotCoords(coords, es,p){
 	p.push();
   p.translate(0,0,2); //offset 2 pixels from triangulation graph
 	for(var i = 0; i < es.length; i++){
-		var x1 = coords[es[i].node1][0]/zoom;
-		var x2 = coords[es[i].node2][0]/zoom;
-		var y1 = coords[es[i].node1][1]/zoom;
-		var y2 = coords[es[i].node2][1]/zoom;
-		var z1 = coords[es[i].node1][2]/zoom;
-		var z2 = coords[es[i].node2][2]/zoom;
+		var x1 = coords[es[i].node1][0];
+		var x2 = coords[es[i].node2][0];
+		var y1 = coords[es[i].node1][1];
+		var y2 = coords[es[i].node2][1];
+		var z1 = coords[es[i].node1][2];
+		var z2 = coords[es[i].node2][2];
 		p.stroke(150,150,150);
 		p.line(x1,y1,z1,x2,y2,z2);
 		//console.log(x + ' ' + y);

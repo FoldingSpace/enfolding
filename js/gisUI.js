@@ -137,3 +137,18 @@ function wireFrameMode(obj){
 	}
 	recalcMaps();
 }
+
+function webVrOn(obj){
+	var vrDiv = document.getElementById('webvr');
+
+	if(!obj.checked){
+		vrModeOn = false;
+		renderer.vr.enabled = false;
+		vrDiv.innerHTML = '';
+	} else {
+		vrModeOn = true;
+		renderer.vr.enabled = true;
+		vrDiv.append(WEBVR.createButton(renderer));
+	}
+	recalcMaps();
+}
