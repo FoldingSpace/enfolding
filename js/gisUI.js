@@ -149,6 +149,10 @@ function webVrOn(obj){
 		vrModeOn = true;
 		renderer.vr.enabled = true;
 		vrDiv.append(WEBVR.createButton(renderer));
+		var user = new THREE.Group();
+		user.position.set( 0, 0, canvaswidth/2 );
+		scene.add( user );
+		user.add( camera );
 	}
 	recalcMaps();
 }

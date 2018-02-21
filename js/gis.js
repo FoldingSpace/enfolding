@@ -337,6 +337,9 @@ var l = function(p){
 						//slice.x += .00001;
 					}
 				}
+				if(vrModeOn){
+
+				}
 				controls.update();
 				renderer.render(scene, camera);
 
@@ -1061,6 +1064,7 @@ function plotTriangles(coords, trias, focus, outputObj){
 
 		}
 
+/*
 		//move mesh away from origin
 		if(vrModeOn){
 			for(var i = 0; i < slices.length; i++){
@@ -1070,7 +1074,9 @@ function plotTriangles(coords, trias, focus, outputObj){
 			}
 			console.log('webVR on');
 		}
+		*/
 	}
+
 		//var material2 = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('images/texture.jpg'), side: THREE.DoubleSide } );
 		//var cube = new THREE.CubeGeometry(300,300,300);
   		//var mesh = new THREE.Mesh(cube,material);
