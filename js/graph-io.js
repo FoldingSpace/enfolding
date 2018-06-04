@@ -13,16 +13,17 @@ function GraphXMLfromString(xmlString){
   var keyid, fortype, attrtype;
   var keys = {};
   for (var i = 0; i < keychildren.length; i++) {
-    keyid = keychildren[i].getElementsByTagName('id');
-    fortype = keychildren[i].getElementsByTagName('for');
-    attrname = keychildren[i].getElementsByTagName('attr.name');
+    keyid = keychildren[i].getAttribute('className')('id');
+    fortype = keychildren[i].getAttribute('for');
+    attrname = keychildren[i].getAttribute('attr.name');
     keys[keyid] = {'for': fortype, 'attrname': attrname}
     console.log(keyid + ', ' + fortype + ', ' + attrtype);
   }
 
+  /*
+
   // parse nodes
 
-  /*
   var nodechildren = xmlDoc.getElementsByTagName('node');
   var datachildren;
   for (var currnode = 0; currnode < nodechildren.length; currnode++) {
@@ -35,7 +36,7 @@ function GraphXMLfromString(xmlString){
     }
   }
   */
-  
+
   // add the nodes to enfolding
 
   // parse edges
