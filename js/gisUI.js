@@ -156,3 +156,10 @@ function webVrOn(obj){
 	}
 	recalcMaps();
 }
+
+function getDataIO(fileIn){
+	console.log(fileIn);
+	//parse xml
+	//make new map object
+
+}
