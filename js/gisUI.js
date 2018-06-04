@@ -165,10 +165,11 @@ document.getElementById('import').onclick = function() {
 		fr.readAsText(files[0]);
 		fr.onload = function(e) {
     	rawText = fr.result;
+			GraphXMLfromString(rawText);
+			
 		};
 
   if (files.length <= 0) {
     return false;
   }
-	GraphXMLfromString(rawText);
 }
