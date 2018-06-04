@@ -159,9 +159,16 @@ function webVrOn(obj){
 
 document.getElementById('import').onclick = function() {
     var files = document.getElementById('selectFiles').files;
-  	console.log(files[0]);
+		var fr = new FileReader();
+		var rawText;
+
+		fr.readAsText(files[0]);
+		fr.onload = function(e) {
+    	rawText = fr.result;
+		};
+
   if (files.length <= 0) {
     return false;
   }
-	inputGraphXML(files[0]);
+	GraphXMLfromString(rawText);
 }
