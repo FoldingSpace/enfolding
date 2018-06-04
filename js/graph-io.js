@@ -14,25 +14,27 @@ function inputGraphXML(xmlURI){
   //
   console.log("XML URI to load: "+xmlURI)
   var xml = myp5.loadXML(xmlURI,XMLfound,XMLnotfound);
-  var children = xml.getChildren('key');
+
 
   // get the keys
-  for (var i = 0; i < children.length; i++) {
-    var keyid = children[i].getString('id');
-    var fortype = children[i].getString('for');
-    var attrtype = children[i].getString('attr.name');
+  var keychildren = xml.getChildren('key');
+  var keyid, fortype, attrtype;
+  for (var i = 0; i < keychildren.length; i++) {
+    keyid = keychildren[i].getString('id');
+    fortype = keychildren[i].getString('for');
+    attrtype = keychildren[i].getString('attr.name');
     console.log(keyid + ', ' + fortype + ', ' + attrtype);
   }
 
-  // get the keys
-
-  for (var i = 0; i < children.length; i++) {
-    var keyid = children[i].getString('id');
-    var fortype = children[i].getString('for');
-    var attrtype = children[i].getString('attr.name');
-    console.log(keyid + ', ' + fortype + ', ' + attrtype);
+  // parse nodes
+  var nodechildren = xml.getChildren('node');
+  var datachildren;
+  for (var currnode = 0; currnode < nodechildren.length; currnode++) {
+    datachildren = nodechildren[currnode].getChildren('data');
+    for (var currdata = 0; currdata < datachildren.length; currdata++) {
+      keyid = datachildren[currdata].getString('key');
+      keycontent = datachildren[currdata].getContent();
+      console.log(keyid + ' is ' + keycontent);
+    }
   }
-
-
-
-  }
+}
