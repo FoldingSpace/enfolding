@@ -32,7 +32,7 @@ function GraphXMLfromString(xmlString){
     for (var currdata = 0; currdata < datachildren.length; currdata++) {
       keyid = datachildren[currdata].getAttribute('key');
       keycontent = datachildren[currdata].childNodes[0].nodeValue;
-      console.log("Node " + currnode + " has key " + keyid + ' of ' + keycontent);
+      /*console.log("Node " + currnode + " has key " + keyid + ' of ' + keycontent);*/
       console.log("Node " + currnode + " has key " + keys[keyid].attrname + ' of ' + keycontent)
     }
   }
