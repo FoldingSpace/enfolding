@@ -19,11 +19,9 @@ function GraphXMLfromString(xmlString){
     keyid = keychildren[i].getAttribute('id');
     fortype = keychildren[i].getAttribute('for');
     attrname = keychildren[i].getAttribute('attr.name');
-    keys[keyid] = {'for': fortype, 'attrname': attrname}
+    keys[keyid] = {for: fortype, attrname: attrname}
     console.log(keyid + ', ' + fortype + ', ' + attrname);
   }
-
-  /*
 
   // parse nodes
 
@@ -32,13 +30,13 @@ function GraphXMLfromString(xmlString){
   for (var currnode = 0; currnode < nodechildren.length; currnode++) {
     datachildren = nodechildren[currnode].getElementsByTagName('data');
     for (var currdata = 0; currdata < datachildren.length; currdata++) {
-      keyid = datachildren[currdata].getElementsByTagName('key');
-      keycontent = datachildren[currdata].nodeValue;
+      keyid = datachildren[currdata].getAttribute('key');
+      keycontent = datachildren[currdata].childNodes[0].nodeValue;
       console.log("Node " + currnode + " has key " + keyid + ' of ' + keycontent);
-      console.log("Node " + currnode + " has key " + keys[keyid] + ' is ' + keycontent)
+      console.log("Node " + currnode + " has key " + keys[keyid].attrname + ' of ' + keycontent)
     }
   }
-  */
+
 
   // add the nodes to enfolding
 
