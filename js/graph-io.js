@@ -40,4 +40,11 @@ function inputGraphXML(xmlURI){
       console.log("Node " + currnode + " has key " + keys[keyid] + ' is ' + keycontent)
     }
   }
+
+  // add the nodes to enfolding
+
+  // parse edges
+
+  // add edges to enfolding
+  
 }
