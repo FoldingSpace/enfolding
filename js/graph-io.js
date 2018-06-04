@@ -19,10 +19,12 @@ function inputGraphXML(xmlURI){
   // get the keys
   var keychildren = xml.getChildren('key');
   var keyid, fortype, attrtype;
+  var keys = {};
   for (var i = 0; i < keychildren.length; i++) {
     keyid = keychildren[i].getString('id');
     fortype = keychildren[i].getString('for');
-    attrtype = keychildren[i].getString('attr.name');
+    attrname = keychildren[i].getString('attr.name');
+    keys[keyid] = {'for': fortype, 'attrname': attrname}
     console.log(keyid + ', ' + fortype + ', ' + attrtype);
   }
 
@@ -34,7 +36,8 @@ function inputGraphXML(xmlURI){
     for (var currdata = 0; currdata < datachildren.length; currdata++) {
       keyid = datachildren[currdata].getString('key');
       keycontent = datachildren[currdata].getContent();
-      console.log(keyid + ' is ' + keycontent);
+      console.log("Node " + currnode + " has key " + keyid + ' of ' + keycontent);
+      console.log("Node " + currnode + " has key " + keys[keyid] + ' is ' + keycontent)
     }
   }
 }
