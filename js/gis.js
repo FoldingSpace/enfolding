@@ -43,7 +43,7 @@ var l = function(p){
 		p.noLoop();
 	  var c = p.createCanvas(canvaswidth, canvasheight);
 	  //p.colorMode('HSB',360,100,100,100)
-	  p.background(255,100,100,0);
+	  p.background('#404040');
 
 /*
 
@@ -315,7 +315,7 @@ var l = function(p){
   			var light = new THREE.AmbientLight( 0x404040 ); // soft white light
 			//scene.add( light );
 
-			renderer.setClearColor(0xffffff, 1);
+			renderer.setClearColor(0x404040, 1);
 			//The X axis is red. The Y axis is green. The Z axis is blue.
 				//var axesHelper = new THREE.AxesHelper( 5 );
 				//scene.add( axesHelper );
@@ -438,7 +438,7 @@ function Map(name, opac, img, p, xoff, id){
     		//p.text(i,this.internalNodes[i].xpos,this.internalNodes[i].ypos);
     	}
     	//display edges
-    	p.strokeWeight(2);
+    	p.strokeWeight(4);
    		p.stroke(0,0,0, 150);
     	for(var i=0; i < this.internalEdges.length; i++){
     		var x1 = this.internalNodes[this.internalEdges[i].node1].xpos;
@@ -1108,7 +1108,7 @@ function plotCoords(coords, es,p){
 }
 
 function displayMaps(p){
-	p.background(255,255,255);
+	p.background('#404040');
 	for (var i=0; i<maps.length; i++) {
     	maps[i].display(p);
 
