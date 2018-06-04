@@ -10,14 +10,17 @@ function GraphXMLfromString(xmlString){
 
   // get the keys
   var keychildren = xmlDoc.getElementsByTagName('key');
+  console.log('keychildren has this number of elements: '+keychildren.length)
+  console.log(keychildren)
+
   var keyid, fortype, attrtype;
   var keys = {};
   for (var i = 0; i < keychildren.length; i++) {
-    keyid = keychildren[i].getAttribute('className')('id');
+    keyid = keychildren[i].getAttribute('id');
     fortype = keychildren[i].getAttribute('for');
     attrname = keychildren[i].getAttribute('attr.name');
     keys[keyid] = {'for': fortype, 'attrname': attrname}
-    console.log(keyid + ', ' + fortype + ', ' + attrtype);
+    console.log(keyid + ', ' + fortype + ', ' + attrname);
   }
 
   /*
