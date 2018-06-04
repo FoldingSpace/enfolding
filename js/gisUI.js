@@ -157,8 +157,10 @@ function webVrOn(obj){
 	recalcMaps();
 }
 
-function getDataIO(fileIn){
-	console.log(fileIn);
+function getDataIO(fileInput){
+	console.log(fileInput);
+	inputGraphXML(fileInput);
+	
 	//parse xml
 	//make new map object
 
