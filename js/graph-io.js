@@ -1,11 +1,11 @@
 // comment
 // testing
 
-XMLnotfound(myerror){
+function XMLnotfound(myerror){
   console.log("loadXML current error is: " + myerror)
 }
 
-XMLfound(myXML){
+function XMLfound(myXML){
   console.log("loadXML worked with value: " + myXML)
 }
 
