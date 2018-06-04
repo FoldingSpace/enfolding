@@ -157,11 +157,11 @@ function webVrOn(obj){
 	recalcMaps();
 }
 
-function getDataIO(fileInput){
-	console.log(fileInput);
-	inputGraphXML(fileInput);
-	
-	//parse xml
-	//make new map object
-
+document.getElementById('import').onclick = function() {
+    var files = document.getElementById('selectFiles').files;
+  	console.log(files[0]);
+  if (files.length <= 0) {
+    return false;
+  }
+	inputGraphXML(files[0]);
 }
