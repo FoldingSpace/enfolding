@@ -1,6 +1,48 @@
 // comment
 // testing
 
+function GraphXMLfromString(xmlString){
+  //
+  console.log("XML data seen: "+xmlString)
+
+  parser = new DOMParser();
+  xmlDoc = parser.parseFromString(xmlString,"text/xml")
+
+  // get the keys
+  var keychildren = xmlDoc.getElementsByTagName('key');
+  var keyid, fortype, attrtype;
+  var keys = {};
+  for (var i = 0; i < keychildren.length; i++) {
+    keyid = keychildren[i].getElementsByTagName('id');
+    fortype = keychildren[i].getElementsByTagName('for');
+    attrname = keychildren[i].getElementsByTagName('attr.name');
+    keys[keyid] = {'for': fortype, 'attrname': attrname}
+    console.log(keyid + ', ' + fortype + ', ' + attrtype);
+  }
+
+  // parse nodes
+  var nodechildren = xmlDoc.getElementsByTagName('node');
+  var datachildren;
+  for (var currnode = 0; currnode < nodechildren.length; currnode++) {
+    datachildren = nodechildren[currnode].getElementsByTagName('data');
+    for (var currdata = 0; currdata < datachildren.length; currdata++) {
+      keyid = datachildren[currdata].getElementsByTagName('key');
+      keycontent = datachildren[currdata].nodeValue;
+      console.log("Node " + currnode + " has key " + keyid + ' of ' + keycontent);
+      console.log("Node " + currnode + " has key " + keys[keyid] + ' is ' + keycontent)
+    }
+  }
+
+  // add the nodes to enfolding
+
+  // parse edges
+
+  // add edges to enfolding
+
+}
+
+/*
+
 function XMLnotfound(myerror){
   console.log("loadXML current error is: " + myerror)
 }
@@ -8,7 +50,6 @@ function XMLnotfound(myerror){
 function XMLfound(myXML){
   console.log("loadXML worked with value: " + myXML)
 }
-
 
 function inputGraphXML(xmlURI){
   //
@@ -46,5 +87,6 @@ function inputGraphXML(xmlURI){
   // parse edges
 
   // add edges to enfolding
-  
+
 }
+*/
