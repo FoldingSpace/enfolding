@@ -21,6 +21,8 @@ function GraphXMLfromString(xmlString){
   }
 
   // parse nodes
+
+  /*
   var nodechildren = xmlDoc.getElementsByTagName('node');
   var datachildren;
   for (var currnode = 0; currnode < nodechildren.length; currnode++) {
@@ -32,7 +34,8 @@ function GraphXMLfromString(xmlString){
       console.log("Node " + currnode + " has key " + keys[keyid] + ' is ' + keycontent)
     }
   }
-
+  */
+  
   // add the nodes to enfolding
 
   // parse edges
