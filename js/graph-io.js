@@ -1,9 +1,18 @@
 // comment
 // testing
 
+XMLnotfound(myerror){
+  console.log("loadXML current error is: " + myerror)
+}
+
+XMLfound(myXML){
+  console.log("loadXML worked with value: " + myXML)
+}
+
+
 function inputGraphXML(xmlURI){
   //
-  var xml = myp5.loadXML(xmlURI);
+  var xml = myp5.loadXML(xmlURI,XMLfound,XMLnotfound);
   var children = xml.getChildren('key');
 
   // get the keys
