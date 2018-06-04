@@ -12,6 +12,7 @@ function XMLfound(myXML){
 
 function inputGraphXML(xmlURI){
   //
+  console.log("XML URI to load: "+xmlURI)
   var xml = myp5.loadXML(xmlURI,XMLfound,XMLnotfound);
   var children = xml.getChildren('key');
 
