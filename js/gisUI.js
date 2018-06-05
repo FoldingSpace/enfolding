@@ -185,8 +185,12 @@ document.getElementById('importImage').onclick = function() {
 		if (files.length <= 0) {
 			return false;
 		}*/
-		console.log("Current file: "+files[0]);
+		console.log("Current file: "+files[0].name);
 		myfile = new p5.File(files[0]);
-		myp5.addMap(myfile);
+		console.log("Current file as p5 file: "+myfile);
+		console.log("Current type of p5 file: "+myfile.type);
+		myp5.loadImage(myfile.data,myp5.addMap);
+		//myp5.addMap(myfile);
+		console.log("Made it past loadImage and addMap.")
 		mapImages.push(myfile);
 }
