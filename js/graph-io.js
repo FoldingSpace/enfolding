@@ -58,9 +58,9 @@ function GraphXMLfromString(xmlString) {
     edgeid = edgechildren[curredge].getAttribute('id');
     datachildren = edgechildren[curredge].getElementsByTagName('data');
     var current_edge = {};
-    for (var currdata = 0; currdata < edgechildren.length; currdata++) {
-      keyid = edgechildren[currdata].getAttribute('key');
-      keycontent = edgechildren[currdata].childNodes[0].nodeValue;
+    for (var currdata = 0; currdata < datachildren.length; currdata++) {
+      keyid = datachildren[currdata].getAttribute('key');
+      keycontent = datachildren[currdata].childNodes[0].nodeValue;
       console.log("Edge " + edgeid + " has key " + keys[keyid].attrname + ' of ' + keycontent);
       current_edge[keys[keyid].attrname] = keycontent;
     };
