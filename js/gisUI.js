@@ -167,7 +167,6 @@ document.getElementById('import').onclick = function() {
     	rawText = fr.result;
 			document.getElementById('fileN').innerHTML = (files[0].name);
 			GraphXMLfromString(rawText);
-
 		};
 
   if (files.length <= 0) {

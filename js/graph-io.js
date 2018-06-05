@@ -36,12 +36,13 @@ function GraphXMLfromString(xmlString) {
       keyid = datachildren[currdata].getAttribute('key');
       keycontent = datachildren[currdata].childNodes[0].nodeValue;
       console.log("Node " + nodeid + " has key " + keys[keyid].attrname + ' of ' + keycontent);
-      current_node = current_node + {keys[keyid].attrname: keycontent};
-    }
-    nodes = nodes + current_node;
-  }
+      current_node[keys[keyid].attrname] = keycontent;
+    };
+    nodes[nodeid] = current_node;
+  };
   console.log(nodes);
-}
+};
+
   // add the nodes to enfolding
 
   // parse edges
