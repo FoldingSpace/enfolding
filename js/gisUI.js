@@ -35,10 +35,10 @@ function resetMaps(){
 		toRemove.parentNode.removeChild(toRemove);
 	}
 	//run object reset routine
-	maps[mapFocus].reset(myp5);
+	maps[mapFocus].reset();
 }
 
-function delaunay(p,obj){
+function delaunay(obj){
 	if(!obj.checked){
 		delaunayOn = false;
 	} else {
@@ -48,7 +48,7 @@ function delaunay(p,obj){
 	wormCalc(p);
 }
 
-function imgToggle(p,obj){
+function imgToggle(obj){
 	if(!obj.checked){
 		imageOn = false;
 	} else {
@@ -57,7 +57,7 @@ function imgToggle(p,obj){
 	displayMaps(p);
 }
 
-insToggle = function(p,obj){
+insToggle = function(obj){
 	if(!obj.checked){
 		var allInputs = document.getElementsByClassName("mapIn");
 		for(var i = 0; i < allInputs.length; i++){
@@ -102,7 +102,7 @@ function bindMaps(obj){
 	} else {
 		bindTwo = true;
 	}
-	wormCalc(myp5);
+	wormCalc();
 }
 
 function cNodesChange(obj){
@@ -189,7 +189,7 @@ document.getElementById('importImage').onclick = function() {
 		myfile = new p5.File(files[0]);
 		console.log("Current file as p5 file: "+myfile);
 		console.log("Current type of p5 file: "+myfile.type);
-		myp5.loadImage(myfile.data,myp5.addMap);
+		loadImage(myfile.data,addMap);
 		//myp5.addMap(myfile);
 		console.log("Made it past loadImage and addMap.")
 		mapImages.push(myfile);
