@@ -9,6 +9,8 @@ function GraphXMLfromString(xmlString) {
   xmlDoc = parser.parseFromString(xmlString,"text/xml");
 
   // get the keys
+
+  console.log("KEYS:");
   var keychildren = xmlDoc.getElementsByTagName('key');
   console.log('keychildren has this number of elements: '+keychildren.length);
   console.log(keychildren);
@@ -23,8 +25,10 @@ function GraphXMLfromString(xmlString) {
     console.log(keyid + ', ' + fortype + ', ' + attrname);
   };
 
+
   // parse nodes
 
+  console.log("NODES:");
   var nodechildren = xmlDoc.getElementsByTagName('node');
   var datachildren;
   var nodes = {};
@@ -46,6 +50,26 @@ function GraphXMLfromString(xmlString) {
   // add the nodes to enfolding
 
   // parse edges
+
+  console.log("EDGES:");
+  var edgechildren = xmlDoc.getElementsByTagName('edge');
+  var datachildren;
+  var edges = {};
+  for (var curredge = 0; curredge < edgechildren.length; curredge++) {
+    edgeid = edgechildren[curredge].getAttribute('id');
+    datachildren = edgechildren[currnode].getElementsByTagName('data');
+    var current_edge = {};
+    for (var currdata = 0; currdata < edgechildren.length; currdata++) {
+      keyid = edgechildren[currdata].getAttribute('key');
+      keycontent = edgechildren[currdata].childNodes[0].nodeValue;
+      console.log("Edge " + edgeid + " has key " + keys[keyid].attrname + ' of ' + keycontent);
+      current_edge[keys[keyid].attrname] = keycontent;
+    };
+    edges[edgeid] = current_edge;
+  };
+  console.log(edges);
+};
+
 
   // add edges to enfolding
 
