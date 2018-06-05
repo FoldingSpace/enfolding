@@ -157,19 +157,35 @@ function webVrOn(obj){
 	recalcMaps();
 }
 
-document.getElementById('import').onclick = function() {
-    var files = document.getElementById('selectFiles').files;
+document.getElementById('importGraph').onclick = function() {
+    var files = document.getElementById('selectFilesGraph').files;
 		var fr = new FileReader();
 		var rawText;
 
 		fr.readAsText(files[0]);
 		fr.onload = function(e) {
     	rawText = fr.result;
-			document.getElementById('fileN').innerHTML = (files[0].name);
+			document.getElementById('fileGraph').innerHTML = (files[0].name);
 			GraphXMLfromString(rawText);
 		};
 
   if (files.length <= 0) {
     return false;
   }
+}
+
+document.getElementById('importImage').onclick = function() {
+    var files = document.getElementById('selectFilesImage').files;
+		/*
+		var fr = new FileReader();
+
+		fr.readAsBinaryString(files[0]);
+		var rawData = fr.result;
+		document.getElementById('fileImage').innerHTML = (files[0].name);
+		if (files.length <= 0) {
+			return false;
+		}*/
+		myfile = new p5.File(files[0])
+		myp5.addMap(myfile)
+		mapImages.push(myfile)
 }
