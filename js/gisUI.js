@@ -6,6 +6,7 @@ function goInterface(){
 	document.getElementById("goInterface").style.backgroundColor = "#666";
 	document.getElementById("goRender").style.backgroundColor = "#333";
 	editMode = true;
+	insToggle2();
 }
 
 function goRender(){
@@ -16,6 +17,7 @@ function goRender(){
 	document.getElementById("goInterface").style.backgroundColor = "#333";
 	document.getElementById("goRender").style.backgroundColor = "#666";
 	editMode = false;
+	insToggle2();
 }
 
 function changeFocus(){
@@ -45,7 +47,7 @@ function delaunay(obj){
 		delaunayOn = true;
 	}
 	maps[mapFocus].reCalculate();
-	wormCalc(p);
+	wormCalc();
 }
 
 function imgToggle(obj){
@@ -54,7 +56,7 @@ function imgToggle(obj){
 	} else {
 		imageOn = true;
 	}
-	displayMaps(p);
+	displayMaps();
 }
 
 insToggle = function(obj){
@@ -69,6 +71,21 @@ insToggle = function(obj){
 			allInputs[i].style.visibility = "visible";
 		}
 	}
+}
+
+function insToggle2(){
+	if(!editMode){
+		var allInputs = document.getElementsByClassName("mapIn");
+		for(var i = 0; i < allInputs.length; i++){
+			allInputs[i].style.visibility = "hidden";
+		}
+	} else if(editMode){
+		var allInputs = document.getElementsByClassName("mapIn");
+		for(var i = 0; i < allInputs.length; i++){
+			allInputs[i].style.visibility = "visible";
+		}
+	}
+
 }
 
 function nNodesChange(obj){
@@ -189,7 +206,9 @@ document.getElementById('importImage').onclick = function() {
 		myfile = new p5.File(files[0]);
 		console.log("Current file as p5 file: "+myfile);
 		console.log("Current type of p5 file: "+myfile.type);
-		loadImage(myfile.data,addMap);
+		var myfiledata = myfile.data;
+		console.log(myfiledata);
+		myp5.loadImage(myfiledata,myp5.addMap);
 		//myp5.addMap(myfile);
 		console.log("Made it past loadImage and addMap.")
 		mapImages.push(myfile);
