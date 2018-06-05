@@ -407,7 +407,7 @@ function Map(name, opac, img, xoff, id){
     		//text(i,this.internalNodes[i].xpos,this.internalNodes[i].ypos);
     	}
     	//display edges
-    	strokeWeight(4);
+    	strokeWeight(3);
    		stroke(0,0,0, 150);
     	for(var i=0; i < this.internalEdges.length; i++){
     		var x1 = this.internalNodes[this.internalEdges[i].node1].xpos;
@@ -745,7 +745,7 @@ function nodeDist(nn1,nn2){
 }
 
 //make dist input box
-function makeInput(edge, nodes, n, xOff, yOff,p, nm){
+function makeInput(edge, nodes, n, xOff, yOff, nm){
 	input = createInput();
 	var x1 = nodes[edge.node1].xpos+xOff+dragOffX;
 	var x2 = nodes[edge.node2].xpos+xOff+dragOffX;
