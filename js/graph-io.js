@@ -45,7 +45,6 @@ function GraphXMLfromString(xmlString) {
     nodes[nodeid] = current_node;
   };
   console.log(nodes);
-};
 
   // add the nodes to enfolding
 
