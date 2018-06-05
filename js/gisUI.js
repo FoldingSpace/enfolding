@@ -208,7 +208,7 @@ document.getElementById('importImage').onclick = function() {
 		console.log("Current type of p5 file: "+myfile.type);
 		var myfiledata = myfile.data;
 		console.log(myfiledata);
-		myp5.loadImage(myfiledata,myp5.addMap);
+		loadImage(myfiledata,addMap);
 		//myp5.addMap(myfile);
 		console.log("Made it past loadImage and addMap.")
 		mapImages.push(myfile);
