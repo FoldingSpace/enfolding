@@ -56,8 +56,10 @@ function GraphXMLfromString(xmlString) {
   var edges = {};
   for (var curredge = 0; curredge < edgechildren.length; curredge++) {
     edgeid = edgechildren[curredge].getAttribute('id');
+    edgesource = edgechildren[curredge].getAttribute('source');
+    edgetarget = edgechildren[curredge].getAttribute('target');
     datachildren = edgechildren[curredge].getElementsByTagName('data');
-    var current_edge = {};
+    var current_edge = {'source': edgesource, 'target':edgetarget};
     for (var currdata = 0; currdata < datachildren.length; currdata++) {
       keyid = datachildren[currdata].getAttribute('key');
       keycontent = datachildren[currdata].childNodes[0].nodeValue;
