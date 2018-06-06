@@ -65,6 +65,7 @@ new p5();
 	  //console.log(file);
 	  if (file.type === 'image') {
 			// Create an image DOM element and add to maps array
+			// console.log("We're currently seeing: "+file.data)
 			loadImage(file.data,addMap);//callback to addMap once image loaded
 			//array mapImages holds map images for three.js access
 			//images also added to Map objects
