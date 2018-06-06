@@ -6,7 +6,6 @@ function goInterface(){
 	document.getElementById("goInterface").style.backgroundColor = "#666";
 	document.getElementById("goRender").style.backgroundColor = "#333";
 	editMode = true;
-	insToggle2();
 }
 
 function goRender(){
@@ -17,7 +16,6 @@ function goRender(){
 	document.getElementById("goInterface").style.backgroundColor = "#333";
 	document.getElementById("goRender").style.backgroundColor = "#666";
 	editMode = false;
-	insToggle2();
 }
 
 function changeFocus(){
@@ -37,29 +35,29 @@ function resetMaps(){
 		toRemove.parentNode.removeChild(toRemove);
 	}
 	//run object reset routine
-	maps[mapFocus].reset();
+	maps[mapFocus].reset(myp5);
 }
 
-function delaunay(obj){
+function delaunay(p,obj){
 	if(!obj.checked){
 		delaunayOn = false;
 	} else {
 		delaunayOn = true;
 	}
 	maps[mapFocus].reCalculate();
-	wormCalc();
+	wormCalc(p);
 }
 
-function imgToggle(obj){
+function imgToggle(p,obj){
 	if(!obj.checked){
 		imageOn = false;
 	} else {
 		imageOn = true;
 	}
-	displayMaps();
+	displayMaps(p);
 }
 
-insToggle = function(obj){
+insToggle = function(p,obj){
 	if(!obj.checked){
 		var allInputs = document.getElementsByClassName("mapIn");
 		for(var i = 0; i < allInputs.length; i++){
@@ -71,21 +69,6 @@ insToggle = function(obj){
 			allInputs[i].style.visibility = "visible";
 		}
 	}
-}
-
-function insToggle2(){
-	if(!editMode){
-		var allInputs = document.getElementsByClassName("mapIn");
-		for(var i = 0; i < allInputs.length; i++){
-			allInputs[i].style.visibility = "hidden";
-		}
-	} else if(editMode){
-		var allInputs = document.getElementsByClassName("mapIn");
-		for(var i = 0; i < allInputs.length; i++){
-			allInputs[i].style.visibility = "visible";
-		}
-	}
-
 }
 
 function nNodesChange(obj){
@@ -119,7 +102,7 @@ function bindMaps(obj){
 	} else {
 		bindTwo = true;
 	}
-	wormCalc();
+	wormCalc(myp5);
 }
 
 function cNodesChange(obj){
@@ -172,44 +155,4 @@ function webVrOn(obj){
 		user.add( camera );
 	}
 	recalcMaps();
-}
-
-document.getElementById('importGraph').onclick = function() {
-    var files = document.getElementById('selectFilesGraph').files;
-		var fr = new FileReader();
-		var rawText;
-
-		fr.readAsText(files[0]);
-		fr.onload = function(e) {
-    	rawText = fr.result;
-			document.getElementById('fileGraph').innerHTML = (files[0].name);
-			GraphXMLfromString(rawText);
-		};
-
-  if (files.length <= 0) {
-    return false;
-  }
-}
-
-document.getElementById('importImage').onclick = function() {
-    var files = document.getElementById('selectFilesImage').files;
-		/*
-		var fr = new FileReader();
-
-		fr.readAsBinaryString(files[0]);
-		var rawData = fr.result;
-		document.getElementById('fileImage').innerHTML = (files[0].name);
-		if (files.length <= 0) {
-			return false;
-		}*/
-		console.log("Current file: "+files[0].name);
-		myfile = new p5.File(files[0]);
-		console.log("Current file as p5 file: "+myfile);
-		console.log("Current type of p5 file: "+myfile.type);
-		var myfiledata = myfile.data;
-		console.log(myfiledata);
-		myp5.loadImage(myfiledata,myp5.addMap);
-		//myp5.addMap(myfile);
-		console.log("Made it past loadImage and addMap.")
-		mapImages.push(myfile);
 }
