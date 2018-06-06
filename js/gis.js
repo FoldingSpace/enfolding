@@ -34,70 +34,38 @@ var dragging = false;
 var vrModeOn = false;
 var renderer;
 
+new p5();
+
+
 //BEGIN LEFT CANVAS
 //instance mode of p5.js https://github.com/processing/p5.js/wiki/p5.js-overview#instantiation--namespace
-var l = function(p){
 
-	p.setup = function() {
+	setup = function() {
 	  // create canvas
-		p.noLoop();
-	  var c = p.createCanvas(canvaswidth, canvasheight);
-	  //p.colorMode('HSB',360,100,100,100)
-	  p.background(255,100,100,0);
-
-/*
-
-	//3D MAP CONTROLS
-
-	  var bDiv = p.createDiv('Change lattice-to-lattice distance (0-300):');
-		bDiv.parent(mm);
-
-	  bSlider1 = p.createSlider(0,300,180);
-	  bSlider1.style('width', '150px');
-	  bSlider1.changed(p.bind1);
-		bSlider1.parent(mm);
-
-	  var b2Div = p.createDiv('Change inter-map connection distance (0-300):');
-		b2Div.parent(mm);
-
-	  bSlider2 = p.createSlider(0,300,50);
-	  bSlider2.style('width', '150px');
-	  bSlider2.changed(p.bind2);
-		bSlider2.parent(mm);
-
-	  var opDiv = p.createDiv('Change map opacity:');
-		opDiv.parent(mm);
-
-	  tSlider1 = p.createSlider(0,200,100);
-	  tSlider1.style('width', '150px');
-		tSlider1.parent(mm);
-	  tSlider1.changed(p.trans1);
-	  tSlider2 = p.createSlider(0,100,100);
-		tSlider2.parent(mm);
-	  tSlider2.style('width', '150px');
-	  tSlider2.changed(p.trans2);
-
-	  /*buttonTrans = p.createButton('transparency on/off');
-	  buttonTrans.position(1150,200);
-	  buttonTrans.mousePressed(transToggle);*/
-
-	  p.fill(0,0,0,100);
-	  p.noStroke();
-	  p.textSize(24);
-	  p.textAlign('CENTER');
-	  p.text('Drag and drop a map', p.width/4, p.height/2);
+		noLoop();
+	  var c = createCanvas(document.getElementById("leftCanv").offsetWidth,document.getElementById("leftCanv").offsetHeight);
+		c.parent("leftCanv");
+	  //colorMode('HSB',360,100,100,100)
+	  background('#fff');
+	  fill(0,0,0,100);
+	  noStroke();
+	  textSize(24);
+	  textAlign('CENTER');
+	  text('Drag and drop a map', width/4, height/2);
 		// Add an event for when a file is dropped onto the canvas
-	  c.drop(p.gotFile);
-	  //p.createDiv('data: ').id('dataResults');
+	  c.drop(gotFile);
+	  //createDiv('data: ').id('dataResults');
 	};
 
-	p.draw = function() {};
+	draw = function() {};
 
-	p.gotFile = function(file) {
+
+
+	gotFile = function(file) {
 	  //console.log(file);
 	  if (file.type === 'image') {
 			// Create an image DOM element and add to maps array
-			p.loadImage(file.data,p.addMap);//callback to addMap once image loaded
+			loadImage(file.data,addMap);//callback to addMap once image loaded
 			//array mapImages holds map images for three.js access
 			//images also added to Map objects
 			//double storage should be consolidated in future versions
@@ -110,14 +78,15 @@ var l = function(p){
 	 	}
 	};
 
-	p.addMap = function(imgLoaded){
+
+	addMap = function(imgLoaded){
 		var offX = 30
 		if(maps.length > 0){
 			offX = maps[mapFocus].img.width + 50;
 		}
-		p.append(maps,new Map('map'+maps.length,1,imgLoaded,p, offX, maps.length));
+		append(maps,new Map('map'+maps.length,1,imgLoaded,offX, maps.length));
 		mapFocus = maps.length - 1; //change focus to last uploaded map
-		maps[mapFocus].makeNew(p);
+		maps[mapFocus].makeNew();
 		maps[mapFocus].reCalculate();
 
 		//create new transparency slider for map
@@ -136,7 +105,7 @@ var l = function(p){
 		targetDiv.innerHTML += "<br />";
 	}
 
-	p.deleteIns = function(){
+	deleteIns = function(){
 		var allInputs = document.getElementsByClassName(maps[mapFocus].name);
 		//console.log(allInputs);
 		for(var i = allInputs.length-1; i >= 0; i--){
@@ -144,11 +113,11 @@ var l = function(p){
 		}
 	}
 
-	p.addAllInputs = function(){
+	addAllInputs = function(){
 		maps[mapFocus].addInputs();
 	}
 
-	p.moveIns = function(){
+	moveIns = function(){
 		var allInputs = document.getElementsByClassName("mapIn");
 		for(var i = 0; i < allInputs.length; i++){
 			var ogY = parseInt(allInputs[i].dataset.ypos);
@@ -161,7 +130,7 @@ var l = function(p){
 	//input.attribute("data-xpos", posX);
 	//input.attribute("data-ypos", posY);
 
-	p.showDefaultIns = function(){
+	showDefaultIns = function(){
 		var allInputs = document.getElementsByClassName("mapIn");
 		for(var i = 0; i < allInputs.length; i++){
 			allInputs[i].style.visibility = "hidden";
@@ -172,103 +141,103 @@ var l = function(p){
 		}
 	}
 
-	p.gridMode = function(){
+	gridMode = function(){
 		//resetMaps();
-		maps[mapFocus].grid(p);
+		maps[mapFocus].grid();
 		gridMode = true;
 		recalcMaps();
 	}
 
-	p.gridMode2 = function(){
+	gridMode2 = function(){
 		//resetMaps();
-		p.deleteIns();
+		deleteIns();
 		//maps[mapFocus].reset(p);
-		maps[mapFocus].grid2(p);
+		maps[mapFocus].grid2();
 		gridMode = true;
 		recalcMaps();
 	}
 
-	p.testNodes = function(){
-		maps[mapFocus].addTestNodes(p);
+	testNodes = function(){
+		maps[mapFocus].addTestNodes();
 	}
 
-	p.testNodes2 = function(){
-		maps[mapFocus].addTestNodes2(p);
+	testNodes2 = function(){
+		maps[mapFocus].addTestNodes2();
 	}
 
-	p.mouseReleased = function(){
+	mouseReleased = function(){
 			if(dragging){
-				p.moveIns();
-				//p.showDefaultIns();
+				moveIns();
+				//showDefaultIns();
 				dragging = false;
 			} else {
-				maps[mapFocus].selectNode(p.mouseX,p.mouseY,p);
+				maps[mapFocus].selectNode(mouseX,mouseY);
 			}
 	};
 
-	p.mousePressed = function(){
+	mousePressed = function(){
 		if(editMode){
-			dragDiffX = p.mouseX - dragOffX;
-			dragDiffY = p.mouseY - dragOffY;
+			dragDiffX = mouseX - dragOffX;
+			dragDiffY = mouseY - dragOffY;
 		}
 	}
 
-	p.mouseDragged = function(){
+	mouseDragged = function(){
 		dragging = true;
-		//p.hideIns();
+		//hideIns();
 		if(editMode){
-			dragOffX = p.mouseX - dragDiffX;
-			dragOffY = p.mouseY - dragDiffY;
-			displayMaps(p);
+			dragOffX = mouseX - dragDiffX;
+			dragOffY = mouseY - dragDiffY;
+			displayMaps();
 		}
 	}
 
 	//FUNCTION FOR ZOOMING IN ON MAPS IN EDIT MODE
-	// p.mouseWheel = function(event){
+	// mouseWheel = function(event){
 	// 	if(!scrollLock){
 	// 		maps[mapFocus].mapZoom(event.delta,p);
 	// 	}
 	// 	return false;
 	// }
 
-	p.trans1 = function(){
-		transOne(p);
+	trans1 = function(){
+		transOne();
 	}
 
-	p.trans2 = function(){
-		transTwo(p);
+	trans2 = function(){
+		transTwo();
 	}
 
-	p.bind1 = function(){
+	bind1 = function(){
 		bindDist = bSlider1.value();
-		reCalc(p);
+		reCalc();
 	}
 
-	p.bind2 = function(){
+	bind2 = function(){
 		connectDist = bSlider2.value();
-		reCalc(p);
+		reCalc();
 	}
 
-	p.keyPressed = function(){
+	keyPressed = function(){
 
 	}
-};
+
 //END LEFT CANVAS
 
 //BEGIN RIGHT CANVAS, THREE.JS
+
+window.onload = function() {
+	canvaswidth = document.getElementById('leftCanv').clientWidth;
+	canvasheight = document.getElementById('leftCanv').clientHeight;
+	initThree();
+	animateThree();
+};
+
 	var scene, camera;
 	var wireframeOn = false;
 
 	//var material = new THREE.MeshLambertMaterial( { color: 0x0000FF, transparent: true, opacity: 0.8, side: THREE.DoubleSide, wireframe:wireframeOn } );
   var slices = [];
-
-
-	window.onload = function() {
-		canvaswidth = document.getElementById('leftCanv').clientWidth;
-		canvasheight = document.getElementById('leftCanv').clientHeight;
-		initThree();
-		animateThree();
-	};
 
 
 	function initThree() {
@@ -315,7 +284,7 @@ var l = function(p){
   			var light = new THREE.AmbientLight( 0x404040 ); // soft white light
 			//scene.add( light );
 
-			renderer.setClearColor(0xffffff, 1);
+			renderer.setClearColor(0xFFFFFF, 1);
 			//The X axis is red. The Y axis is green. The Z axis is blue.
 				//var axesHelper = new THREE.AxesHelper( 5 );
 				//scene.add( axesHelper );
@@ -352,7 +321,7 @@ var l = function(p){
 //END RIGHT CANVAS
 
 //map class, contains main data structure
-function Map(name, opac, img, p, xoff, id){
+function Map(name, opac, img, xoff, id){
 	this.name = name;
 	this.opac = opac;
 	this.img = img;
@@ -373,35 +342,35 @@ function Map(name, opac, img, p, xoff, id){
 	this.zoomScroll = 1.0;
 
 
-  this.makeNew = function(p){
+  this.makeNew = function(){
 		//start with 4 nodes at corners
-		p.append(this.internalNodes, new Node(0,0));
-		p.append(this.internalNodes, new Node(this.img.width,0));
-		p.append(this.internalNodes, new Node(this.img.width, this.img.height));
-		p.append(this.internalNodes, new Node(0,this.img.height));
+		append(this.internalNodes, new Node(0,0));
+		append(this.internalNodes, new Node(this.img.width,0));
+		append(this.internalNodes, new Node(this.img.width, this.img.height));
+		append(this.internalNodes, new Node(0,this.img.height));
 
 
 		//and 4 edges that connect them
-		p.append(this.internalEdges, new Edge(0,1,nodeDist(this.internalNodes[0],this.internalNodes[1],p)));
-		p.append(this.internalEdges, new Edge(1,2,nodeDist(this.internalNodes[1],this.internalNodes[2],p)));
-		p.append(this.internalEdges, new Edge(2,3,nodeDist(this.internalNodes[2],this.internalNodes[3],p)));
-		p.append(this.internalEdges, new Edge(3,0,nodeDist(this.internalNodes[3],this.internalNodes[0],p)));
+		append(this.internalEdges, new Edge(0,1,nodeDist(this.internalNodes[0],this.internalNodes[1])));
+		append(this.internalEdges, new Edge(1,2,nodeDist(this.internalNodes[1],this.internalNodes[2])));
+		append(this.internalEdges, new Edge(2,3,nodeDist(this.internalNodes[2],this.internalNodes[3])));
+		append(this.internalEdges, new Edge(3,0,nodeDist(this.internalNodes[3],this.internalNodes[0])));
 
 		for(var j = 0; j < this.internalEdges.length; j++){
-			makeInput(this.internalEdges[j], this.internalNodes, j, this.offSetX, this.offSetY,p, this.name + " defaultIn");
+			makeInput(this.internalEdges[j], this.internalNodes, j, this.offSetX, this.offSetY, this.name + " defaultIn");
 		}
 
-		p.strokeWeight(3);
-		p.stroke(0,0,0,100);
-		this.display(p);
+		strokeWeight(3);
+		stroke(0,0,0,100);
+		this.display();
 	}
 
-	this.display = function(p){
-		//p.scale(this.zoomScroll);
-		p.push();
-		p.translate(this.offSetX + dragOffX,this.offSetY + dragOffY);
+	this.display = function(){
+		//scale(this.zoomScroll);
+		push();
+		translate(this.offSetX + dragOffX,this.offSetY + dragOffY);
 		if(imageOn){
-			p.image(this.img,0,0,this.img.width,this.img.height);
+			image(this.img,0,0,this.img.width,this.img.height);
 		}
 		if(delaunayOn){
 			if(this.trias.length % 3 == 0){
@@ -412,88 +381,88 @@ function Map(name, opac, img, p, xoff, id){
 					var y2 = this.internalNodes[this.trias[i+1]].ypos;
 					var x3 = this.internalNodes[this.trias[i+2]].xpos;
 					var y3 = this.internalNodes[this.trias[i+2]].ypos;
-					p.stroke(255,0,0,50);
-					p.strokeWeight(8);
-					p.line(x1,y1,x2,y2);
-					p.line(x2,y2,x3,y3);
-					p.line(x3,y3,x1,y1);
+					stroke(255,0,0,50);
+					strokeWeight(8);
+					line(x1,y1,x2,y2);
+					line(x2,y2,x3,y3);
+					line(x3,y3,x1,y1);
 				}
 			}
 		}
 		//display nodes
-		p.stroke(0,0,0,150);
-		p.strokeWeight(1);
+		stroke(0,0,0,150);
+		strokeWeight(1);
     	for(var i=0; i < this.internalNodes.length; i++){
     		// if(this.internalNodes.length-1 == i){
-    		// 	p.stroke(255);
-    		// 	p.strokeWeight(3);
+    		// 	stroke(255);
+    		// 	strokeWeight(3);
     		// }
 				//if node is selected, turn on highlight color
 				if(this.internalNodes[i].nodeHL == true){
-					p.fill(255,0,0,100);
+					fill(255,0,0,100);
 				} else {
-					p.fill(0,0,0,100);
+					fill(0,0,0,100);
 				}
-    		p.ellipse(this.internalNodes[i].xpos,this.internalNodes[i].ypos, 10, 10);
-    		//p.text(i,this.internalNodes[i].xpos,this.internalNodes[i].ypos);
+    		ellipse(this.internalNodes[i].xpos,this.internalNodes[i].ypos, 10, 10);
+    		//text(i,this.internalNodes[i].xpos,this.internalNodes[i].ypos);
     	}
     	//display edges
-    	p.strokeWeight(2);
-   		p.stroke(0,0,0, 150);
+    	strokeWeight(3);
+   		stroke(0,0,0, 150);
     	for(var i=0; i < this.internalEdges.length; i++){
     		var x1 = this.internalNodes[this.internalEdges[i].node1].xpos;
     		var x2 = this.internalNodes[this.internalEdges[i].node2].xpos;
     		var y1 = this.internalNodes[this.internalEdges[i].node1].ypos;
     		var y2 = this.internalNodes[this.internalEdges[i].node2].ypos;
-    		p.line(x1,y1,x2,y2);
+    		line(x1,y1,x2,y2);
     	}
-    	p.pop();
+    	pop();
 	};
 
-	this.blur = function(p){
-		p.noStroke();
-		p.fill(255,150);
-		p.rect(0+this.offSetX+dragOffX,0+this.offSetY+dragOffY,this.img.width+this.offSetX,this.img.height+this.offSetY);
+	this.blur = function(){
+		noStroke();
+		fill(255,150);
+		rect(0+this.offSetX+dragOffX,0+this.offSetY+dragOffY,this.img.width+this.offSetX,this.img.height+this.offSetY);
 	};
 
-	this.returnImg = function(p){
+	this.returnImg = function(){
 		return this.img;
 	};
 
 	this.reCalculate = function(){
 		//updateData(p);
 		resetThree();
-		var matrices = makeMatrix(p, this.id);
+		var matrices = makeMatrix(this.id);
 		this.mdsMatrix = matrices[0];
 		this.trias = matrices[1];
 		plotTriangles(this.mdsMatrix, this.trias, this.id, false);
-		displayMaps(p);
+		displayMaps();
 		//console.log("recalculate");
 	};
 
 	this.reCalculateW = function(){
-		var matrices = makeMatrix(myp5, this.id);
+		var matrices = makeMatrix(this.id);
 		this.trias = matrices[1];
-		displayMaps(p);
+		displayMaps();
 	};
 
-	this.mapZoom = function(scrollVal,p){
+	this.mapZoom = function(scrollVal){
 		this.zoomScroll += scrollVal/30;
-		displayMaps(p);
+		displayMaps();
 	}
 
 	this.addInputs = function(){
-		p.deleteIns();
+		deleteIns();
 		for(var i = 0; i < this.internalEdges.length; i++){
-			makeInput(this.internalEdges[i], this.internalNodes, i, this.offSetX, this.offSetY,p, this.name);
+			makeInput(this.internalEdges[i], this.internalNodes, i, this.offSetX, this.offSetY, this.name);
 		}
 	}
 
-	this.selectNode = function(mx,my,p){
+	this.selectNode = function(mx,my){
 		mx = mx-this.offSetX-dragOffX;
 		my = my-this.offSetY-dragOffY;
 		for(var i = 0; i < this.internalNodes.length; i++){
-			if(p.dist(mx,my,this.internalNodes[i].xpos,this.internalNodes[i].ypos) < 10){
+			if(dist(mx,my,this.internalNodes[i].xpos,this.internalNodes[i].ypos) < 10){
 				if(this.selectNo == 0){
 			    this.unHighlightNodes();
 					this.selectedOne = i;
@@ -501,12 +470,12 @@ function Map(name, opac, img, p, xoff, id){
 				} else if(this.selectNo == 1){
 					this.selectedTwo = i;
 					this.selectNo = 0;
-					this.checkForEdge(this.selectedOne,this.selectedTwo,p);
+					this.checkForEdge(this.selectedOne,this.selectedTwo);
 				}
 				this.internalNodes[i].nodeHL = true;
 			}
 		}
-		this.display(p);
+		this.display();
 	}
 
 	this.unHighlightNodes = function(){
@@ -519,9 +488,9 @@ function Map(name, opac, img, p, xoff, id){
 			for(var i = 0; i < this.internalEdges.length; i++){
 				if(this.internalEdges[i].node1 == one && this.internalEdges[i].node2 == two){
 					foundEdge = true;
-					makeInput(this.internalEdges[i], this.internalNodes, i, this.offSetX, this.offSetY,p, this.name);
+					makeInput(this.internalEdges[i], this.internalNodes, i, this.offSetX, this.offSetY,this.name);
 				} else if(this.internalEdges[i].node1 == two && this.internalEdges[i].node2 == one){
-					makeInput(this.internalEdges[i], this.internalNodes, i, this.offSetX, this.offSetY,p, this.name);
+					makeInput(this.internalEdges[i], this.internalNodes, i, this.offSetX, this.offSetY, this.name);
 					foundEdge = true;
 				}
 			}
@@ -538,24 +507,24 @@ function Map(name, opac, img, p, xoff, id){
 					this.autoAddNode(mx-this.offSetX,my-this.offSetY,p);
 				} else {//odds complete edge
 					this.autoAddNode(mx-this.offSetX,my-this.offSetY,p);
-					var d = nodeDist(this.internalNodes[this.internalNodes.length-2], this.internalNodes[this.internalNodes.length-1],p);
-					p.append(this.internalEdges, new Edge(this.internalNodes.length-2,this.internalNodes.length-1,d)); //connect two above nodes
-					makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY,p, this.name + " defaultIn");
+					var d = nodeDist(this.internalNodes[this.internalNodes.length-2], this.internalNodes[this.internalNodes.length-1]);
+					append(this.internalEdges, new Edge(this.internalNodes.length-2,this.internalNodes.length-1,d)); //connect two above nodes
+					makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY, this.name + " defaultIn");
 				}
 				this.clickCount++;
 			} else {
-					p.append(this.internalNodes, new Node(mx-this.offSetX,my-this.offSetY));
+					append(this.internalNodes, new Node(mx-this.offSetX,my-this.offSetY));
 
 					//third argument = n nearest nodes to connect to
 					var nodeShort = findClosestNNodes(mx-this.offSetX,my-this.offSetY, nNodes, this.internalNodes,p);
 					//console.log(nodeShort);
 					for(var i = 0; i < nodeShort.length; i++){
 						//subtract offsets from mx, my because nodes start from (0,0), then translated
-						p.append(this.internalEdges, new Edge(nodeShort[i], this.internalNodes.length - 1, nodeDistXY(this.internalNodes[nodeShort[i]], mx-this.offSetX,my-this.offSetY,p)));
-						makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY,p, this.name + " defaultIn");
+						append(this.internalEdges, new Edge(nodeShort[i], this.internalNodes.length - 1, nodeDistXY(this.internalNodes[nodeShort[i]], mx-this.offSetX,my-this.offSetY)));
+						makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY, this.name + " defaultIn");
 					}
 					//console.log(this.internalEdges[this.internalEdges.length-1]);
-			displayMaps(p);
+			displayMaps();
 			//updateData(p);
 			}
 		};
@@ -563,46 +532,46 @@ function Map(name, opac, img, p, xoff, id){
 
 	//called for grid building
 		this.autoAddNode = function(mx,my,p){
-			p.append(this.internalNodes, new Node(mx,my));
+			append(this.internalNodes, new Node(mx,my));
 			var nodeShort = findClosestNNodes(mx,my, nNodes, this.internalNodes,p);
 			for(var i = 0; i < nodeShort.length; i++){
-				p.append(this.internalEdges, new Edge(nodeShort[i], this.internalNodes.length - 1, nodeDistXY(this.internalNodes[nodeShort[i]], mx,my,p)));
+				append(this.internalEdges, new Edge(nodeShort[i], this.internalNodes.length - 1, nodeDistXY(this.internalNodes[nodeShort[i]], mx,my)));
 				//makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY,p, this.name);
 			}
-			displayMaps(p);
+			displayMaps();
 	    //updateData(p);
 	};
 
-	this.reset = function(p){
+	this.reset = function(){
 		dragOffX = 0;
 		dragOffY = 0;
-		//p.resetMatrix();
+		//resetMatrix();
 		this.internalNodes = [];
 		this.internalEdges = [];
 		this.trias = [0];
 
 		//Following routine same as initialization--could be condensed to single function
 		//start with 4 nodes at corners
-		p.append(this.internalNodes, new Node(0,0));
-		p.append(this.internalNodes, new Node(this.img.width,0));
-		p.append(this.internalNodes, new Node(this.img.width, this.img.height));
-		p.append(this.internalNodes, new Node(0,this.img.height));
+		append(this.internalNodes, new Node(0,0));
+		append(this.internalNodes, new Node(this.img.width,0));
+		append(this.internalNodes, new Node(this.img.width, this.img.height));
+		append(this.internalNodes, new Node(0,this.img.height));
 
 		//and 4 edges that connect them
-		p.append(this.internalEdges, new Edge(0,1,nodeDist(this.internalNodes[0],this.internalNodes[1],p)));
-		p.append(this.internalEdges, new Edge(1,2,nodeDist(this.internalNodes[1],this.internalNodes[2],p)));
-		p.append(this.internalEdges, new Edge(2,3,nodeDist(this.internalNodes[2],this.internalNodes[3],p)));
-		p.append(this.internalEdges, new Edge(3,0,nodeDist(this.internalNodes[3],this.internalNodes[0],p)));
+		append(this.internalEdges, new Edge(0,1,nodeDist(this.internalNodes[0],this.internalNodes[1])));
+		append(this.internalEdges, new Edge(1,2,nodeDist(this.internalNodes[1],this.internalNodes[2])));
+		append(this.internalEdges, new Edge(2,3,nodeDist(this.internalNodes[2],this.internalNodes[3])));
+		append(this.internalEdges, new Edge(3,0,nodeDist(this.internalNodes[3],this.internalNodes[0])));
 
 		for(var j = 0; j < this.internalEdges.length; j++){
-			makeInput(this.internalEdges[j], this.internalNodes, j, this.offSetX, this.offSetY,p,this.name + " defaultIn");
+			makeInput(this.internalEdges[j], this.internalNodes, j, this.offSetX, this.offSetY,this.name + " defaultIn");
 		}
 		this.gridMode = false;
 		this.clickCount = 0;
 		this.reCalculate();
 	};
 
-	this.grid = function(p){
+	this.grid = function(){
 		this.internalNodes = [];
 		this.internalEdges = [];
 
@@ -613,18 +582,18 @@ function Map(name, opac, img, p, xoff, id){
 		var m = f.options[f.selectedIndex].value;
 		for(var i = 0; i <= m; i++){ //height
 			for(var j = 0; j <=n; j++){ //width
-				p.append(this.internalNodes, new Node(j*img.width/n,i*img.height/m));
+				append(this.internalNodes, new Node(j*img.width/n,i*img.height/m));
 				//console.log('j' + j + 'i' + i);
 				if(j > 0 ){ //draw horizontal lines to previous node	&& i > 0 && i < gridH
-					p.append(this.internalEdges,new Edge(nodeCount-1,nodeCount,
-						nodeDist(this.internalNodes[nodeCount-1],this.internalNodes[nodeCount],p)));
+					append(this.internalEdges,new Edge(nodeCount-1,nodeCount,
+						nodeDist(this.internalNodes[nodeCount-1],this.internalNodes[nodeCount])));
 				}
 
 				if(i > 0 ){ //draw vertical lines on outline && (j == 0 || j == gridW)  && j> 0 && j < gridW
 					// :-/
 					if(typeof this.internalNodes[nodeCount-(n+1)] !== "undefined" && typeof this.internalNodes[nodeCount] !== "undefined" ){
-						p.append(this.internalEdges,new Edge(nodeCount-(n+1),nodeCount,
-							nodeDist(this.internalNodes[nodeCount-(n+1)],this.internalNodes[nodeCount],p)));
+						append(this.internalEdges,new Edge(nodeCount-(n+1),nodeCount,
+							nodeDist(this.internalNodes[nodeCount-(n+1)],this.internalNodes[nodeCount])));
 					}
 
 				}
@@ -639,8 +608,8 @@ function Map(name, opac, img, p, xoff, id){
 				this.autoAddNode((j*img.width/n)+(img.width/n*0.5), (i*img.height/m)+(0.5*img.height/m), p);
 				if(j > 0 ){
 					//horizontals
-					p.append(this.internalEdges,new Edge(nodeCount-1,nodeCount,
-						nodeDist(this.internalNodes[nodeCount-1],this.internalNodes[nodeCount],p)));
+					append(this.internalEdges,new Edge(nodeCount-1,nodeCount,
+						nodeDist(this.internalNodes[nodeCount-1],this.internalNodes[nodeCount])));
 					//console.log(nodeCount);
 					//console.log(nodeDist(this.internalNodes[nodeCount-1],this.internalNodes[nodeCount],p));
 					//verticals
@@ -648,8 +617,8 @@ function Map(name, opac, img, p, xoff, id){
 				if(i > 0){
 					// :-/
 					if(typeof this.internalNodes[nodeCount-(n+1)] !== "undefined" && typeof this.internalNodes[nodeCount] !== "undefined" ){
-						p.append(this.internalEdges,new Edge(nodeCount-(n),nodeCount,
-							nodeDist(this.internalNodes[nodeCount-(n)],this.internalNodes[nodeCount],p)));
+						append(this.internalEdges,new Edge(nodeCount-(n),nodeCount,
+							nodeDist(this.internalNodes[nodeCount-(n)],this.internalNodes[nodeCount])));
 					}
 				}
 
@@ -659,21 +628,21 @@ function Map(name, opac, img, p, xoff, id){
 		}
 		/*
 		//define distances of outside of image
-		p.append(this.internalEdges,new Edge(0,gridW,img.width));
-		p.append(this.internalEdges, new Edge(gridW, (gridW+1)*(gridH+1)-1,img.height));
-		p.append(this.internalEdges, new Edge((gridW+1)*(gridH+1)-1, (gridW+1)*(gridH+1)-1-gridW,img.width));
-		p.append(this.internalEdges, new Edge((gridW+1)*(gridH+1)-1-gridW,0,img.height));
+		append(this.internalEdges,new Edge(0,gridW,img.width));
+		append(this.internalEdges, new Edge(gridW, (gridW+1)*(gridH+1)-1,img.height));
+		append(this.internalEdges, new Edge((gridW+1)*(gridH+1)-1, (gridW+1)*(gridH+1)-1-gridW,img.width));
+		append(this.internalEdges, new Edge((gridW+1)*(gridH+1)-1-gridW,0,img.height));
 
 		//define diagonal distances across entire image
-		p.append(this.internalEdges, new Edge(0,(gridW+1)*(gridH+1)-1,p.dist(0,0,this.img.width,this.img.height)));
-		p.append(this.internalEdges, new Edge(gridW, (gridW+1)*(gridH+1)-1-gridW, p.dist(0,0,this.img.width, this.img.height)));
+		append(this.internalEdges, new Edge(0,(gridW+1)*(gridH+1)-1,dist(0,0,this.img.width,this.img.height)));
+		append(this.internalEdges, new Edge(gridW, (gridW+1)*(gridH+1)-1-gridW, dist(0,0,this.img.width, this.img.height)));
 		*/
 		nodeCount = 0;
 		this.gridMode = true;
 		//this.reCalculate();
 	};
 
-	this.grid2 = function(p){
+	this.grid2 = function(){
 
 		this.internalNodes = [];
 		this.internalEdges = [];
@@ -687,19 +656,19 @@ function Map(name, opac, img, p, xoff, id){
 
 		for(var i = 0; i <= m; i++){ //height
 			for(var j = 0; j <=n; j++){ //width
-				p.append(this.internalNodes, new Node(j*img.width/n,i*img.height/m));
+				append(this.internalNodes, new Node(j*img.width/n,i*img.height/m));
 				//console.log('j' + j + 'i' + i);
 				if(j > 0){ //draw horizontal lines to previous node	&& i > 0 && i < gridH
-					p.append(this.internalEdges,new Edge(nodeCount-1,nodeCount,
-						nodeDist(this.internalNodes[nodeCount-1],this.internalNodes[nodeCount],p)));
+					append(this.internalEdges,new Edge(nodeCount-1,nodeCount,
+						nodeDist(this.internalNodes[nodeCount-1],this.internalNodes[nodeCount])));
 				}
 				if(i > 0 ){
 					//console.log('n:' + n);
 					var cc = nodeCount-n-1;
 					//console.log(cc + " " + nodeCount);
 					if(typeof this.internalNodes[cc] !== "undefined" && typeof this.internalNodes[nodeCount] !== "undefined" ){
-						p.append(this.internalEdges,new Edge(cc,nodeCount,
-							nodeDist(this.internalNodes[cc],this.internalNodes[nodeCount],p)));
+						append(this.internalEdges,new Edge(cc,nodeCount,
+							nodeDist(this.internalNodes[cc],this.internalNodes[nodeCount])));
 					}
 
 				}
@@ -712,20 +681,20 @@ function Map(name, opac, img, p, xoff, id){
 	};
 
 	//add two test nodes, connect with edge and custom distance
-	this.addTestNodes = function(p){
+	this.addTestNodes = function(){
 		this.autoAddNode(100,100,p);
 		this.autoAddNode(350,100,p);
-		p.append(this.internalEdges, new Edge(this.internalNodes.length-2,this.internalNodes.length-1,250)); //connect two above nodes
+		append(this.internalEdges, new Edge(this.internalNodes.length-2,this.internalNodes.length-1,250)); //connect two above nodes
 		makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY,p, this.name);
 
 		//console.log(this.internalEdges[this.internalEdges.length-1]);
 	};
 
 	//add two test nodes, connect with edge and custom distance
-	this.addTestNodes2 = function(p){
+	this.addTestNodes2 = function(){
 		this.autoAddNode(100,100,p);
 		this.autoAddNode(100,350,p);
-		p.append(this.internalEdges, new Edge(this.internalNodes.length-2,this.internalNodes.length-1,250)); //connect two above nodes
+		append(this.internalEdges, new Edge(this.internalNodes.length-2,this.internalNodes.length-1,250)); //connect two above nodes
 		makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY,p, this.name);
 	};
 }
@@ -750,13 +719,13 @@ function Edge(node1, node2, distance){
 }
 
 //connect to n nearest nodes
-function findClosestNNodes(mx, my, n, nodes,p){
+function findClosestNNodes(mx, my, n, nodes){
 	var closest = [];
 	var nodeIDs = [];
 	for(var i = 0; i < nodes.length; i++){
-		var distN = p.dist(nodes[i].xpos, nodes[i].ypos, mx, my);
+		var distN = dist(nodes[i].xpos, nodes[i].ypos, mx, my);
 		if(distN != 0){ //to avoid comparing to self
-			p.append(closest, {distance:distN, id:i});
+			append(closest, {distance:distN, id:i});
 		}
 	}
 	//sort by distances, lowest to highest
@@ -764,20 +733,20 @@ function findClosestNNodes(mx, my, n, nodes,p){
 
 	//return nodeIDS for the n closest nodes
 	for(var i = 0; i < n; i++){
-		p.append(nodeIDs, closest[i].id);
+		append(nodeIDs, closest[i].id);
 	}
 	//console.log(nodeIDs);
 	return nodeIDs;
 }
 
 //returns distance btw two nodes
-function nodeDist(nn1,nn2,p){
-	return p.dist(nn1.xpos,nn1.ypos,nn2.xpos,nn2.ypos);
+function nodeDist(nn1,nn2){
+	return dist(nn1.xpos,nn1.ypos,nn2.xpos,nn2.ypos);
 }
 
 //make dist input box
-function makeInput(edge, nodes, n, xOff, yOff,p, nm){
-	input = p.createInput();
+function makeInput(edge, nodes, n, xOff, yOff, nm){
+	input = createInput();
 	var x1 = nodes[edge.node1].xpos+xOff+dragOffX;
 	var x2 = nodes[edge.node2].xpos+xOff+dragOffX;
 	var y1 = nodes[edge.node1].ypos+yOff+dragOffY;
@@ -787,10 +756,10 @@ function makeInput(edge, nodes, n, xOff, yOff,p, nm){
 	  var posX = x1+(x2-x1)/2;
 		var posY = y1+(y2-y1)/2;
     input.position(posX, posY);
-		if(p.int(edge.distance) != p.int(edge.distanceMod)){
-    	input.value(p.int(edge.distanceMod)+'/'+p.int(edge.distance));
+		if(int(edge.distance) != int(edge.distanceMod)){
+    	input.value(int(edge.distanceMod)+'/'+int(edge.distance));
 		} else {
-			input.value(p.int(edge.distance));
+			input.value(int(edge.distance));
 		}
     input.id(nm + "_" + n); //adds id that refers to edge
     input.class(nm + " mapIn" ); //uses image name for class for deletion later
@@ -801,12 +770,12 @@ function makeInput(edge, nodes, n, xOff, yOff,p, nm){
 }
 
 //returns distance btw node and x,y
-function nodeDistXY(nn1,mx,my,p){
-	return p.dist(nn1.xpos,nn1.ypos,mx,my);
+function nodeDistXY(nn1,mx,my){
+	return dist(nn1.xpos,nn1.ypos,mx,my);
 }
 
 //build empty matrix, run through Floyd Warshall and MDS
-function makeMatrix(p, focus){
+function makeMatrix(focus){
 	//console.log(maps[mapFocus].internalNodes);
 	var nodes = maps[focus].internalNodes;
 	var edges = maps[focus].internalEdges;
@@ -1087,9 +1056,9 @@ function plotTriangles(coords, trias, focus, outputObj){
 
 
 function plotCoords(coords, es,p){
-	//p.background(255,255,255);
-	p.push();
-  p.translate(0,0,2); //offset 2 pixels from triangulation graph
+	//background(255,255,255);
+	push();
+  translate(0,0,2); //offset 2 pixels from triangulation graph
 	for(var i = 0; i < es.length; i++){
 		var x1 = coords[es[i].node1][0];
 		var x2 = coords[es[i].node2][0];
@@ -1097,30 +1066,30 @@ function plotCoords(coords, es,p){
 		var y2 = coords[es[i].node2][1];
 		var z1 = coords[es[i].node1][2];
 		var z2 = coords[es[i].node2][2];
-		p.stroke(150,150,150);
-		p.line(x1,y1,z1,x2,y2,z2);
+		stroke(150,150,150);
+		line(x1,y1,z1,x2,y2,z2);
 		//console.log(x + ' ' + y);
-		//p.ellipse(x1,y1,5,5);
-		//p.ellipse(x2,y2,5,5);
-		//p.line(x1,y1,x2,y2);
+		//ellipse(x1,y1,5,5);
+		//ellipse(x2,y2,5,5);
+		//line(x1,y1,x2,y2);
 	}
-	p.pop();
+	pop();
 }
 
-function displayMaps(p){
-	p.background(255,255,255);
+function displayMaps(){
+	background('#fff');
 	for (var i=0; i<maps.length; i++) {
-    	maps[i].display(p);
+    	maps[i].display();
 
     	//blur out non-focus maps
     	if(mapFocus != i){
-    		maps[i].blur(p);
+    		maps[i].blur();
 		}
   	}
   	//console.log('yes');
 }
 
-function displayGraphs(p){
+function displayGraphs(){
 	for (var i=0; i<maps.length; i++) {
     	maps[i].displayGraph(maps[i].img.width+50, 0,p);
   	}
@@ -1143,12 +1112,12 @@ function displayGraphs(p){
 }
 
 window.ondblclick=function(){
-	reCalc(myp5);
+	reCalc();
 	recalcMaps();
 }
 
 //add data to end of page
-function updateData(p){
+function updateData(){
 	var div = document.getElementById('dataResults');
 	div.innerHTML = ''; //clear data results
 	for (var i=0; i<maps.length; i++) {
@@ -1159,20 +1128,20 @@ function updateData(p){
 		}
 		div.innerHTML = div.innerHTML + '<b>EDGES: </b><br />';
 		for(var j=0; j < maps[i].internalEdges.length; j++){
-			div.innerHTML = div.innerHTML + 'id: ' + j + ' distance: ' + p.int(maps[i].internalEdges[j].distance) + ' distanceMod: ' + p.int(maps[i].internalEdges[j].distanceMod) + ' node1: ' + maps[i].internalEdges[j].node1 + ' node2: ' + maps[i].internalEdges[j].node2 +   '<br />';
+			div.innerHTML = div.innerHTML + 'id: ' + j + ' distance: ' + int(maps[i].internalEdges[j].distance) + ' distanceMod: ' + int(maps[i].internalEdges[j].distanceMod) + ' node1: ' + maps[i].internalEdges[j].node1 + ' node2: ' + maps[i].internalEdges[j].node2 +   '<br />';
 		}
   	}
 }
 
-function reCalc(p){
+function reCalc(){
 	if(mode == 0){
-			maps[mapFocus].addNode(p.mouseX-dragOffX, p.mouseY-dragOffY, p);
-			//console.log(p.mouseX + " " + p.mouseY);
+			maps[mapFocus].addNode(mouseX-dragOffX, mouseY-dragOffY);
+			//console.log(mouseX + " " + mouseY);
 		}
-	wormCalc(p);
+	wormCalc();
 }
 
-function wormCalc(p){
+function wormCalc(){
 	if(worm){
 			maps[mapFocus].reCalculateW();
 			combineMatrix(p,0,1);
@@ -1196,7 +1165,7 @@ function recalcMaps(){
 	for(var i = 0; i < maps.length; i++){
 		maps[i].reCalculate();
 	}
-	wormCalc(myp5);
+	wormCalc();
 }
 
 function transOne(pp){
@@ -1324,5 +1293,3 @@ function mdsCoords(distances, dimensions) {
   }());
   exports.floydWarshall = floydWarshall;
 })(typeof window === 'undefined' ? module.exports : window);
-
-	var myp5 = new p5(l,'leftCanv');
