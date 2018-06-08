@@ -19,6 +19,11 @@
   <link rel="stylesheet" type="text/css" href="style/style.css">
 </head>
 <body>
+
+<!-- load up some graphml as JS wrapped text just to test the import button
+<script language="javascript" type="text/javascript" src="graphs/test.graphml.js"></script>
+-->
+
   <!--TOP MENU-->
   <div id="nav"><img src="images/logo.png" /> enfolding
       <button id="goInterface" class="button" onclick="goInterface()">EDIT</button>
@@ -32,7 +37,7 @@
   <!--SIDE MENU, EDIT MODE-->
   <div id="menuEdit" class="menu">
     <header>MAPS</header>
-      <button onclick="changeFocus()">FOCUS</button>
+      <button onclick="changeFocus();">FOCUS</button>
       <button onclick="resetMaps();">RESET</button>
     <hr>
     <header>GRIDS</header>
@@ -68,11 +73,11 @@
       <button onclick="gridMode()">ADD GRID (COMPLEX)</button><br />
       <hr>
       <header>IO</header>
-        <input type="file" id="selectFilesImage" value="Import" disabled /><span id="fileImage"></span><br />
+        <input type="file" id="selectFilesImage" value="Import" disabled/><span id="fileImage"></span><br />
         <button id="importImage" disabled>Import image/map</button>
         <hr>
-        <input type="file" id="selectFilesGraph" value="Import" disabled /><span id="fileGraph"></span><br />
-        <button id="importGraph" disabled>Import network/graph relations (GraphML format) to current image</button>
+        <label for="selectFilesGraph">Import graphml file:</label><br />
+        <input type="file" id="selectFilesGraph" disabled/><span id="fileGraph"></span>
 
     </div>
     <hr>
