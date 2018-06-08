@@ -20,8 +20,9 @@
 </head>
 <body>
 
-<!-- load up some graphml as JS wrapped text just to test the import button -->
+<!-- load up some graphml as JS wrapped text just to test the import button
 <script language="javascript" type="text/javascript" src="graphs/test.graphml.js"></script>
+-->
 
   <!--TOP MENU-->
   <div id="nav"><img src="images/logo.png" /> enfolding
@@ -75,8 +76,8 @@
         <input type="file" id="selectFilesImage" value="Import" disabled/><span id="fileImage"></span><br />
         <button id="importImage" disabled>Import image/map</button>
         <hr>
-        <input type="file" id="selectFilesGraph" value="Import"/><span id="fileGraph"></span><br />
-        <button id="importGraph" onclick="GraphXMLfromString(testxml);">Import graphml</button>
+        <label for="selectFilesGraph">Import graphml file:</label><br />
+        <input type="file" id="selectFilesGraph"/><span id="fileGraph"></span>
 
     </div>
     <hr>

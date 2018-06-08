@@ -174,21 +174,18 @@ function webVrOn(obj){
 	recalcMaps();
 }
 
-document.getElementById('importGraph').onclick = function() {
-    var files = document.getElementById('selectFilesGraph').files;
-		var fr = new FileReader();
-		var rawText;
-
-		fr.readAsText(files[0]);
-		fr.onload = function(e) {
-    	rawText = fr.result;
-			document.getElementById('fileGraph').innerHTML = (files[0].name);
-			GraphXMLfromString(rawText);
-		};
-
+document.getElementById('selectFilesGraph').onchange = function() {
+  var files = document.getElementById('selectFilesGraph').files;
   if (files.length <= 0) {
     return false;
-  }
+  };
+	document.getElementById('fileGraph').innerHTML = (files[0].name);
+	var fr = new FileReader();
+	fr.readAsText(files[0]);
+	fr.onload = function(e) {
+  	rawText = fr.result;
+		GraphXMLfromString(fr.result);
+	};
 }
 
 document.getElementById('importImage').onclick = function() {
