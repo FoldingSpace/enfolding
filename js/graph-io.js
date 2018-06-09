@@ -48,6 +48,12 @@ function GraphXMLfromString(xmlString) {
 
   // add the nodes to enfolding
 
+  // very much an experimental hack for now
+  var tf = new Transform([-180, 180, -90, 90], [0, 256, 0, 256]);
+  for (var i in nodes) {
+    append(maps[0].internalNodes, new Node(nodes[i].lon, nodes[i].lat, tf));
+  };
+  maps[0].display();
   // parse edges
 
   console.log("EDGES:");

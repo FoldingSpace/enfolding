@@ -342,6 +342,8 @@ function Map(name, opac, img, xoff, id){
 	this.trans = 1.0;
 	this.zoomScroll = 1.0;
 
+	// this.transform = ... // add something to transform from input coords to pixels
+
 
   this.makeNew = function(){
 		//start with 4 nodes at corners
@@ -700,10 +702,40 @@ function Map(name, opac, img, xoff, id){
 	};
 }
 
+
+// This is what a transformation might look like
+// map object should have an instance, to use when adding nodeShort
+// probably should have forward and inverse transformation methods
+function Transform(xyInBounds, xyOutBounds){
+	this.xInMin = xyInBounds[0];
+	this.yInMin = xyInBounds[2];
+	this.xInRange = xyInBounds[1] - this.xInMin;
+	this.yInRange = xyInBounds[3] - this.yInMin;
+	this.xOutMin = xyOutBounds[0];
+	this.yOutMin = xyOutBounds[2];
+	this.xOutRange = xyOutBounds[1] - this.xOutMin;
+	this.yOutRange = xyOutBounds[3] - this.yOutMin;
+
+	this.transform = function(x, y) {
+		var xOut = (x - this.xInMin) / this.xInRange * this.xOutRange + this.xOutMin;
+		var yOut = (y - this.yInMin) / this.yInRange * this.yOutRange + this.yOutMin;
+		return [xOut, yOut];
+	};
+}
+
+
 //node class
-function Node(xpos, ypos){
-	this.xpos = xpos;
-	this.ypos = ypos;
+// slightly modded to allow continued use (for now) of methods that
+// don't provide the transformation
+function Node(xpos, ypos, tr){
+  if (tr != null) {
+		xy = tr.transform(xpos, ypos);
+		this.xpos = xy[0]; // xpos; // apply transform
+		this.ypos = xy[1]; // ypos; // apply transform
+	} else {
+		this.xpos = xpos; // apply transform
+		this.ypos = ypos; // apply transform
+	};
 	this.nodeHL = false;
 
 	this.display = function(){
