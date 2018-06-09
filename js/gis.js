@@ -484,7 +484,7 @@ function Map(name, opac, img, xoff, id){
 			this.internalNodes[i].nodeHL = false;
 		}
 	}
-		this.checkForEdge = function(one,two,p){
+		this.checkForEdge = function(one,two){
 			var foundEdge = false;
 			for(var i = 0; i < this.internalEdges.length; i++){
 				if(this.internalEdges[i].node1 == one && this.internalEdges[i].node2 == two){
@@ -1056,7 +1056,7 @@ function plotTriangles(coords, trias, focus, outputObj){
 }
 
 
-function plotCoords(coords, es,p){
+function plotCoords(coords, es){
 	//background(255,255,255);
 	push();
   translate(0,0,2); //offset 2 pixels from triangulation graph
@@ -1092,7 +1092,7 @@ function displayMaps(){
 
 function displayGraphs(){
 	for (var i=0; i<maps.length; i++) {
-    	maps[i].displayGraph(maps[i].img.width+50, 0,p);
+    	maps[i].displayGraph(maps[i].img.width+50, 0);
   	}
 }
 
