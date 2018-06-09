@@ -50,6 +50,11 @@ function GraphXMLfromString(xmlString) {
   // very much an experimental hack for now
   var tf = new Transform([-180, 180, -90, 90], [0, 1024, 0, 512]);
 
+  // throw away the initial four corners and associated edges
+  maps[0].internalNodes = [];
+  maps[0].internalEdges = [];
+  var n = maps[0].internalNodes.length;
+
   for (var i in nodes) {
     var v = new Node(nodes[i].lon, nodes[i].lat, tf);
     append(maps[0].internalNodes, v);
@@ -84,7 +89,13 @@ function GraphXMLfromString(xmlString) {
 
   for (var i in edges) {
     // Note the offset by index position n (the 4 corners that are in internalNodes at the start)
-    var e = new Edge(4 + Number(edges[i].source), 4 + Number(edges[i].target), edges[i].dist_km);
+    var n1 = n + Number(edges[i].source);
+    var n2 = n + Number(edges[i].target);
+    // make an edge with distance set from the image coordinates
+    var e = new Edge(n1, n2, nodeDist(maps[0].internalNodes[n1], maps[0].internalNodes[n2]));
+    // set its distanceMod from the graphml
+    e.distanceMod = edges[i].dist_km;
+    // add it to the internalEdges
     append(maps[0].internalEdges, e);
   };
   maps[0].display();
