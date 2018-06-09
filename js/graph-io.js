@@ -47,11 +47,12 @@ function GraphXMLfromString(xmlString) {
   console.log(nodes);
 
   // add the nodes to enfolding
-
   // very much an experimental hack for now
   var tf = new Transform([-180, 180, -90, 90], [0, 1024, 0, 512]);
+
   for (var i in nodes) {
-    append(maps[0].internalNodes, new Node(nodes[i].lon, nodes[i].lat, tf));
+    var v = new Node(nodes[i].lon, nodes[i].lat, tf);
+    append(maps[0].internalNodes, v);
   };
 
   // parse edges
@@ -73,14 +74,18 @@ function GraphXMLfromString(xmlString) {
       current_edge[keys[keyid].attrname] = keycontent;
     };
     //edges[edgeid] = current_edge;
+    // this change needed to correctly unpack edges
     edges[curredge] = current_edge;
   };
   console.log(edges);
 
   // add edges to enfolding
   // very much an experimental hack for now
+
   for (var i in edges) {
-    append(maps[0].internalEdges, new Edge(edges[i].source, edges[i].target, edges[i].dist_km));
+    // Note the offset by index position n (the 4 corners that are in internalNodes at the start)
+    var e = new Edge(4 + Number(edges[i].source), 4 + Number(edges[i].target), edges[i].dist_km);
+    append(maps[0].internalEdges, e);
   };
   maps[0].display();
 };
