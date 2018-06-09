@@ -49,11 +49,11 @@ function GraphXMLfromString(xmlString) {
   // add the nodes to enfolding
 
   // very much an experimental hack for now
-  var tf = new Transform([-180, 180, -90, 90], [0, 256, 0, 256]);
+  var tf = new Transform([-180, 180, -90, 90], [0, 1024, 0, 512]);
   for (var i in nodes) {
     append(maps[0].internalNodes, new Node(nodes[i].lon, nodes[i].lat, tf));
   };
-  maps[0].display();
+
   // parse edges
 
   console.log("EDGES:");
@@ -69,16 +69,22 @@ function GraphXMLfromString(xmlString) {
     for (var currdata = 0; currdata < datachildren.length; currdata++) {
       keyid = datachildren[currdata].getAttribute('key');
       keycontent = datachildren[currdata].childNodes[0].nodeValue;
-      console.log("Edge " + edgeid + " has key " + keys[keyid].attrname + ' of ' + keycontent);
+      console.log("Edge " + edgesource + " to " + edgetarget + " has key " + keys[keyid].attrname + ' of ' + keycontent);
       current_edge[keys[keyid].attrname] = keycontent;
     };
-    edges[edgeid] = current_edge;
+    //edges[edgeid] = current_edge;
+    edges[curredge] = current_edge;
   };
   console.log(edges);
-};
-
 
   // add edges to enfolding
+  // very much an experimental hack for now
+  for (var i in edges) {
+    append(maps[0].internalEdges, new Edge(edges[i].source, edges[i].target, edges[i].dist_km));
+  };
+  maps[0].display();
+};
+
 
 
 

@@ -394,7 +394,7 @@ function Map(name, opac, img, xoff, id){
 		}
 		//display nodes
 		stroke(0,0,0,150);
-		strokeWeight(1);
+		strokeWeight(0.2);
     	for(var i=0; i < this.internalNodes.length; i++){
     		// if(this.internalNodes.length-1 == i){
     		// 	stroke(255);
@@ -406,12 +406,12 @@ function Map(name, opac, img, xoff, id){
 				} else {
 					fill(0,0,0,100);
 				}
-    		ellipse(this.internalNodes[i].xpos,this.internalNodes[i].ypos, 10, 10);
+    		ellipse(this.internalNodes[i].xpos,this.internalNodes[i].ypos, 5, 5);
     		//text(i,this.internalNodes[i].xpos,this.internalNodes[i].ypos);
     	}
     	//display edges
-    	strokeWeight(3);
-   		stroke(0,0,0, 150);
+    	strokeWeight(1);
+   		stroke(255,255,0,150);
     	for(var i=0; i < this.internalEdges.length; i++){
     		var x1 = this.internalNodes[this.internalEdges[i].node1].xpos;
     		var x2 = this.internalNodes[this.internalEdges[i].node2].xpos;
