@@ -501,13 +501,13 @@ function Map(name, opac, img, xoff, id){
 		}
 
 	//called when mouseReleased
-		this.addNode = function(mx,my,p){
+		this.addNode = function(mx,my){
 		if(mx >this.offSetX && mx < this.img.width+this.offSetX && my > 0 && my <  this.img.height+this.offSetY){ //check if on map
 			if(this.gridMode){
 				if(this.clickCount % 2 == 0){//evens are first clicks
-					this.autoAddNode(mx-this.offSetX,my-this.offSetY,p);
+					this.autoAddNode(mx-this.offSetX,my-this.offSetY);
 				} else {//odds complete edge
-					this.autoAddNode(mx-this.offSetX,my-this.offSetY,p);
+					this.autoAddNode(mx-this.offSetX,my-this.offSetY);
 					var d = nodeDist(this.internalNodes[this.internalNodes.length-2], this.internalNodes[this.internalNodes.length-1]);
 					append(this.internalEdges, new Edge(this.internalNodes.length-2,this.internalNodes.length-1,d)); //connect two above nodes
 					makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY, this.name + " defaultIn");
@@ -517,7 +517,7 @@ function Map(name, opac, img, xoff, id){
 					append(this.internalNodes, new Node(mx-this.offSetX,my-this.offSetY));
 
 					//third argument = n nearest nodes to connect to
-					var nodeShort = findClosestNNodes(mx-this.offSetX,my-this.offSetY, nNodes, this.internalNodes,p);
+					var nodeShort = findClosestNNodes(mx-this.offSetX,my-this.offSetY, nNodes, this.internalNodes);
 					//console.log(nodeShort);
 					for(var i = 0; i < nodeShort.length; i++){
 						//subtract offsets from mx, my because nodes start from (0,0), then translated
@@ -532,12 +532,12 @@ function Map(name, opac, img, xoff, id){
 	};
 
 	//called for grid building
-		this.autoAddNode = function(mx,my,p){
+		this.autoAddNode = function(mx,my){
 			append(this.internalNodes, new Node(mx,my));
-			var nodeShort = findClosestNNodes(mx,my, nNodes, this.internalNodes,p);
+			var nodeShort = findClosestNNodes(mx,my, nNodes, this.internalNodes);
 			for(var i = 0; i < nodeShort.length; i++){
 				append(this.internalEdges, new Edge(nodeShort[i], this.internalNodes.length - 1, nodeDistXY(this.internalNodes[nodeShort[i]], mx,my)));
-				//makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY,p, this.name);
+				//makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY, this.name);
 			}
 			displayMaps();
 	    //updateData(p);
@@ -606,7 +606,7 @@ function Map(name, opac, img, xoff, id){
 		//add nodes in center of grid squares
 		for(var i = 0; i < m; i++){
 			for(var j = 0; j < n; j++){
-				this.autoAddNode((j*img.width/n)+(img.width/n*0.5), (i*img.height/m)+(0.5*img.height/m), p);
+				this.autoAddNode((j*img.width/n)+(img.width/n*0.5), (i*img.height/m)+(0.5*img.height/m));
 				if(j > 0 ){
 					//horizontals
 					append(this.internalEdges,new Edge(nodeCount-1,nodeCount,
@@ -683,20 +683,20 @@ function Map(name, opac, img, xoff, id){
 
 	//add two test nodes, connect with edge and custom distance
 	this.addTestNodes = function(){
-		this.autoAddNode(100,100,p);
-		this.autoAddNode(350,100,p);
+		this.autoAddNode(100,100);
+		this.autoAddNode(350,100);
 		append(this.internalEdges, new Edge(this.internalNodes.length-2,this.internalNodes.length-1,250)); //connect two above nodes
-		makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY,p, this.name);
+		makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY, this.name);
 
 		//console.log(this.internalEdges[this.internalEdges.length-1]);
 	};
 
 	//add two test nodes, connect with edge and custom distance
 	this.addTestNodes2 = function(){
-		this.autoAddNode(100,100,p);
-		this.autoAddNode(100,350,p);
+		this.autoAddNode(100,100);
+		this.autoAddNode(100,350);
 		append(this.internalEdges, new Edge(this.internalNodes.length-2,this.internalNodes.length-1,250)); //connect two above nodes
-		makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY,p, this.name);
+		makeInput(this.internalEdges[this.internalEdges.length-1], this.internalNodes, this.internalEdges.length-1, this.offSetX, this.offSetY, this.name);
 	};
 }
 
@@ -836,7 +836,7 @@ function makeMatrix(focus){
 	//plotTriangles(mdsArray,triangles);
 }
 
-function combineMatrix(p, focus1, focus2){
+function combineMatrix(focus1, focus2){
 	var nodes1 = maps[focus1].internalNodes;
 	var nodes2 = maps[focus2].internalNodes;
 	var edges1 = maps[focus1].internalEdges;
@@ -1145,7 +1145,7 @@ function reCalc(){
 function wormCalc(){
 	if(worm){
 			maps[mapFocus].reCalculateW();
-			combineMatrix(p,0,1);
+			combineMatrix(0,1);
 			resetThree();
 			plotTriangles(maps[0].mdsMatrix, maps[0].trias, 0, false);
 			plotTriangles(maps[1].mdsMatrix, maps[1].trias, 1, false);
