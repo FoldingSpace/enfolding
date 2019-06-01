@@ -1,4 +1,6 @@
 var maps = []; //array to store images
+var saveStates = []; //array to save map states
+var savedStateNo = 0;
 var mapFocus = 0; //number in array to focus
 var bindTwo = false;
 var tSlider1, tSlider2;

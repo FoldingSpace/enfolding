@@ -210,3 +210,32 @@ document.getElementById('importImage').onclick = function() {
 		console.log("Made it past loadImage and addMap.")
 		mapImages.push(myfile);
 }
+
+function saveState(){
+		//append(saveStates, maps[mapFocus]);
+ 		//var saveObj = Object.assign({},maps[mapFocus]);
+		//var saveObj = JSON.parse(JSON.stringify(maps[mapFocus]));
+		//saveStates.push(saveObj);
+		var saveDistMods = [];
+		for(var i = 0; i < maps[0].internalEdges.length; i++){
+			//console.log(maps[0].internalEdges[i].distanceMod);
+			saveDistMods.push(maps[0].internalEdges[i].distanceMod);
+		}
+		console.log(saveDistMods);
+		saveStates.push(saveDistMods);
+
+	  document.getElementById('saved').innerHTML += "<a onclick=\"loadState(" + savedStateNo + ")\" href=\"#\">" + savedStateNo + "</a><br />";
+		savedStateNo ++;
+		}
+
+function loadState(s){
+	//maps[0] = JSON.parse(JSON.stringify(saveStates[s]));
+	var loaded = saveStates[s];
+	for(var i = 0; i < maps[0].internalEdges.length; i++){
+		//console.log(maps[0].internalEdges[i].distanceMod);
+		maps[0].internalEdges[i].distanceMod = loaded[i];
+	}
+	reCalc();
+	recalcMaps();
+	console.log(maps[0]);
+}
