@@ -882,7 +882,8 @@ function combineMatrix(focus1, focus2){
 			}
 		} else {
 			if(!editMode){
-				alert("Error: maps must have same number of points to bind");
+				alert("Error: maps must have same number of points to bind."
+				+ " Map One: " + nodes1.length + " nodes " + " Map Two: " + nodes2.length+ " nodes ");		
 			}
 			document.getElementById("bindCheck").checked=false;
 			bindTwo = false;
