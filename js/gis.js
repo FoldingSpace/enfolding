@@ -51,8 +51,12 @@ new p5();
 	  noStroke();
 	  textSize(24);
 	  textAlign('CENTER');
-	  text('Drag and drop a map', width/4, height/2);
-		// Add an event for when a file is dropped onto the canvas
+	  text('Drag and drop a map or layer', width/4, height/2);
+	  fill(0,0,10,80);
+	  noStroke();
+	  textSize(14);
+	  textAlign('CENTER');
+	  text('  (Enfolding supports .JPG, .JPEG, .GIF, .PNG, .SVG)', width/4, height/1.87);// Add an event for when a file is dropped onto the canvas
 	  c.drop(gotFile);
 	  //createDiv('data: ').id('dataResults');
 	};
