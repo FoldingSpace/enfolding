@@ -26,8 +26,8 @@
 
   <!--TOP MENU-->
   <div id="nav"><img src="images/logo.png" /> enfolding
-      <button id="goInterface" class="button" onclick="goInterface()">EDIT</button>
-      <button id="goRender" class="button" onclick="goRender()">RENDER</button>
+      <button title="Add or remove maps, grids, and nodes" id="goInterface" class="button" onclick="goInterface()">EDIT</button>
+      <button title="Render your map(s)" id="goRender" class="button" onclick="goRender()">RENDER</button>
   </div>
 
   <!--EDIT & RENDER CANVASES-->
@@ -37,8 +37,8 @@
   <!--SIDE MENU, EDIT MODE-->
   <div id="menuEdit" class="menu">
     <header>MAPS</header>
-      <button onclick="changeFocus();">FOCUS</button>
-      <button onclick="resetMaps();">RESET</button>
+      <button title="In two map mode? Click here to swap maps." onclick="changeFocus();">FOCUS</button>
+      <button title="Remove all grids and nodes." onclick="resetMaps();">RESET</button>
     <hr>
     <header>GRIDS</header>
       <div id="grids">
