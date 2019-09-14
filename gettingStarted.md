@@ -84,7 +84,7 @@ Manually add nodes by double clicking the map of interest. By default, the node 
 ![Adding Nodes](graphics/nodes-condensed-2.gif)  
 
 #### Adjusting edge distances
-You will notice that as you create nodes, text boxes that displace node-node distance appear on each edge. You may adjust these distances in order to stretch or pinch the map. Simply click the box, type a new number, and hit enter. 
+You will notice that as you create nodes, text boxes that display node-node distance appear on each edge. You may adjust these distances in order to stretch or pinch the map. Simply click the box, type a new number, and hit enter. 
 
 In order to change the distance between two particular nodes, click a single node. It will appear in red. Then select another node with a shared edge. The text box will appear and allow you to adjust the distance. 
 
