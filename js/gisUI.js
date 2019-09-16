@@ -88,6 +88,43 @@ function insToggle2(){
 
 }
 
+//change canvas color
+function orangeCan() {
+  renderer.setClearColor(0xff812d, 1);
+};
+
+function blueCan() {
+  renderer.setClearColor(0x5a8ad2, 1);
+};
+
+function yellowCan() {
+  renderer.setClearColor(0xffd941, 1);
+};
+
+function greenCan() {
+  renderer.setClearColor(0x94d668, 1);
+};
+
+function magentaCan() {
+  renderer.setClearColor(0xff2d81, 1);
+};
+
+function purpleCan() {
+  renderer.setClearColor(0xba72cc, 1);
+};
+
+function whiteCan() {
+  renderer.setClearColor(0xFFFFFF, 1);
+};
+
+function grayCan() {
+  renderer.setClearColor(0x808080, 1);
+};
+
+function blackCan() {
+  renderer.setClearColor(0x000000, 1);
+};
+//end color change button
 function nNodesChange(obj){
 	var item = obj.value;
 	nNodes = item;
