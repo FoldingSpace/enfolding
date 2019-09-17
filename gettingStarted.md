@@ -1,6 +1,7 @@
 # **An introduction to enfolding: a prototype Geographical Imagination System (GIS)**
-#### enfolding (c) Luke Bergmann and Nick Lally
 ![Enfolding](graphics/bases.png)  
+##### enfolding (c) Luke Bergmann and Nick Lally. [Current prototype can be found here.](https://foldingspace.github.io/enfolding/)
+
 Table of contents
 ============
 - [Introduction](#introduction)
@@ -31,10 +32,16 @@ Table of contents
   * [Exporting your visualization](#exporting-your-visualization)
 
 # **Introduction**
-(This will include a little bit of information about the software´s goals, inspiration, the creators, and a bit of info on how the code works)
+### Why Geographical *Imagination* System?
+Enfolding allows you to collage, reassemble, fragment, interweave, fold, or tear maps/layers and render them in 2D and 3D visualizations. This interactive web interface created by Luke Bergmann and Nick Lally has at its core a desire to upset the rigid spatialities of traditional Geographic Information Systems. What does this mean for users?  Enfolding can be used to bind two distant places that share intimate economic, emotional, or extractive connections to create an intertwined representation of this relation across space. Through the interface you can visualize relational space by stretching or shrinking surface distances or get inside the map with rotating 3D representations. The possibilities to reshape, drape, and create are numerous. 
 
-###### [Current prototype can be found here.](https://foldingspace.github.io/enfolding/)
+Enfolding was created for people searching for new ways to represent absolute and relational spaces. We hope this software will assist users as they conduct exploratory visual analysis and tailor new representations of space.  If you are not an avid mapper within traditional GIS environments or do not consider yourself a spatial theorist, do not worry. This platform and the upcoming tutorials have been designed for people with varying knowledge, interests, and skills. Bring your creativity and stay tuned for upcoming examples and tutorials. 
 
+### How it works? 
+Enfolding draws on a number of JavaScript libraries including [p5.js](https://p5js.org/), [three.js](https://threejs.org/), and [the delaunator](https://github.com/mapbox/delaunator). 
+
+### What is to come? 
+In what follows we present a short introduction to the interface. More tutorials and guides will be published in the weeks to come. 
 
 # About the interface
 Enfolding has two canvases, the editing canvas and the rendering canvas. Once you add your maps or layers  to the editing canvas, you may toggle back and forth between editing and rendering as you work. Let´s take a closer look at each of these canvases before getting started.
@@ -101,15 +108,16 @@ In order to change the distance between two particular nodes, click a single nod
 ![advanced](graphics/advanced_rectangle.gif)  
 - ### Show triangles
     Selecting the show triangles option will reveal the triangles created by your grid and node selection.
+    
 (Add in little explanation about the triangles)   
-- ### Show maps
+- ### Show Maps
     The show maps option allows you to hide or display your maps. All nodes and edges will remain visible.
-- ### Show inputs
+- ### show inputs
     Check or uncheck the show inputs box if you would like to see or hide the distance text boxes as you create new nodes.
     
 
 # **Rendering your visualization**
-Once you have added a grid or drawn a few nodes, switch over to the rendering canvas in order to see how your maps are shaping up. You can always return to make any necessary adjustments.
+Once you have added a grid or drawn a few nodes, switch over to the rendering canvas to see how your maps are shaping up. You can always return to make any necessary adjustments.
 
 
 ## **Map Controls**
@@ -117,6 +125,7 @@ Once you have added a grid or drawn a few nodes, switch over to the rendering ca
    Your map will automatically render in 2D. Check the box next to 3D in order to view your maps in three dimensions.  
 - ### Two map mode 
     If you choose to work with 2 images, check the box next to “Two map mode” to activate other features. Here you may bind the two images together, connecting them by 1-6 nodes. Remember, each image must contain the same number of nodes to bind together successfully.
+    
     (insert GIF with different # of nodes)
 - ### Rotate
     Activate the rotation feature below.
@@ -147,4 +156,5 @@ We are still developing a number of export options. For now, we have a few recom
     Some operating systems automatically offer users the chance to capture a video of your screen. If your do not, many free options exist to do so. 
 * ### Export as a 3D object
     If you would like to continue creating within a 3D graphics program like Blender, save your project as an OBJ. 
-(Possible example of how and when to use blender)
+    
+(Possible example of how and when to use blender, or should that be a separate thing?
