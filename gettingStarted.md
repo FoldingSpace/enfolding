@@ -68,7 +68,7 @@ You will notice two buttons at the top of the editing menu: “Focus” and “R
 - #### Focus 
     You must be focused on an image in order to add or remove nodes and grids. If you are working with two maps or layers, swap back and forth between the two by using the focus button.
     
-![focus](graphics/focus1.gif)  
+![focus](graphics/focus.gif)  
 
 - #### Reset 
     Click the reset button when you are ready to clear all the current nodes or grids from your images. If you would like to delete a current image, refresh the page to start with a blank canvas.
