@@ -1,4 +1,5 @@
 # **An introduction to enfolding: a prototype Geographical Imagination System (GIS)**
+#### enfolding (c) Luke Bergmann and Nick Lally
 ![Enfolding](graphics/bases.png)  
 Table of contents
 ============
