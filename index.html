@@ -84,9 +84,6 @@
 
   <!--SIDE MENU, RENDER MODE-->
   <div id="menuRender" class="menu">
-    <header>OUTPUT</header>
-      <button id="objOut" class="button" onclick="outOBJ()">SAVE OBJ</button>
-    <hr>
     <header>MAP CONTROLS</header>
       <input type="checkbox" name="3D" onchange="dimensionChange(this)" checked>3D<br />
       <input type="checkbox" name="2maps" onchange="wormMode(this)">Two map mode<br />
@@ -117,13 +114,17 @@
     <button style="background-color: #ad58c2" class="colors" onclick="purpleCan()"></button>
     <button style="background-color: #d40055" class="colors" onclick="magentaCan()"></button>
 
-
-
     <hr>
     <header>ADVANCED</header>
     <input type="checkbox" name="wireframe" onchange="wireFrameMode(this)">Wireframe<br />
     <input type="checkbox" name="webvr" onchange="webVrOn(this)">WebVR<br />
     <div id="webvr"></div>
+    <hr>
+    <header>OUTPUT</header>
+    <button id="objOut" class="button" onclick="outOBJ()">SAVE OBJ</button>
+    <button id="jpgOut" title="Export your creation as an image" class="button" onclick="saveAsImage()">SAVE IMAGE</button>
+  
+    <hr>
 
 </form>
 
