@@ -87,6 +87,31 @@ function insToggle2(){
 	}
 
 }
+//color picker iro.js
+//color picker iro.js
+var colorPicker = new iro.ColorPicker('#color-picker-container', {
+width: 150,
+padding:5,
+handleRadius: 5,
+});
+
+var values = document.getElementById("values");
+colorPicker.on(["color:init", "color:change"], function(color, values){
+  var hexPicker = colorPicker.color.hexString;
+  console.log(hexPicker);
+  values.innerHTML = [
+    "hex: " + color.hexString,
+  ].join("<br>");
+});
+
+function onColorChange(color, changes) {
+//change render canvas color
+    renderer.setClearColor(color.hexString, 1);
+}
+
+// listen to a color picker's color:change event
+colorPicker.on('color:change', onColorChange);
+
 
 //change canvas color
 function orangeCan() {
