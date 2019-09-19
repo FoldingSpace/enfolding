@@ -107,12 +107,10 @@ In order to change the distance between two particular nodes, click a single nod
 ## **Advanced Options**
 ![advanced](graphics/advanced_rectangle.gif)  
 - ### Show triangles
-    Selecting the show triangles option will reveal the triangles created by your grid and node selection.
-    
-(Add in little explanation about the triangles)   
-- ### Show Maps
+    Selecting the show triangles option will reveal the triangles created by your grid and node selection. For more information about Delaunay triangulation check out the [delaunator’s guide](https://mapbox.github.io/delaunator/).
+- ### Show maps
     The show maps option allows you to hide or display your maps. All nodes and edges will remain visible.
-- ### show inputs
+- ### Show inputs
     Check or uncheck the show inputs box if you would like to see or hide the distance text boxes as you create new nodes.
     
 
