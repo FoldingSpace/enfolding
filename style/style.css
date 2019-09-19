@@ -64,7 +64,7 @@ button:disabled {
 .menu button.colors {
      border: none;
      color: white;
-     padding: 10px 10px;
+     padding: 7px 7px;
      display: inline-block;
      box-shadow: 1px 1px 1px #333;
 }
