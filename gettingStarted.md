@@ -1,4 +1,4 @@
-# **An introduction to enfolding: a prototype Geographical Imagination System (GIS)**
+# **An introduction to enfolding: an experimental geographical imagination system (gis)**
 ![Enfolding](graphics/bases.png)  
 ##### enfolding (c) Luke Bergmann and Nick Lally. [Current prototype can be found here.](https://foldingspace.github.io/enfolding/)
 
@@ -32,8 +32,8 @@ Table of contents
   * [Exporting your visualization](#exporting-your-visualization)
 
 # **Introduction**
-### Why Geographical *Imagination* System?
-Enfolding allows you to collage, reassemble, fragment, interweave, fold, or tear maps/layers and render them in 2D and 3D visualizations. This interactive web interface created by Luke Bergmann and Nick Lally has at its core a desire to upset the rigid spatialities of traditional Geographic Information Systems. What does this mean for users?  Enfolding can be used to bind two distant places that share intimate economic, emotional, or extractive connections to create an intertwined representation of this relation across space. Through the interface you can strech or shrink surface distances or get inside the map with rotating 3D representations. The possibilities to reshape, drape, and create are numerous. 
+### Why geographical *imagination* system?
+Enfolding allows you to collage, reassemble, fragment, interweave, fold, or tear maps/layers and render them in 2D and 3D visualizations. This interactive web interface created by Luke Bergmann and Nick Lally has at its core a desire to upset the rigid spatialities of traditional Geographic Information Systems (GIS). What does this mean for users?  Enfolding can be used to bind two distant places that share intimate economic, emotional, or extractive connections to create an intertwined representation of this relation across space. Through the interface you can strech or shrink surface distances or get inside the map with rotating 3D representations. The possibilities to reshape, drape, and create are numerous. 
 
 Enfolding was created for people searching for new ways to represent absolute and relational spaces. We hope this software will assist users as they conduct exploratory visual analysis and tailor new representations of space.  If you are not an avid mapper within traditional GIS environments or do not consider yourself a spatial theorist, do not worry. This platform and the upcoming tutorials have been designed for people with varying knowledge, interests, and skills. Bring your creativity and stay tuned for upcoming examples and tutorials. 
 
@@ -53,7 +53,7 @@ Edit mode is where you will begin your project. Here you will add your maps and 
 In the rendering canvas, you will be able to view your creation in 2D or 3D, bind maps together, and export your project for use outside of Enfolding.
 
 # **Getting Started in Editing Mode**
-To get started with enfolding you will need at least one image. This may be a map, a satellite image, a layer exported from a GIS software, etc.
+To get started with enfolding you will need at least one image. This may be a map, a satellite image, a layer exported from a mapping software, etc.
 ### Choosing a file
  Enfolding accepts most image formats including .PNG, JPG, .GIF, .SVG, among others. Be sure to save your images, when possible, with a transparent background if there is any white space around them.
 
