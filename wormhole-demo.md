@@ -67,8 +67,8 @@ If you would like to stretch the wormhole, select a higher value. If you would l
 ### Step 4: Return to the Rendering Canvas to view the results
 These two examples were made using the 5x5 grid. Examine how the dynamic shifts when editing MAP 1 and MAP 2. 
 #### MAP 1 with exagerated edge distances around the central node
-![Map 1 advanced view](graphics/wormhole/adjust-distance-M2-compilation.png)
+![Map 1 advanced view](graphics/wormhole/adjust-distance-compilation.png)
 #### MAP 2 with exagerated edge distances around the central node
-![Map 2 advanced view](graphics/wormhole/adjust-distance-compilation.png)
+![Map 2 advanced view](graphics/wormhole/adjust-distance-M2-compilation.png)
 # Why create a wormhole with enfolding?
 ![example](graphics/wormhole/11-bind-compilation.png)
