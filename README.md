@@ -1,4 +1,4 @@
-## enfolding:  a prototype Geographical Imagination System (GIS)
+## enfolding:  a prototype geographical imagination system (gis)
 
 [Current prototype can be found here.](https://foldingspace.github.io/enfolding/)
 
