@@ -168,9 +168,11 @@ function wormMode(obj){
 	if(!obj.checked){
 		worm = false;
 		document.getElementById("nodeConnect").style.display = "none";
+		document.getElementById("renderFocus").style.display = "block";
 	} else {
 		worm = true;
 		document.getElementById("nodeConnect").style.display = "block";
+		document.getElementById("renderFocus").style.display = "none"
 	}
 	recalcMaps();
 }
