@@ -1,6 +1,7 @@
 # Distance Demo
 ![Distance 0 in Color](graphics/distance-tutorial/pinch-color.png)
 ![Add map grid](graphics/distance-tutorial/add-map-grid.png)
+![Nodes-triangles](graphics/distance-tutorial/nodes-triangles.png)
 ![change-distance](graphics/distance-tutorial/change-distance.gif)
 ![2D-normal](graphics/distance-tutorial/2D-normal.png)
 ![2D-pinch](graphics/distance-tutorial/2D-pinch.png)
