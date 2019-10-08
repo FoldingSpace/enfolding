@@ -15,13 +15,19 @@ Here is a brief overview of the process before we jump into a geographic example
 ![change-distance](graphics/distance-tutorial/change-distance.gif)
 
 ## Example: Getting to NACIS 2016
-
+### Add image and grid
 ![nacis-2016](graphics/distance-tutorial/grids.png)
+### Create nodes and connections between airports
 ![nacis-2016](graphics/distance-tutorial/nodes.png)
+### Adjust distances
 ![nacis-2016](graphics/distance-tutorial/inputs.png)
+### Display in render canvas
 ![nacis-2016](graphics/distance-tutorial/nacis-2016.jpg)
-![nacis-2016-with-line](graphics/distance-tutorial/nacis-2016-with-line.png)
+### View wireframe
 ![wireframe-peaks](graphics/distance-tutorial/wireframe-peaks.jpg)
+### Add route lines in external program
+![nacis-2016-with-line](graphics/distance-tutorial/nacis-2016-with-line.png)
+
 
 
 
