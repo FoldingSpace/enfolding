@@ -42,5 +42,5 @@ Here is a brief overview of the process before we jump into a geographic example
 ![3D-normal](graphics/distance-tutorial/3D-normal.png)
 #### 3D render with distance set to zero
 ![3D-pinch](graphics/distance-tutorial/3D-pinch.png)
-#### Zero Distance
+#### Zero distance alternative view
 ![3D-view](graphics/distance-tutorial/3D-view.png)
