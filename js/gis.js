@@ -21,6 +21,9 @@ var connectLastNodes = 1; //connect last n-nodes in two map mode
 var scrollLock = false;
 var editMode = true;
 
+var jitterEdgeMultiplierMagnitude = 0.01; // fractional maximum jitter multiplier per edge
+var jitterVertexAbsoluteMagnitude = 1.00; // maximum jitter addition per node x or y coordinate
+
 //these generated dynamically to fit screen
 var canvaswidth = 0;
 var canvasheight = 0;
@@ -775,6 +778,40 @@ function nodeDistXY(nn1,mx,my){
 	return dist(nn1.xpos,nn1.ypos,mx,my);
 }
 
+function jitterEdgeMatrix(matrix,jitterEdgeMultiplierMagnitude){
+	// this code randomly perturbs edge distances
+	// such that 'nearby' similarly-good MDS results might be found
+	// e.g. symmetric mirrors.
+	var jitterEdgeMatrixMultipliers = numeric.add(
+		1,
+		numeric.add(
+			-1 * jitterEdgeMultiplierMagnitude,
+			numeric.mul(
+				jitterEdgeMultiplierMagnitude,
+				numeric.random([matrix.length,matrix[0].length])
+			)
+		)
+	);
+	for(var y = 0; y < matrix.length; y++) {
+		for(var x = 0; x < matrix[0].length; x++) {
+				// do elementwise multiplication -- could be sped up.
+				matrix[x][y] = matrix[x][y] * jitterEdgeMatrixMultipliers[x][y];
+			};
+		};
+	return matrix;
+}
+
+function jitterVertexPositionArray(vertices,jitterVertexAbsoluteMagnitude) {
+	// this code randomly perturbs vertex node positions (for the Delaunay)
+	// such that 'nearby' similarly-good MDS results might be found
+	// e.g. symmetric mirrors.
+	for(var v = 0; v < vertices.length; v++) {
+		vertices[v][0] = vertices[v][0] + 2 * (Math.random()-1) * jitterVertexAbsoluteMagnitude;
+		vertices[v][1] = vertices[v][1] + 2 * (Math.random()-1) * jitterVertexAbsoluteMagnitude;
+	};
+	return vertices;
+}
+
 //build empty matrix, run through Floyd Warshall and MDS
 function makeMatrix(focus){
 	//console.log(maps[mapFocus].internalNodes);
@@ -811,40 +848,8 @@ function makeMatrix(focus){
 		vertices[y] = [nodes[y].xpos, nodes[y].ypos];
 	}
 
-	// *************
-	// begin distance and position jittering code
-	//
-	// this code randomly perturbs edge distances AND vertex node positions (for the Delaunay)
-	// such that 'nearby' similarly-good MDS results might be found
-	// e.g. symmetric mirrors.
-
-	var jitterEdgeMultiplierMagnitude = 0.01; // fractional maximum jitter multiplier per edge
-	var jitterVertexAbsoluteMagnitude = 1.00; // maximum jitter addition per node x or y coordinate
-
-	var jitterEdgeMatrixMultipliers = numeric.add(
-		1,
-		numeric.add(
-			-1 * jitterEdgeMultiplierMagnitude,
-			numeric.mul(
-				jitterEdgeMultiplierMagnitude,
-				numeric.random([nodes.length,nodes.length])
-			)
-		)
-	);
-	for(var y = 0; y < nodes.length; y++) {
-		for(var x = 0; x < nodes.length; x++) {
-				// do elementwise multiplication -- could be sped up.
-				matrix[x][y] = matrix[x][y] * jitterEdgeMatrixMultipliers[x][y];
-			};
-		};
-
-	for(var v = 0; v < vertices.length; v++) {
-		vertices[v][0] = vertices[v][0] + 2 * (Math.random()-1) * jitterVertexAbsoluteMagnitude;
-		vertices[v][1] = vertices[v][1] + 2 * (Math.random()-1) * jitterVertexAbsoluteMagnitude;
-	};
-	// end distance and position jittering code
-	// *************
-
+	matrix = jitterEdgeMatrix(matrix,jitterEdgeMultiplierMagnitude);
+	vertices = jitterVertexPositionArray(vertices,jitterVertexAbsoluteMagnitude);
 
 	//console.log(matrix);
 
@@ -961,6 +966,8 @@ function combineMatrix(focus1, focus2){
 		}
 		console.log(entries);
 	}*/
+
+	matrix = jitterEdgeMatrix(matrix,jitterEdgeMultiplierMagnitude);
 
 	var shortestDists = floydWarshall(matrix);
 	//uncomment to print floyd warshall matrix to console
