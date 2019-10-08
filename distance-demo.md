@@ -9,7 +9,7 @@ Here, we are working with a simple grey grid image. Drag and drop whatever image
 Create two nodes to get started. You are not limited to just two nodes, but for this example, we are using two.
 ![Nodes-triangles](graphics/distance-tutorial/nodes-triangles.png)
 ### Working with the inputs
-Be sure to check "show inputs" so that the edge distances appear. All distances are recorded in pixels. Type a new distance in the text box, then hit eneter. Swap over to the rendering canvas to see your changes in 2D and 3D. You can enter new distances and adjust your visualization. 
+Be sure to check "show inputs" so that the edge distances appear. All distances are recorded in pixels. Type a new distance in the text box, then hit eneter. Swap over to the rendering canvas to see your changes in 2D and 3D. You can always switch back to edit mode and enter new distances in order to adjust your visualization. 
 ### Overview
 Here is a brief overview of the process before we jump into a geographic example.
 ![change-distance](graphics/distance-tutorial/change-distance.gif)
