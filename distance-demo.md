@@ -33,14 +33,14 @@ Here is a brief overview of the process before we jump into a geographic example
 
 
 
-
-#### 2D View with no distance changes
+### Additional grey grid renders
+#### 2D render with no distance changes
 ![2D-normal](graphics/distance-tutorial/2D-normal.png)
-#### D View with distance set to zero
+#### 2D render with distance set to zero
 ![2D-pinch](graphics/distance-tutorial/2D-pinch.png)
-#### 3D View with no distance changes
+#### 3D render with no distance changes
 ![3D-normal](graphics/distance-tutorial/3D-normal.png)
-#### 3D View with distance set to zero
+#### 3D render with distance set to zero
 ![3D-pinch](graphics/distance-tutorial/3D-pinch.png)
 #### Zero Distance
 ![3D-view](graphics/distance-tutorial/3D-view.png)
