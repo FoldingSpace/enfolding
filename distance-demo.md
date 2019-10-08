@@ -15,8 +15,10 @@ Here is a brief overview of the process before we jump into a geographic example
 ![change-distance](graphics/distance-tutorial/change-distance.gif)
 
 ## Example: Getting to NACIS 2016
-
-
+![orginal-image]
+![nacis-2016](graphics/distance-tutorial/nacis-2016.jpg)
+![nacis-2016-with-line](graphics/distance-tutorial/nacis-2016-with-line.png)
+![wireframe-peaks](graphics/distance-tutorial/wireframe-peaks.jpg)
 
 
 
