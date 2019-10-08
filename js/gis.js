@@ -801,14 +801,40 @@ function jitterEdgeMatrix(matrix,jitterEdgeMultiplierMagnitude){
 	return matrix;
 }
 
+function floatingPointClose(num1,num2,myTolerance) {
+	return(abs(num1-num2) < myTolerance);
+}
+
 function jitterVertexPositionArray(vertices,jitterVertexAbsoluteMagnitude) {
 	// this code randomly perturbs vertex node positions (for the Delaunay)
 	// such that 'nearby' similarly-good MDS results might be found
 	// e.g. symmetric mirrors.
+
+	// Find min and max positions for x and y.
+	// The principle is that no jitters occur along the edges of the maps.
+	// The reason for this is that they otherwise can create very elongated delaunay triangles,
+	//  which creates associated distortions in the rendering.
+	var xPosArray = vertices.map(p => p[0]);
+	var yPosArray = vertices.map(p => p[1]);
+	var xMax = Math.max(...xPosArray);
+	var yMax = Math.max(...yPosArray);
+	var xMin = Math.min(...xPosArray);
+	var yMin = Math.min(...yPosArray);
+
 	for(var v = 0; v < vertices.length; v++) {
-		vertices[v][0] = vertices[v][0] + 2 * (Math.random()-1) * jitterVertexAbsoluteMagnitude;
+		if (
+			!floatingPointClose(xMin,vertices[v][0],jitterVertexAbsoluteMagnitude) &&
+			!floatingPointClose(xMax,vertices[v][0],jitterVertexAbsoluteMagnitude)
+		) {
+			vertices[v][0] = vertices[v][0] + 2 * (Math.random()-1) * jitterVertexAbsoluteMagnitude;
+		};
+		if (
+			!floatingPointClose(yMin,vertices[v][1],jitterVertexAbsoluteMagnitude) &&
+			!floatingPointClose(yMax,vertices[v][1],jitterVertexAbsoluteMagnitude)
+		) {
 		vertices[v][1] = vertices[v][1] + 2 * (Math.random()-1) * jitterVertexAbsoluteMagnitude;
-	};
+	  };
+  };
 	return vertices;
 }
 
