@@ -21,6 +21,9 @@ var connectLastNodes = 1; //connect last n-nodes in two map mode
 var scrollLock = false;
 var editMode = true;
 
+var jitterEdgeMultiplierMagnitude = 0.01; // fractional maximum jitter multiplier per edge
+var jitterVertexAbsoluteMagnitude = 1.00; // maximum jitter addition per node x or y coordinate
+
 //these generated dynamically to fit screen
 var canvaswidth = 0;
 var canvasheight = 0;
@@ -816,6 +819,66 @@ function nodeDistXY(nn1,mx,my){
 	return dist(nn1.xpos,nn1.ypos,mx,my);
 }
 
+function jitterEdgeMatrix(matrix,jitterEdgeMultiplierMagnitude){
+	// this code randomly perturbs edge distances
+	// such that 'nearby' similarly-good MDS results might be found
+	// e.g. symmetric mirrors.
+	var jitterEdgeMatrixMultipliers = numeric.add(
+		1,
+		numeric.add(
+			-1 * jitterEdgeMultiplierMagnitude,
+			numeric.mul(
+				jitterEdgeMultiplierMagnitude,
+				numeric.random([matrix.length,matrix[0].length])
+			)
+		)
+	);
+	for(var y = 0; y < matrix.length; y++) {
+		for(var x = 0; x < matrix[0].length; x++) {
+				// do elementwise multiplication -- could be sped up.
+				matrix[x][y] = matrix[x][y] * jitterEdgeMatrixMultipliers[x][y];
+			};
+		};
+	return matrix;
+}
+
+function floatingPointClose(num1,num2,myTolerance) {
+	return(abs(num1-num2) < myTolerance);
+}
+
+function jitterVertexPositionArray(vertices,jitterVertexAbsoluteMagnitude) {
+	// this code randomly perturbs vertex node positions (for the Delaunay)
+	// such that 'nearby' similarly-good MDS results might be found
+	// e.g. symmetric mirrors.
+
+	// Find min and max positions for x and y.
+	// The principle is that no jitters occur along the edges of the maps.
+	// The reason for this is that they otherwise can create very elongated delaunay triangles,
+	//  which creates associated distortions in the rendering.
+	var xPosArray = vertices.map(p => p[0]);
+	var yPosArray = vertices.map(p => p[1]);
+	var xMax = Math.max(...xPosArray);
+	var yMax = Math.max(...yPosArray);
+	var xMin = Math.min(...xPosArray);
+	var yMin = Math.min(...yPosArray);
+
+	for(var v = 0; v < vertices.length; v++) {
+		if (
+			!floatingPointClose(xMin,vertices[v][0],jitterVertexAbsoluteMagnitude) &&
+			!floatingPointClose(xMax,vertices[v][0],jitterVertexAbsoluteMagnitude)
+		) {
+			vertices[v][0] = vertices[v][0] + 2 * (Math.random()-1) * jitterVertexAbsoluteMagnitude;
+		};
+		if (
+			!floatingPointClose(yMin,vertices[v][1],jitterVertexAbsoluteMagnitude) &&
+			!floatingPointClose(yMax,vertices[v][1],jitterVertexAbsoluteMagnitude)
+		) {
+		vertices[v][1] = vertices[v][1] + 2 * (Math.random()-1) * jitterVertexAbsoluteMagnitude;
+	  };
+  };
+	return vertices;
+}
+
 //build empty matrix, run through Floyd Warshall and MDS
 function makeMatrix(focus){
 	//console.log(maps[mapFocus].internalNodes);
@@ -851,6 +914,9 @@ function makeMatrix(focus){
 		//populate vertices array for Delaunay
 		vertices[y] = [nodes[y].xpos, nodes[y].ypos];
 	}
+
+	matrix = jitterEdgeMatrix(matrix,jitterEdgeMultiplierMagnitude);
+	vertices = jitterVertexPositionArray(vertices,jitterVertexAbsoluteMagnitude);
 
 	//console.log(matrix);
 
@@ -968,6 +1034,8 @@ function combineMatrix(focus1, focus2){
 		}
 		console.log(entries);
 	}*/
+
+	matrix = jitterEdgeMatrix(matrix,jitterEdgeMultiplierMagnitude);
 
 	var shortestDists = floydWarshall(matrix);
 	//uncomment to print floyd warshall matrix to console

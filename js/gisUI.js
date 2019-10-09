@@ -274,3 +274,13 @@ document.getElementById('importImage').onclick = function() {
 		console.log("Made it past loadImage and addMap.")
 		mapImages.push(myfile);
 }
+
+function mirrorMesh() {
+	scene.children.forEach(
+		function(object) {
+			if (object.type === "Mesh") {
+				object.applyMatrix(new THREE.Matrix4().makeScale(-1, 1, 1));
+			}
+		}
+	);
+}
