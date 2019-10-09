@@ -51,8 +51,12 @@ new p5();
 	  noStroke();
 	  textSize(24);
 	  textAlign('CENTER');
-	  text('Drag and drop a map', width/4, height/2);
-		// Add an event for when a file is dropped onto the canvas
+	  text('Drag and drop a map or layer', width/4, height/2);
+	  fill(0,0,10,80);
+	  noStroke();
+	  textSize(14);
+	  textAlign('CENTER');
+	  text('  (Enfolding supports .JPG, .JPEG, .GIF, .PNG, .SVG)', width/4, height/1.87);// Add an event for when a file is dropped onto the canvas
 	  c.drop(gotFile);
 	  //createDiv('data: ').id('dataResults');
 	};
@@ -235,6 +239,7 @@ window.onload = function() {
 };
 
 	var scene, camera;
+	var strDownloadMime = "image/octet-stream";
 	var wireframeOn = false;
 
 	//var material = new THREE.MeshLambertMaterial( { color: 0x0000FF, transparent: true, opacity: 0.8, side: THREE.DoubleSide, wireframe:wireframeOn } );
@@ -242,7 +247,13 @@ window.onload = function() {
 
 
 	function initThree() {
-		renderer = new THREE.WebGLRenderer({ alpha: true });
+		renderer = new THREE.WebGLRenderer({
+		alpha: true,
+		preserveDrawingBuffer: true
+	  });
+		renderer.setSize(window.innerWidth, window.innerHeight);
+                document.body.appendChild(renderer.domElement);
+	
 		scene = new THREE.Scene();
 		camera = new THREE.PerspectiveCamera(
                 75,             // Field of view
@@ -318,6 +329,36 @@ window.onload = function() {
 			render();
 
 	};
+
+
+	function saveAsImage() {
+	  var imgData, imgNode;
+
+	  try {
+	    var strMime = "image/jpeg";
+	    imgData = renderer.domElement.toDataURL(strMime);
+
+	    saveFile(imgData.replace(strMime, strDownloadMime), "test.jpg");
+
+	  } catch (e) {
+	    console.log(e);
+	    return;
+	  }
+
+	}
+
+	var saveFile = function(strData, filename) {
+	  var link = document.createElement('a');
+	  if (typeof link.download === 'string') {
+	    document.body.appendChild(link); 
+	    link.download = filename;
+	    link.href = strData;
+	    link.click();
+	    document.body.removeChild(link); 
+	  } else {
+	    location.replace(uri);
+	  }
+	}
 
 //END RIGHT CANVAS
 
@@ -882,7 +923,8 @@ function combineMatrix(focus1, focus2){
 			}
 		} else {
 			if(!editMode){
-				alert("Error: maps must have same number of points to bind");
+				alert("Error: maps must have same number of points to bind."
+				+ " Map One: " + nodes1.length + " nodes " + " Map Two: " + nodes2.length+ " nodes ");		
 			}
 			document.getElementById("bindCheck").checked=false;
 			bindTwo = false;
