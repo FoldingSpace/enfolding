@@ -1,7 +1,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Geographical Imagination System</title>
+  <title>geographical imagination system</title>
   <script language="javascript" type="text/javascript" src="js/p5.js"></script>
   <script language="javascript" type="text/javascript" src="js/p5.dom.js"></script>-->
   <!--<script language="javascript" type="text/javascript" src="js/p5.min.old.js"></script>
@@ -15,6 +15,7 @@
   <script language="javascript" type="text/javascript" src="js/FileSaver.min.js"></script>
   <script language="javascript" type="text/javascript" src="js/graph-io.js"></script>
   <script language="javascript" type="text/javascript" src="js/vr/webvr2.js"></script>
+  <script language="javascript" type="text/javascript" src="js/iro.js"></script>  
 
   <link rel="stylesheet" type="text/css" href="style/style.css">
 </head>
@@ -26,8 +27,8 @@
 
   <!--TOP MENU-->
   <div id="nav"><img src="images/logo.png" /> enfolding
-      <button id="goInterface" class="button" onclick="goInterface()">EDIT</button>
-      <button id="goRender" class="button" onclick="goRender()">RENDER</button>
+      <button title="Add or remove maps, grids, and nodes" id="goInterface" class="button" onclick="goInterface()">EDIT</button>
+      <button title="Render your map(s)" id="goRender" class="button" onclick="goRender()">RENDER</button>
       <button title="Check out the quick start guide here." id="Getting Started" class="button" style="float: right;" onclick="var otherWindow = window.open();otherWindow.opener = null;otherWindow.location.href='https://github.com/FoldingSpace/enfolding/blob/gettingStarted/gettingStarted.md';">Getting Started</button>
   </div>
 
@@ -38,8 +39,8 @@
   <!--SIDE MENU, EDIT MODE-->
   <div id="menuEdit" class="menu">
     <header>MAPS</header>
-      <button onclick="changeFocus();">FOCUS</button>
-      <button onclick="resetMaps();">RESET</button>
+      <button title="In two map mode? Click here to swap maps." onclick="changeFocus();">FOCUS</button>
+      <button title="Remove all grids and nodes." onclick="resetMaps();">RESET</button>
     <hr>
     <header>GRIDS</header>
       <div id="grids">
@@ -85,10 +86,10 @@
 
   <!--SIDE MENU, RENDER MODE-->
   <div id="menuRender" class="menu">
-    <header>OUTPUT</header>
-      <button id="objOut" class="button" onclick="outOBJ()">SAVE OBJ</button>
-    <hr>
     <header>MAP CONTROLS</header>
+      <button id="renderFocus" title="Toggle between MAP1 and MAP2" onclick="changeFocus();">FOCUS</button><br />
+      <br />
+      <span><b>View Options</b></span><br />
       <input type="checkbox" name="3D" onchange="dimensionChange(this)" checked>3D<br />
       <input type="checkbox" name="2maps" onchange="wormMode(this)">Two map mode<br />
       <div id="nodeConnect" style="display:none;padding-left:15px;">
@@ -107,11 +108,31 @@
     <header>APPEARANCE</header>
       <div id="transSliders">
       </div>
+    <span><b>CANVAS COLOR</b></span><br />
+    <br />
+    <div id="color-picker-container"></div><br />
+    <button style="background-color: #000000" class="colors" onclick="blackCan()"></button>
+    <button style="background-color: #808080" class="colors" onclick="grayCan()"></button>
+    <button style="background-color: #FFFFFF" class="colors" onclick="whiteCan()"></button>
+    <button style="background-color: #ff6600" class="colors" onclick="orangeCan()"></button>
+    <button style="background-color: #ffd42a" class="colors" onclick="yellowCan()"></button>
+    <button style="background-color: #71c837" class="colors" onclick="greenCan()"></button>
+    <button style="background-color: #3771c8" class="colors" onclick="blueCan()"></button>
+    <button style="background-color: #ad58c2" class="colors" onclick="purpleCan()"></button>
+    <button style="background-color: #d40055" class="colors" onclick="magentaCan()"></button>
+
     <hr>
     <header>ADVANCED</header>
+    <button title="mirrorMesh" onclick="mirrorMesh()">MIRROR</button><br /><br />
     <input type="checkbox" name="wireframe" onchange="wireFrameMode(this)">Wireframe<br />
     <input type="checkbox" name="webvr" onchange="webVrOn(this)">WebVR<br />
     <div id="webvr"></div>
+    <hr>
+    <header>OUTPUT</header>
+    <button id="objOut" class="button" onclick="outOBJ()">SAVE OBJ</button>
+    <button id="jpgOut" title="Export your creation as an image" class="button" onclick="saveAsImage()">SAVE IMAGE</button>
+  
+    <hr>
 
 </form>
 

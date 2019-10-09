@@ -61,6 +61,14 @@ button:disabled {
     box-shadow: 1px 1px 1px #333;
 }
 
+.menu button.colors {
+     border: none;
+     color: white;
+     padding: 7px 7px;
+     display: inline-block;
+     box-shadow: 1px 1px 1px #333;
+}
+
 .menu select{
     background-color: #08519c;
     color: white;
