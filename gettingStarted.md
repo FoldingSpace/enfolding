@@ -96,7 +96,8 @@ You will notice that as you create nodes, text boxes that display node-node dist
 
 In order to change the distance between two particular nodes, click a single node. It will appear in red. Then select another node with a shared edge. The text box will appear and allow you to adjust the distance. 
 
-- **Example 1:** To pinch the map, adjust to 0 and click enter	
+- To pinch the map, adjust to 0 and click enter. [See an extended example here.](https://github.com/FoldingSpace/enfolding/blob/gettingStarted/distance-demo.md)
+- In some particular cases, enfolding allows you to increase or exagerate distances as well. [Check out the wormhole demo for an example of this.](https://github.com/FoldingSpace/enfolding/blob/gettingStarted/wormhole-demo.md)	
 	
 ## **Advanced Options**
 ![advanced](graphics/advanced_rectangle.gif)  
