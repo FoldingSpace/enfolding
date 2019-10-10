@@ -96,13 +96,7 @@ You will notice that as you create nodes, text boxes that display node-node dist
 
 In order to change the distance between two particular nodes, click a single node. It will appear in red. Then select another node with a shared edge. The text box will appear and allow you to adjust the distance. 
 
-(GIF or vid to demonstrate)
-
-- **Example 1:** To pinch the map, adjust to 0 and click enter
-	(Still image before and after distance decrease)
-- **Example 2:** To stretch the map increase the distance and click enter
-	(Still image before and after distance increase)
-	
+- **Example 1:** To pinch the map, adjust to 0 and click enter	
 	
 ## **Advanced Options**
 ![advanced](graphics/advanced_rectangle.gif)  
@@ -123,8 +117,6 @@ Once you have added a grid or drawn a few nodes, switch over to the rendering ca
    Your map will automatically render in 2D. Check the box next to 3D in order to view your maps in three dimensions.  
 - ### Two map mode 
     If you choose to work with 2 images, check the box next to “Two map mode” to activate other features. Here you may bind the two images together, connecting them by 1-6 nodes. Remember, each image must contain the same number of nodes to bind together successfully.
-    
-    (insert GIF with different # of nodes)
 - ### Rotate
     Activate the rotation feature below.
     
@@ -154,5 +146,4 @@ We are still developing a number of export options. For now, we have a few recom
     Some operating systems automatically offer users the chance to capture a video of your screen. If your do not, many free options exist to do so. 
 * ### Export as a 3D object
     If you would like to continue creating within a 3D graphics program like Blender, save your project as an OBJ. 
-    
-(Possible example of how and when to use blender, or should that be a separate thing?
+
