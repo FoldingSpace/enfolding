@@ -148,8 +148,8 @@ Once you have added a grid or drawn a few nodes, switch over to the rendering ca
 ## **Exporting your visualization**
 We are still developing a number of export options. For now, we have a few recommendations on how to export your enfolded map.
 
-* ### Screen captures
-    Use your computer’s screen capture function in order to save an image.
+* ### Save as image
+    Use the SAVE IMAGE button in the rendering canvas to export a .jpg of your canvas.
 * ### Screen recordings
     Some operating systems automatically offer users the chance to capture a video of your screen. If your do not, many free options exist to do so. 
 * ### Export as a 3D object
