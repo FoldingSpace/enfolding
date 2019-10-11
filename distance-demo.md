@@ -31,7 +31,7 @@ Driving time from Madison to Colorado Springs averages around 15 hours, and flig
 ![nacis-2016](graphics/distance-tutorial/nacis-2016.jpg) 
 ### View wireframe
 ![wireframe-peaks](graphics/distance-tutorial/wireframe-peaks.jpg)
-### Add route lines in external program
+#### Add route lines in external program
 ![nacis-2016-with-line](graphics/distance-tutorial/nacis-2016-with-line.png)
 
 #### Map tiles used for image by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL.
