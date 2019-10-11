@@ -1,5 +1,5 @@
 # **An introduction to enfolding: an experimental geographical imagination system (gis)**
-![Enfolding](graphics/bases.png)  
+![example](graphics/wormhole/11-bind-compilation.png)
 ##### enfolding (c) Luke Bergmann and Nick Lally. [Current prototype can be found here.](https://foldingspace.github.io/enfolding/)
 
 Table of contents
@@ -147,4 +147,6 @@ We are still developing a number of export options. For now, we have a few recom
     Some operating systems automatically offer users the chance to capture a video of your screen. If your do not, many free options exist to do so. 
 * ### Export as a 3D object
     If you would like to continue creating within a 3D graphics program like Blender, save your project as an OBJ. 
+    ### enfolding product rendered in blender
+    ![Enfolding](graphics/bases.png)  
 
