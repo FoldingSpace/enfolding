@@ -25,9 +25,9 @@ We compared the driving route to flight paths. The driving path is symbolized in
 Driving time from Madison to Colorado Springs averages around 15 hours, and flight time totals around 4.5 hours in the selected route. We added an extra 2 hours to account for airport waiting and descreased the node distances to reflect the difference between driving and flight times, cinching together the three airport hubs. 
 ![nacis-2016](graphics/distance-tutorial/inputs.png)
 ### Display in render canvas
-Here’s how the image changes in 2D with the new distances.
+**Here’s how the image changes in 2D with the new distances.**
 ![nacis-2016](graphics/distance-tutorial/2-D.jpg) 
-Here’s how it changes in 3D as relations get scaled.
+**Here’s how it changes in 3D as relations get scaled.**
 ![nacis-2016](graphics/distance-tutorial/nacis-2016.jpg) 
 ### View wireframe
 ![wireframe-peaks](graphics/distance-tutorial/wireframe-peaks.jpg)
