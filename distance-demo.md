@@ -19,12 +19,14 @@ How do different modes of transportation shape these relations across space?
 ### Add image and grid
 ![nacis-2016](graphics/distance-tutorial/grids.png)
 ### Create nodes and connections between airports
-We compared the driving route to flight paths. This specific path transports passengers from Madison to Dallas and then back north to Colorado Springs. After laying out a basic grid, we added a number of nodes to connect these airports and examined their original distances. 
+We compared the driving route to flight paths. The driving path is symbolized in black, while the flight path was created through new nodes within enfolding. This specific path transports passengers from Madison to Dallas and then back north to Colorado Springs. After laying out a basic grid, we added a number of nodes to connect these airports and examined their original distances. 
 ![nacis-2016](graphics/distance-tutorial/nodes.png)
 ### Adjust distances
 Driving time from Madison to Colorado Springs averages around 15 hours, and flight time totals around 4.5 hours in the selected route. We added an extra 2 hours to account for airport waiting and descreased the node distances to reflect the difference between driving and flight times, cinching together the three airport hubs. 
 ![nacis-2016](graphics/distance-tutorial/inputs.png)
 ### Display in render canvas
+Here’s how the image changes in 2D with the new distances.
+![nacis-2016](graphics/distance-tutorial/2-D.jpg) 
 Here’s how it changes in 3D as relations get scaled.
 ![nacis-2016](graphics/distance-tutorial/nacis-2016.jpg) 
 ### View wireframe
@@ -38,6 +40,7 @@ Here’s how it changes in 3D as relations get scaled.
 
 
 ### Additional grey grid renders
+Here are a few extra renders from the grey grid example. 
 #### 2D render with no distance changes
 ![2D-normal](graphics/distance-tutorial/2D-normal.png)
 #### 2D render with distance set to zero
