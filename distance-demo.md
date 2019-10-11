@@ -15,7 +15,7 @@ Here is a brief overview of the process before we jump into a geographic example
 ![change-distance](graphics/distance-tutorial/change-distance.gif)
 
 ## Example: Getting to NACIS 2016
-How do different modes of transportation shape these relations across space?
+How do different modes of transportation shape relations across space?
 ### Add image and grid
 ![nacis-2016](graphics/distance-tutorial/grids.png)
 ### Create nodes and connections between airports
@@ -51,5 +51,5 @@ Notice how this changes when distance is drastically decreased, creating intense
 In the 3D render, these distance changes reflect in folding, curling or pinching of the image's surface. 
 ![3D-pinch](graphics/distance-tutorial/3D-pinch.png)
 #### Zero distance alternative view
-Use the rotate feature of your mouse to move the graphic around and export alternate 3D views. 
+Use the rotate feature or your mouse to move the graphic around and export alternate 3D views. 
 ![3D-view](graphics/distance-tutorial/3D-view.png)
