@@ -37,17 +37,19 @@ Here’s how it changes in 3D as relations get scaled.
 #### Map tiles used for image by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL.
 
 
-
-
 ### Additional grey grid renders
 Here are a few extra renders from the grey grid example. 
 #### 2D render with no distance changes
+The new nodes cause the corners to slightly fold even in the 2D view.
 ![2D-normal](graphics/distance-tutorial/2D-normal.png)
 #### 2D render with distance set to zero
+Notice how this changes when distance is drastically decreased, creating intense folds.
 ![2D-pinch](graphics/distance-tutorial/2D-pinch.png)
 #### 3D render with no distance changes
 ![3D-normal](graphics/distance-tutorial/3D-normal.png)
 #### 3D render with distance set to zero
+In the 3D render, these distance changes reflect in folding, curling or pinching of the image's surface. 
 ![3D-pinch](graphics/distance-tutorial/3D-pinch.png)
 #### Zero distance alternative view
+Use the rotate feature of your mouse to move the graphic around and export alternate 3D views. 
 ![3D-view](graphics/distance-tutorial/3D-view.png)
