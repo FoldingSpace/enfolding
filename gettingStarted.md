@@ -147,6 +147,6 @@ We are still developing a number of export options. For now, we have a few recom
     Some operating systems automatically offer users the chance to capture a video of your screen. If your do not, many free options exist to do so. 
 * ### Export as a 3D object
     If you would like to continue creating within a 3D graphics program like Blender, save your project as an OBJ.
- #### enfolding product rendered in blender
-    ![Enfolding](graphics/bases.png)  
+ #### enfolding output rendered in blender
+ ![Enfolding](graphics/bases.png)  
 
