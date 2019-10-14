@@ -23,6 +23,9 @@ var connectLastNodes = 1; //connect last n-nodes in two map mode
 var scrollLock = false;
 var editMode = true;
 
+var jitterEdgeMultiplierMagnitude = 0.01; // fractional maximum jitter multiplier per edge
+var jitterVertexAbsoluteMagnitude = 1.00; // maximum jitter addition per node x or y coordinate
+
 //these generated dynamically to fit screen
 var canvaswidth = 0;
 var canvasheight = 0;
@@ -53,8 +56,12 @@ new p5();
 	  noStroke();
 	  textSize(24);
 	  textAlign('CENTER');
-	  text('Drag and drop a map', width/4, height/2);
-		// Add an event for when a file is dropped onto the canvas
+	  text('Drag and drop a map or layer', width/4, height/2);
+	  fill(0,0,10,80);
+	  noStroke();
+	  textSize(14);
+	  textAlign('CENTER');
+	  text('  (Enfolding supports .JPG, .JPEG, .GIF, .PNG, .SVG)', width/4, height/1.87);// Add an event for when a file is dropped onto the canvas
 	  c.drop(gotFile);
 	  //createDiv('data: ').id('dataResults');
 	};
@@ -237,6 +244,7 @@ window.onload = function() {
 };
 
 	var scene, camera;
+	var strDownloadMime = "image/octet-stream";
 	var wireframeOn = false;
 
 	//var material = new THREE.MeshLambertMaterial( { color: 0x0000FF, transparent: true, opacity: 0.8, side: THREE.DoubleSide, wireframe:wireframeOn } );
@@ -244,7 +252,13 @@ window.onload = function() {
 
 
 	function initThree() {
-		renderer = new THREE.WebGLRenderer({ alpha: true });
+		renderer = new THREE.WebGLRenderer({
+		alpha: true,
+		preserveDrawingBuffer: true
+	  });
+		renderer.setSize(window.innerWidth, window.innerHeight);
+                document.body.appendChild(renderer.domElement);
+	
 		scene = new THREE.Scene();
 		camera = new THREE.PerspectiveCamera(
                 75,             // Field of view
@@ -320,6 +334,36 @@ window.onload = function() {
 			render();
 
 	};
+
+
+	function saveAsImage() {
+	  var imgData, imgNode;
+
+	  try {
+	    var strMime = "image/jpeg";
+	    imgData = renderer.domElement.toDataURL(strMime);
+
+	    saveFile(imgData.replace(strMime, strDownloadMime), "test.jpg");
+
+	  } catch (e) {
+	    console.log(e);
+	    return;
+	  }
+
+	}
+
+	var saveFile = function(strData, filename) {
+	  var link = document.createElement('a');
+	  if (typeof link.download === 'string') {
+	    document.body.appendChild(link); 
+	    link.download = filename;
+	    link.href = strData;
+	    link.click();
+	    document.body.removeChild(link); 
+	  } else {
+	    location.replace(uri);
+	  }
+	}
 
 //END RIGHT CANVAS
 
@@ -777,6 +821,66 @@ function nodeDistXY(nn1,mx,my){
 	return dist(nn1.xpos,nn1.ypos,mx,my);
 }
 
+function jitterEdgeMatrix(matrix,jitterEdgeMultiplierMagnitude){
+	// this code randomly perturbs edge distances
+	// such that 'nearby' similarly-good MDS results might be found
+	// e.g. symmetric mirrors.
+	var jitterEdgeMatrixMultipliers = numeric.add(
+		1,
+		numeric.add(
+			-1 * jitterEdgeMultiplierMagnitude,
+			numeric.mul(
+				jitterEdgeMultiplierMagnitude,
+				numeric.random([matrix.length,matrix[0].length])
+			)
+		)
+	);
+	for(var y = 0; y < matrix.length; y++) {
+		for(var x = 0; x < matrix[0].length; x++) {
+				// do elementwise multiplication -- could be sped up.
+				matrix[x][y] = matrix[x][y] * jitterEdgeMatrixMultipliers[x][y];
+			};
+		};
+	return matrix;
+}
+
+function floatingPointClose(num1,num2,myTolerance) {
+	return(abs(num1-num2) < myTolerance);
+}
+
+function jitterVertexPositionArray(vertices,jitterVertexAbsoluteMagnitude) {
+	// this code randomly perturbs vertex node positions (for the Delaunay)
+	// such that 'nearby' similarly-good MDS results might be found
+	// e.g. symmetric mirrors.
+
+	// Find min and max positions for x and y.
+	// The principle is that no jitters occur along the edges of the maps.
+	// The reason for this is that they otherwise can create very elongated delaunay triangles,
+	//  which creates associated distortions in the rendering.
+	var xPosArray = vertices.map(p => p[0]);
+	var yPosArray = vertices.map(p => p[1]);
+	var xMax = Math.max(...xPosArray);
+	var yMax = Math.max(...yPosArray);
+	var xMin = Math.min(...xPosArray);
+	var yMin = Math.min(...yPosArray);
+
+	for(var v = 0; v < vertices.length; v++) {
+		if (
+			!floatingPointClose(xMin,vertices[v][0],jitterVertexAbsoluteMagnitude) &&
+			!floatingPointClose(xMax,vertices[v][0],jitterVertexAbsoluteMagnitude)
+		) {
+			vertices[v][0] = vertices[v][0] + 2 * (Math.random()-1) * jitterVertexAbsoluteMagnitude;
+		};
+		if (
+			!floatingPointClose(yMin,vertices[v][1],jitterVertexAbsoluteMagnitude) &&
+			!floatingPointClose(yMax,vertices[v][1],jitterVertexAbsoluteMagnitude)
+		) {
+		vertices[v][1] = vertices[v][1] + 2 * (Math.random()-1) * jitterVertexAbsoluteMagnitude;
+	  };
+  };
+	return vertices;
+}
+
 //build empty matrix, run through Floyd Warshall and MDS
 function makeMatrix(focus){
 	//console.log(maps[mapFocus].internalNodes);
@@ -812,6 +916,9 @@ function makeMatrix(focus){
 		//populate vertices array for Delaunay
 		vertices[y] = [nodes[y].xpos, nodes[y].ypos];
 	}
+
+	matrix = jitterEdgeMatrix(matrix,jitterEdgeMultiplierMagnitude);
+	vertices = jitterVertexPositionArray(vertices,jitterVertexAbsoluteMagnitude);
 
 	//console.log(matrix);
 
@@ -884,7 +991,8 @@ function combineMatrix(focus1, focus2){
 			}
 		} else {
 			if(!editMode){
-				alert("Error: maps must have same number of points to bind");
+				alert("Error: maps must have same number of points to bind."
+				+ " Map One: " + nodes1.length + " nodes " + " Map Two: " + nodes2.length+ " nodes ");		
 			}
 			document.getElementById("bindCheck").checked=false;
 			bindTwo = false;
@@ -928,6 +1036,8 @@ function combineMatrix(focus1, focus2){
 		}
 		console.log(entries);
 	}*/
+
+	matrix = jitterEdgeMatrix(matrix,jitterEdgeMultiplierMagnitude);
 
 	var shortestDists = floydWarshall(matrix);
 	//uncomment to print floyd warshall matrix to console

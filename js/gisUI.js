@@ -87,7 +87,69 @@ function insToggle2(){
 	}
 
 }
+//color picker iro.js
+//color picker iro.js
+var colorPicker = new iro.ColorPicker('#color-picker-container', {
+width: 150,
+padding:5,
+handleRadius: 5,
+});
 
+var values = document.getElementById("values");
+colorPicker.on(["color:init", "color:change"], function(color, values){
+  var hexPicker = colorPicker.color.hexString;
+  console.log(hexPicker);
+  values.innerHTML = [
+    "hex: " + color.hexString,
+  ].join("<br>");
+});
+
+function onColorChange(color, changes) {
+//change render canvas color
+    renderer.setClearColor(color.hexString, 1);
+}
+
+// listen to a color picker's color:change event
+colorPicker.on('color:change', onColorChange);
+
+
+//change canvas color
+function orangeCan() {
+  renderer.setClearColor(0xff812d, 1);
+};
+
+function blueCan() {
+  renderer.setClearColor(0x5a8ad2, 1);
+};
+
+function yellowCan() {
+  renderer.setClearColor(0xffd941, 1);
+};
+
+function greenCan() {
+  renderer.setClearColor(0x94d668, 1);
+};
+
+function magentaCan() {
+  renderer.setClearColor(0xff2d81, 1);
+};
+
+function purpleCan() {
+  renderer.setClearColor(0xba72cc, 1);
+};
+
+function whiteCan() {
+  renderer.setClearColor(0xFFFFFF, 1);
+};
+
+function grayCan() {
+  renderer.setClearColor(0x808080, 1);
+};
+
+function blackCan() {
+  renderer.setClearColor(0x000000, 1);
+};
+//end color change button
 function nNodesChange(obj){
 	var item = obj.value;
 	nNodes = item;
@@ -106,9 +168,11 @@ function wormMode(obj){
 	if(!obj.checked){
 		worm = false;
 		document.getElementById("nodeConnect").style.display = "none";
+		document.getElementById("renderFocus").style.display = "block";
 	} else {
 		worm = true;
 		document.getElementById("nodeConnect").style.display = "block";
+		document.getElementById("renderFocus").style.display = "none"
 	}
 	recalcMaps();
 }
@@ -238,4 +302,12 @@ function loadState(s){
 	reCalc();
 	recalcMaps();
 	console.log(maps[0]);
+function mirrorMesh() {
+	scene.children.forEach(
+		function(object) {
+			if (object.type === "Mesh") {
+				object.applyMatrix(new THREE.Matrix4().makeScale(-1, 1, 1));
+			}
+		}
+	);
 }
