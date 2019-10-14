@@ -313,5 +313,4 @@ function mirrorMesh() {
 			}
 		}
 	);
-	
 }
