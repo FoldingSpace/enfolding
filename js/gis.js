@@ -54,7 +54,7 @@ new p5();
 	  noStroke();
 	  textSize(24);
 	  textAlign('CENTER');
-	  text('Drag and drop a map or other image', width/4, height/2);
+	  text('Drag and drop a map or other image here', width/4, height/2);
 	  fill(0,0,10,80);
 	  noStroke();
 	  textSize(14);
