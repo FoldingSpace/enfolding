@@ -6,7 +6,6 @@ enfolding (c) Luke Bergmann and Nick Lally
 
 ![example](graphics/wormhole/11-bind-compilation.png)
 
-============
 - [_enfolding_](#enfolding)
 - [Using the interface](#using-the-interface)
     + [Edit Mode](#edit-mode)
