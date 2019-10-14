@@ -302,6 +302,9 @@ function loadState(s){
 	reCalc();
 	recalcMaps();
 	console.log(maps[0]);
+
+}
+
 function mirrorMesh() {
 	scene.children.forEach(
 		function(object) {
