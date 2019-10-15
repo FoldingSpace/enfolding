@@ -6,8 +6,8 @@ If you want to jump right in, you can get started with the [online version of en
 
 # tutorials
 The following tutorials, first written by Lindsey Funke, will help you get up-and-running with _enfolding_ and give you an idea of what's possible: 
-1. [Changing measures of distance](distance-demo.md)
-2. [Creating wormholes](wormhole-demo.md)
+1. [Changing measures of distance](docs/distance-demo.md)
+2. [Creating wormholes](docs/wormhole-demo.md)
 
 ![example](graphics/wormhole/11-bind-compilation.png)
 
@@ -103,8 +103,8 @@ You will notice that as you create nodes, text boxes that display node-node dist
 
 In order to change the distance between two particular nodes, click a single node. It will appear in red. Then select another node with a shared edge. The text box will appear and allow you to adjust the distance. 
 
-- To pinch the map, adjust to 0 and click enter. [See an extended example here.](https://github.com/FoldingSpace/enfolding/blob/gettingStarted/distance-demo.md)
-- In some particular cases, enfolding allows you to increase or exaggerate distances as well. [Check out the wormhole demo for an example of this.](https://github.com/FoldingSpace/enfolding/blob/gettingStarted/wormhole-demo.md)	
+- To pinch the map, adjust to 0 and click enter. [See an extended example here.](docs/distance-demo.md)
+- In some particular cases, enfolding allows you to increase or exaggerate distances as well. [Check out the wormhole demo for an example of this.](docs/wormhole-demo.md)	
 	
 ## Advanced Options
 ![advanced](graphics/advanced_rectangle.gif)  
