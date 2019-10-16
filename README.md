@@ -1,4 +1,4 @@
-# _enfolding_:  a prototype geographical imagination system (gis)
+# _enfolding:_  a prototype geographical imagination system (gis)
 _enfolding_ was created for people searching for new ways to visualize absolute and relational spaces. We hope this software will assist users as they conduct exploratory visual analysis and tailor new visualizations of space. If you are not an avid mapper within traditional GIS environments or do not consider yourself a spatial theorist, do not worry. This platform and tutorials have been designed for people with varying knowledge, interests, and skills. Bring your creativity and stay tuned for upcoming examples and tutorials. 
 
 # online demo 
