@@ -54,7 +54,7 @@ new p5();
 	  noStroke();
 	  textSize(24);
 	  textAlign('CENTER');
-	  text('Drag and drop a map or layer', width/4, height/2);
+	  text('Drag and drop a map or other image here', width/4, height/2);
 	  fill(0,0,10,80);
 	  noStroke();
 	  textSize(14);
@@ -256,7 +256,7 @@ window.onload = function() {
 	  });
 		renderer.setSize(window.innerWidth, window.innerHeight);
                 document.body.appendChild(renderer.domElement);
-	
+
 		scene = new THREE.Scene();
 		camera = new THREE.PerspectiveCamera(
                 75,             // Field of view
@@ -353,11 +353,11 @@ window.onload = function() {
 	var saveFile = function(strData, filename) {
 	  var link = document.createElement('a');
 	  if (typeof link.download === 'string') {
-	    document.body.appendChild(link); 
+	    document.body.appendChild(link);
 	    link.download = filename;
 	    link.href = strData;
 	    link.click();
-	    document.body.removeChild(link); 
+	    document.body.removeChild(link);
 	  } else {
 	    location.replace(uri);
 	  }
@@ -990,7 +990,7 @@ function combineMatrix(focus1, focus2){
 		} else {
 			if(!editMode){
 				alert("Error: maps must have same number of points to bind."
-				+ " Map One: " + nodes1.length + " nodes " + " Map Two: " + nodes2.length+ " nodes ");		
+				+ " Map One: " + nodes1.length + " nodes " + " Map Two: " + nodes2.length+ " nodes ");
 			}
 			document.getElementById("bindCheck").checked=false;
 			bindTwo = false;
